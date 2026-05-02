@@ -18,20 +18,11 @@ struct SettingsView: View {
 // MARK: - General Tab
 
 struct GeneralSettingsTab: View {
-    @AppStorage(Constants.UserDefaultsKey.defaultProvider) private var defaultProvider = ProviderType.openAI.rawValue
     @AppStorage(Constants.UserDefaultsKey.persistentContext) private var persistentContext = ""
     @State private var launchAtLogin = false
 
     var body: some View {
         Form {
-            Picker("Default Provider", selection: $defaultProvider) {
-                ForEach(ProviderType.allCases, id: \.rawValue) { p in
-                    Text(p.displayName).tag(p.rawValue)
-                }
-            }
-            .pickerStyle(.menu)
-            .frame(maxWidth: 220)
-
             VStack(alignment: .leading, spacing: 4) {
                 Text("Persistent Context")
                     .font(.headline)
@@ -67,7 +58,6 @@ struct GeneralSettingsTab: View {
 
 struct APIKeysSettingsTab: View {
     @State private var openAIKey = ""
-    @State private var claudeKey = ""
     @State private var openAIStatus: String?
     @State private var isTesting = false
 
@@ -89,17 +79,10 @@ struct APIKeysSettingsTab: View {
                     }
                 }
             }
-            Section("Claude API Key (Optional)") {
-                SecureField("sk-ant-…", text: $claudeKey)
-                    .font(.system(size: 13, design: .monospaced))
-                Button("Save to Keychain") { saveClaudeKey() }
-                    .disabled(claudeKey.isEmpty)
-            }
         }
         .padding(16)
         .onAppear {
             openAIKey = KeychainHelper.load(account: Constants.KeychainAccount.openAIAPIKey) ?? ""
-            claudeKey = KeychainHelper.load(account: Constants.KeychainAccount.claudeAPIKey) ?? ""
         }
     }
 
@@ -110,10 +93,6 @@ struct APIKeysSettingsTab: View {
         } catch {
             openAIStatus = "✗ \(error.localizedDescription)"
         }
-    }
-
-    private func saveClaudeKey() {
-        try? KeychainHelper.save(account: Constants.KeychainAccount.claudeAPIKey, value: claudeKey)
     }
 
     private func testOpenAIKey() {

@@ -26,12 +26,10 @@ enum Language: String, CaseIterable, Codable {
 
 enum ProviderType: String, CaseIterable, Codable {
     case openAI = "openai"
-    case claude = "claude"
 
     var displayName: String {
         switch self {
         case .openAI: return "GPT-4o mini"
-        case .claude: return "Claude Sonnet"
         }
     }
 }

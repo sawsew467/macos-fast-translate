@@ -18,7 +18,6 @@ enum Constants {
     // MARK: - Keychain account names (not UserDefaults)
     enum KeychainAccount {
         static let openAIAPIKey = "openai_api_key"
-        static let claudeAPIKey = "claude_api_key"
     }
 
     // MARK: - UserDefaults keys
