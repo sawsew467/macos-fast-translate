@@ -18,7 +18,11 @@ enum Constants {
 
     // MARK: - UI
     enum UI {
-        static let popoverWidth: CGFloat = 360
-        static let popoverHeight: CGFloat = 300
+        static let popoverWidth: CGFloat = 380
+        static let popoverHeight: CGFloat = 340
+        static let popoverHeightWithContext: CGFloat = 420
+        static let floatingPanelWidth: CGFloat = 300
+        static let floatingPanelHeight: CGFloat = 90
+        static let floatingPanelDismissDelay: TimeInterval = 10
     }
 }

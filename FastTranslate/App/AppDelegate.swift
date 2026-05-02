@@ -5,6 +5,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var statusItem: NSStatusItem!
     private var popover: NSPopover!
     private var eventMonitor: Any?
+    var floatingPanel = FloatingPanelController()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         setupStatusItem()
@@ -33,13 +34,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func setupPopover() {
         popover = NSPopover()
-        popover.contentSize = NSSize(width: Constants.UI.popoverWidth, height: Constants.UI.popoverHeight)
+        popover.contentSize = NSSize(width: 380, height: 340)
         popover.behavior = .transient
-        // Placeholder view — replaced in Phase 3
-        popover.contentViewController = NSHostingController(
-            rootView: Text("FastTranslate — Phase 3 will add the full UI")
-                .padding()
-        )
+        let popoverView = TranslationPopoverView { [weak self] result in
+            guard let self else { return }
+            let mousePoint = NSEvent.mouseLocation
+            self.floatingPanel.show(result: result, near: mousePoint)
+        }
+        popover.contentViewController = NSHostingController(rootView: popoverView)
     }
 
     /// Close popover on any click outside it

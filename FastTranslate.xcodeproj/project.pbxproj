@@ -8,29 +8,35 @@
 
 /* Begin PBXBuildFile section */
 		09C89BAD8C5E25E5DDEDF575 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DBB76FCFF017B4AE03585D /* AppDelegate.swift */; };
+		203B0BF756B5E665270596E1 /* OpenAITranslationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C77F685E48C2858ED8F88C8 /* OpenAITranslationProvider.swift */; };
 		565A07966F7A3ADA20B12626 /* TranslationModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0B61BB39F7B81D8125813A /* TranslationModels.swift */; };
+		59CA86294CC279E70F945752 /* LanguageDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97DA6300D18F1BFB56F812AC /* LanguageDetector.swift */; };
+		707E8BCBB9DFFBD33BD64486 /* TranslationPopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F34E49E3BED91BC5DA80EBBF /* TranslationPopoverView.swift */; };
+		7A38A6F68245482F8D1D02E6 /* MultilineTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77AB337EE4A3E5AEFB184785 /* MultilineTextField.swift */; };
+		8ABAEDED638E21112B18B89B /* TranslationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC96BA25B86F82EB77EF7204 /* TranslationProvider.swift */; };
 		A1446A3F79FDB5DB6BDE9EDA /* FastTranslateApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24D55CE698491D500D02B0E0 /* FastTranslateApp.swift */; };
+		B485BCE33A57AA49904103F6 /* FloatingPanelController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B1E25598B115393F26D6778 /* FloatingPanelController.swift */; };
 		B9CD93460571D1DA2007C1E7 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AC78F8B6C6E5259E4608B58 /* Constants.swift */; };
+		DF88809DDC5B03D0E584D614 /* TranslationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B82F1A185658243C2287B09 /* TranslationService.swift */; };
 		FDF1D29066C016D2C34F64A6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2410F309D1E5B5BBAEF3EC72 /* Assets.xcassets */; };
-		AB1001AA0000000000000001 /* TranslationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1001BB0000000000000001 /* TranslationProvider.swift */; };
-		AB1001AA0000000000000002 /* OpenAITranslationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1001BB0000000000000002 /* OpenAITranslationProvider.swift */; };
-		AB1001AA0000000000000003 /* TranslationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1001BB0000000000000003 /* TranslationService.swift */; };
-		AB1001AA0000000000000004 /* LanguageDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1001BB0000000000000004 /* LanguageDetector.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		00E6DC9D78142C0B9D887CFE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		0B82F1A185658243C2287B09 /* TranslationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationService.swift; sourceTree = "<group>"; };
 		1AC78F8B6C6E5259E4608B58 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		2410F309D1E5B5BBAEF3EC72 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		24D55CE698491D500D02B0E0 /* FastTranslateApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FastTranslateApp.swift; sourceTree = "<group>"; };
+		3B1E25598B115393F26D6778 /* FloatingPanelController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingPanelController.swift; sourceTree = "<group>"; };
+		4C77F685E48C2858ED8F88C8 /* OpenAITranslationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAITranslationProvider.swift; sourceTree = "<group>"; };
 		5B0B61BB39F7B81D8125813A /* TranslationModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationModels.swift; sourceTree = "<group>"; };
 		74DDCFADDC84A16CB1355D44 /* FastTranslate.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FastTranslate.entitlements; sourceTree = "<group>"; };
+		77AB337EE4A3E5AEFB184785 /* MultilineTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultilineTextField.swift; sourceTree = "<group>"; };
+		97DA6300D18F1BFB56F812AC /* LanguageDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageDetector.swift; sourceTree = "<group>"; };
+		AC96BA25B86F82EB77EF7204 /* TranslationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationProvider.swift; sourceTree = "<group>"; };
 		C0DBB76FCFF017B4AE03585D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E0CD2AFC50E2FAE900C16D2B /* FastTranslate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FastTranslate.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		AB1001BB0000000000000001 /* TranslationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationProvider.swift; sourceTree = "<group>"; };
-		AB1001BB0000000000000002 /* OpenAITranslationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAITranslationProvider.swift; sourceTree = "<group>"; };
-		AB1001BB0000000000000003 /* TranslationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationService.swift; sourceTree = "<group>"; };
-		AB1001BB0000000000000004 /* LanguageDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageDetector.swift; sourceTree = "<group>"; };
+		F34E49E3BED91BC5DA80EBBF /* TranslationPopoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationPopoverView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -42,6 +48,16 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
+		128A3D1291496E3B886C17D1 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				3B1E25598B115393F26D6778 /* FloatingPanelController.swift */,
+				77AB337EE4A3E5AEFB184785 /* MultilineTextField.swift */,
+				F34E49E3BED91BC5DA80EBBF /* TranslationPopoverView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
 		1C596DB2DE510477316AAC26 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
@@ -50,25 +66,15 @@
 			path = Utils;
 			sourceTree = "<group>";
 		};
-		AB1001CC0000000000000001 /* Services */ = {
-			isa = PBXGroup;
-			children = (
-				AB1001BB0000000000000001 /* TranslationProvider.swift */,
-				AB1001BB0000000000000002 /* OpenAITranslationProvider.swift */,
-				AB1001BB0000000000000003 /* TranslationService.swift */,
-				AB1001BB0000000000000004 /* LanguageDetector.swift */,
-			);
-			path = Services;
-			sourceTree = "<group>";
-		};
 		26AB9A79395C32C3C4E2ED7F /* FastTranslate */ = {
 			isa = PBXGroup;
 			children = (
 				80F0BCAEFCC43611D5FDBC21 /* App */,
 				08F2116B9FD90D97B1B3583F /* Models */,
-				AB1001CC0000000000000001 /* Services */,
 				92421853AA694D4EEEA907C1 /* Resources */,
+				D0A3B91651D680CD7092D4E2 /* Services */,
 				1C596DB2DE510477316AAC26 /* Utils */,
+				128A3D1291496E3B886C17D1 /* Views */,
 			);
 			path = FastTranslate;
 			sourceTree = "<group>";
@@ -90,6 +96,17 @@
 				00E6DC9D78142C0B9D887CFE /* Info.plist */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		D0A3B91651D680CD7092D4E2 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				97DA6300D18F1BFB56F812AC /* LanguageDetector.swift */,
+				4C77F685E48C2858ED8F88C8 /* OpenAITranslationProvider.swift */,
+				AC96BA25B86F82EB77EF7204 /* TranslationProvider.swift */,
+				0B82F1A185658243C2287B09 /* TranslationService.swift */,
+			);
+			path = Services;
 			sourceTree = "<group>";
 		};
 		E1BE24A374E24812103F8FAE /* Products */ = {
@@ -178,11 +195,14 @@
 				09C89BAD8C5E25E5DDEDF575 /* AppDelegate.swift in Sources */,
 				B9CD93460571D1DA2007C1E7 /* Constants.swift in Sources */,
 				A1446A3F79FDB5DB6BDE9EDA /* FastTranslateApp.swift in Sources */,
+				B485BCE33A57AA49904103F6 /* FloatingPanelController.swift in Sources */,
+				59CA86294CC279E70F945752 /* LanguageDetector.swift in Sources */,
+				7A38A6F68245482F8D1D02E6 /* MultilineTextField.swift in Sources */,
+				203B0BF756B5E665270596E1 /* OpenAITranslationProvider.swift in Sources */,
 				565A07966F7A3ADA20B12626 /* TranslationModels.swift in Sources */,
-				AB1001AA0000000000000001 /* TranslationProvider.swift in Sources */,
-				AB1001AA0000000000000002 /* OpenAITranslationProvider.swift in Sources */,
-				AB1001AA0000000000000003 /* TranslationService.swift in Sources */,
-				AB1001AA0000000000000004 /* LanguageDetector.swift in Sources */,
+				707E8BCBB9DFFBD33BD64486 /* TranslationPopoverView.swift in Sources */,
+				8ABAEDED638E21112B18B89B /* TranslationProvider.swift in Sources */,
+				DF88809DDC5B03D0E584D614 /* TranslationService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
