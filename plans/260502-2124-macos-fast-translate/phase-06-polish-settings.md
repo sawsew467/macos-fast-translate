@@ -1,7 +1,7 @@
 ---
 phase: 6
 title: "Settings & Polish"
-status: pending
+status: completed
 priority: P2
 effort: "4h"
 dependencies: [1, 2, 3]
@@ -165,16 +165,16 @@ SMAppService.mainApp.unregister() // disable
    - Smooth animations trong popover (fade in/out)
 
 ## Success Criteria
-- [ ] Settings window mở từ menu bar "Settings..."
-- [ ] OpenAI API key lưu/đọc từ Keychain
-- [ ] "Test" button verify API key hoạt động
-- [ ] Persistent context gửi kèm mọi bản dịch
-- [ ] Translation history lưu/đọc từ JSON file
-- [ ] History hiện trong popover, tìm kiếm được
-- [ ] Launch at login toggle hoạt động
-- [ ] First-launch onboarding wizard hiện đúng lần đầu
-- [ ] Onboarding guide permissions đúng
-- [ ] ⌘+, mở Settings (standard macOS)
+- [x] Settings window mở từ menu bar "Settings..."
+- [x] OpenAI API key lưu/đọc từ Keychain
+- [x] "Test" button verify API key hoạt động
+- [x] Persistent context gửi kèm mọi bản dịch
+- [x] Translation history lưu/đọc từ JSON file
+- [x] History hiện trong popover, tìm kiếm được
+- [x] Launch at login toggle hoạt động
+- [x] First-launch onboarding wizard hiện đúng lần đầu
+- [x] Onboarding guide permissions đúng
+- [x] ⌘+, mở Settings (standard macOS)
 
 ## Risk Assessment
 - **Keychain permission:** App cần "keychain-access-groups" entitlement nếu dùng App Group. Không sandbox → dùng default keychain, đơn giản hơn

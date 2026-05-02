@@ -18,7 +18,7 @@ Menu bar app với hotkey dịch tức thì (~3-5s), hỗ trợ context để d�
 | 3 | UI Components | completed | P0 | Popover view with context box, translation result, copy |
 | 4 | Global Hotkeys | completed | P0 | ⌃+⌥+T/S, selected text reader, floating result panel |
 | 5 | Screenshot OCR | completed | P1 | Region capture → Vision OCR → translate pipeline |
-| 6 | Settings & Polish | pending | P2 | Persistent context, API key, history, launch at login |
+| 6 | Settings & Polish | completed | P2 | Persistent context, API key, history, launch at login |
 
 ## Key Decisions
 - **Default provider:** GPT-4o-mini (~$0.3/tháng cho 100 tin/ngày)
