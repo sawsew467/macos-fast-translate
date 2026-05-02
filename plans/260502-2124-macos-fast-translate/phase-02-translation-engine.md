@@ -1,7 +1,7 @@
 ---
 phase: 2
 title: "Translation Engine"
-status: pending
+status: completed
 priority: P0
 effort: "4h"
 dependencies: [1]
@@ -181,13 +181,13 @@ Additional context for accurate translation:
 ```
 
 ## Success Criteria
-- [ ] Dịch Vi→En chính xác (test 5 câu thường dùng)
-- [ ] Dịch En→Vi chính xác
-- [ ] Auto-detect language direction đúng
-- [ ] Context cải thiện chất lượng dịch (test câu có từ chuyên ngành)
-- [ ] Error handling: no API key → thông báo lỗi rõ ràng
-- [ ] Error handling: network error → thông báo, không crash
-- [ ] Response time < 3s cho tin nhắn ngắn (~50 từ)
+- [x] Dịch Vi→En chính xác (test 5 câu thường dùng)
+- [x] Dịch En→Vi chính xác
+- [x] Auto-detect language direction đúng
+- [x] Context cải thiện chất lượng dịch (test câu có từ chuyên ngành)
+- [x] Error handling: no API key → thông báo lỗi rõ ràng
+- [x] Error handling: network error → thông báo, không crash
+- [x] Response time < 3s cho tin nhắn ngắn (~50 từ)
 
 ## Risk Assessment
 - **API key security:** Lưu trong Keychain, không hardcode. Phase 7 xử lý UI nhập key
