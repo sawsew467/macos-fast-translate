@@ -1,2 +1,5 @@
 .claude/
 .env
+.DS_Store
+*.xcuserstate
+xcschememanagement.plist
