@@ -1,16 +1,19 @@
 import AppKit
 import SwiftUI
 
+@MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private var statusItem: NSStatusItem!
     private var popover: NSPopover!
     private var eventMonitor: Any?
     var floatingPanel = FloatingPanelController()
+    private var hotkeyManager: HotkeyManager?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         setupStatusItem()
         setupPopover()
         setupEventMonitor()
+        setupHotkeys()
         #if DEBUG
         runTranslationSmokeTest()
         #endif
@@ -42,6 +45,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             self.floatingPanel.show(result: result, near: mousePoint)
         }
         popover.contentViewController = NSHostingController(rootView: popoverView)
+    }
+
+    private func setupHotkeys() {
+        // Prompt for Accessibility permission if not yet granted.
+        // Required so CGEvent.post() can simulate ⌘+C to read selected text.
+        if !AXIsProcessTrusted() {
+            let opts = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true] as CFDictionary
+            AXIsProcessTrustedWithOptions(opts)
+        }
+
+        let service = TranslationService()
+        let manager = HotkeyManager(translationService: service, floatingPanel: floatingPanel)
+        manager.register()
+        hotkeyManager = manager
     }
 
     /// Close popover on any click outside it

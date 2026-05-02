@@ -8,6 +8,13 @@ enum Constants {
         static let clipboard: UInt32 = 9    // kVK_ANSI_V
     }
 
+    // MARK: - Hotkey IDs (unique per registered hotkey, used in Carbon EventHotKeyID)
+    enum HotkeyIDs {
+        static let translate: UInt32 = 1
+        static let screenshot: UInt32 = 2
+        static let clipboard: UInt32 = 3
+    }
+
     // MARK: - UserDefaults keys
     enum UserDefaultsKey {
         static let apiKey = "openai_api_key"

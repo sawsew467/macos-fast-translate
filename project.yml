@@ -17,6 +17,8 @@ targets:
     platform: macOS
     sources:
       - FastTranslate
+    dependencies:
+      - sdk: Carbon.framework
     settings:
       base:
         INFOPLIST_FILE: FastTranslate/Resources/Info.plist
