@@ -15,12 +15,18 @@ enum Constants {
         static let clipboard: UInt32 = 3
     }
 
+    // MARK: - Keychain account names (not UserDefaults)
+    enum KeychainAccount {
+        static let openAIAPIKey = "openai_api_key"
+        static let claudeAPIKey = "claude_api_key"
+    }
+
     // MARK: - UserDefaults keys
     enum UserDefaultsKey {
-        static let apiKey = "openai_api_key"
         static let persistentContext = "persistent_context"
         static let defaultProvider = "default_provider"
-        static let launchAtLogin = "launch_at_login"
+        static let hasLaunchedBefore = "has_launched_before"
+        static let onboardingStep = "onboarding_step"
     }
 
     // MARK: - UI

@@ -107,11 +107,13 @@ final class HotkeyManager {
     private func handleScreenshotOCR() {
         Task { @MainActor in
             print("[HotkeyManager] ⌃⌥S fired — starting screenshot OCR")
+            let anchorPoint = NSEvent.mouseLocation
             guard let cgImage = await screenCaptureService.captureRegion() else {
-                print("[HotkeyManager] captureRegion returned nil — aborted")
+                if !ScreenCaptureService.hasPermission() {
+                    showBriefMessage("Screen Recording permission required", near: anchorPoint)
+                }
                 return
             }
-            let anchorPoint = NSEvent.mouseLocation  // cursor position after selection
             do {
                 let fullText = try await ocrService.recognizeText(from: cgImage)
                 let result = try await translationService.translate(fullText)

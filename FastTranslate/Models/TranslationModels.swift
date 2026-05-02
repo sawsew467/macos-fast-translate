@@ -71,7 +71,7 @@ enum TranslationError: LocalizedError {
 
 // MARK: - Translation result
 
-struct TranslationResult {
+struct TranslationResult: Codable {
     let sourceText: String
     let translatedText: String
     let sourceLanguage: Language

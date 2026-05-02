@@ -18,7 +18,7 @@ final class OpenAITranslationProvider: TranslationProvider {
             throw TranslationError.emptyInput
         }
 
-        let apiKey = UserDefaults.standard.string(forKey: Constants.UserDefaultsKey.apiKey) ?? ""
+        let apiKey = KeychainHelper.load(account: Constants.KeychainAccount.openAIAPIKey) ?? ""
         guard !apiKey.isEmpty else { throw TranslationError.noAPIKey }
 
         let body = ChatRequest(

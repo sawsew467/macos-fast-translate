@@ -19,12 +19,10 @@ final class ScreenCaptureService {
     /// Shows a crosshair selection overlay on the screen containing the cursor.
     /// Returns the captured CGImage, or nil if the user cancels (Escape or tiny selection).
     func captureRegion() async -> CGImage? {
-        #if !DEBUG
         guard Self.hasPermission() else {
             Self.requestPermission()
             return nil
         }
-        #endif
         return await withCheckedContinuation { continuation in
             let selector = RegionSelector { [weak self] image in
                 self?.activeSelector = nil

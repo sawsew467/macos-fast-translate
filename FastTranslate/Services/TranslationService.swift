@@ -24,6 +24,7 @@ final class TranslationService: ObservableObject {
 
     init() {
         providers = [.openAI: OpenAITranslationProvider()]
+        loadHistory()
     }
 
     /// Translate text with optional per-message and screenshot context layers.
@@ -68,6 +69,34 @@ final class TranslationService: ObservableObject {
         if history.count > maxHistoryCount {
             history = Array(history.prefix(maxHistoryCount))
         }
+        saveHistory()
         return result
+    }
+
+    // MARK: - History persistence
+
+    private func historyFileURL() -> URL? {
+        FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
+            .first?
+            .appendingPathComponent("FastTranslate/history.json")
+    }
+
+    private func loadHistory() {
+        guard let url = historyFileURL(),
+              FileManager.default.fileExists(atPath: url.path),
+              let data = try? Data(contentsOf: url),
+              let loaded = try? JSONDecoder().decode([TranslationResult].self, from: data)
+        else { return }
+        history = loaded
+    }
+
+    private func saveHistory() {
+        guard let url = historyFileURL() else { return }
+        try? FileManager.default.createDirectory(
+            at: url.deletingLastPathComponent(),
+            withIntermediateDirectories: true
+        )
+        guard let data = try? JSONEncoder().encode(history) else { return }
+        try? data.write(to: url, options: .atomic)
     }
 }

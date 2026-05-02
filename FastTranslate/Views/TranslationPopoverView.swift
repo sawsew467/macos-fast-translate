@@ -137,6 +137,12 @@ struct TranslationPopoverView: View {
             }
             .buttonStyle(.plain)
 
+            Button(action: openHistoryWindow) {
+                Label("History", systemImage: "clock")
+                    .font(.system(size: 13))
+            }
+            .buttonStyle(.plain)
+
             Spacer()
 
             Button(action: clearAll) {
@@ -144,8 +150,18 @@ struct TranslationPopoverView: View {
             }
             .buttonStyle(.plain)
             .foregroundStyle(.secondary)
-
         }
+    }
+
+    private func openHistoryWindow() {
+        let controller = NSHostingController(rootView: HistoryView())
+        let window = NSWindow(contentViewController: controller)
+        window.title = "Translation History"
+        window.styleMask = [.titled, .closable, .resizable]
+        window.setContentSize(NSSize(width: 440, height: 440))
+        window.center()
+        window.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
     }
 
     // MARK: - Actions
