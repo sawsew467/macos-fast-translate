@@ -20,13 +20,22 @@ final class HotkeyManager {
 
     private let translationService: TranslationService
     private let floatingPanel: FloatingPanelController
+    private let screenCaptureService: ScreenCaptureService
+    private let ocrService: OCRService
 
     /// Brief floating window shown when no text is selected.
     private var messageWindow: NSWindow?
 
-    init(translationService: TranslationService, floatingPanel: FloatingPanelController) {
+    init(
+        translationService: TranslationService,
+        floatingPanel: FloatingPanelController,
+        screenCaptureService: ScreenCaptureService,
+        ocrService: OCRService
+    ) {
         self.translationService = translationService
         self.floatingPanel = floatingPanel
+        self.screenCaptureService = screenCaptureService
+        self.ocrService = ocrService
     }
 
     deinit {
@@ -85,7 +94,7 @@ final class HotkeyManager {
         case Constants.HotkeyIDs.translate:
             handleTranslateSelected()
         case Constants.HotkeyIDs.screenshot:
-            print("HotkeyManager: ⌃⌥S — Screenshot OCR (Phase 5 placeholder)")
+            handleScreenshotOCR()
         case Constants.HotkeyIDs.clipboard:
             print("HotkeyManager: ⌃⌥V — Clipboard translate (Phase 6 placeholder)")
         default:
@@ -94,6 +103,24 @@ final class HotkeyManager {
     }
 
     // MARK: - Handlers
+
+    private func handleScreenshotOCR() {
+        Task { @MainActor in
+            print("[HotkeyManager] ⌃⌥S fired — starting screenshot OCR")
+            guard let cgImage = await screenCaptureService.captureRegion() else {
+                print("[HotkeyManager] captureRegion returned nil — aborted")
+                return
+            }
+            let anchorPoint = NSEvent.mouseLocation  // cursor position after selection
+            do {
+                let fullText = try await ocrService.recognizeText(from: cgImage)
+                let result = try await translationService.translate(fullText)
+                floatingPanel.show(result: result, near: anchorPoint)
+            } catch {
+                showBriefMessage(error.localizedDescription, near: anchorPoint)
+            }
+        }
+    }
 
     private func handleTranslateSelected() {
         // Capture mouse location at the moment the hotkey fires (before the async translation delay)

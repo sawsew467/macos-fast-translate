@@ -17,7 +17,7 @@ Menu bar app với hotkey dịch tức thì (~3-5s), hỗ trợ context để d�
 | 2 | Translation Engine | completed | P0 | TranslationProvider protocol, GPT-4o-mini, language detection |
 | 3 | UI Components | completed | P0 | Popover view with context box, translation result, copy |
 | 4 | Global Hotkeys | pending | P0 | ⌃+⌥+T/S/V, selected text reader, floating result panel |
-| 5 | Screenshot OCR | pending | P1 | Region capture → Vision OCR → translate pipeline |
+| 5 | Screenshot OCR | completed | P1 | Region capture → Vision OCR → translate pipeline |
 | 6 | Clipboard Integration | pending | P2 | Translate clipboard content, replace with translation |
 | 7 | Settings & Polish | pending | P2 | Persistent context, API key, history, launch at login |
 

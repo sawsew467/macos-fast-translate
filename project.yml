@@ -19,6 +19,7 @@ targets:
       - FastTranslate
     dependencies:
       - sdk: Carbon.framework
+      - sdk: ScreenCaptureKit.framework
     settings:
       base:
         INFOPLIST_FILE: FastTranslate/Resources/Info.plist

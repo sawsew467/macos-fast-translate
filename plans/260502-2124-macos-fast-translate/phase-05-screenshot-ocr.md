@@ -1,7 +1,7 @@
 ---
 phase: 5
 title: "Screenshot OCR"
-status: pending
+status: completed
 priority: P1
 effort: "5h"
 dependencies: [2, 3, 4]
@@ -159,16 +159,16 @@ Cách này giúp dịch chính xác hơn vì GPT hiểu ngữ cảnh cuộc hộ
    - Verify không có file ảnh tạo trên disk
 
 ## Success Criteria
-- [ ] ⌃+⌥+S mở overlay chọn vùng
-- [ ] Kéo chọn vùng → hiện selection rectangle
-- [ ] Escape hủy capture
-- [ ] OCR trích xuất text tiếng Anh chính xác
-- [ ] OCR trích xuất text tiếng Việt (diacritics) chính xác
-- [ ] Dịch kết quả hiện trong floating panel
-- [ ] Chụp vùng rộng → context cải thiện bản dịch
-- [ ] Không tạo file ảnh trên disk
-- [ ] Screen Recording permission request hoạt động
-- [ ] Pipeline hoàn thành < 5s
+- [x] ⌃+⌥+S mở overlay chọn vùng
+- [x] Kéo chọn vùng → hiện selection rectangle
+- [x] Escape hủy capture
+- [x] OCR trích xuất text tiếng Anh chính xác
+- [x] OCR trích xuất text tiếng Việt (diacritics) chính xác
+- [x] Dịch kết quả hiện trong floating panel
+- [x] Chụp vùng rộng → context cải thiện bản dịch
+- [x] Không tạo file ảnh trên disk
+- [x] Screen Recording permission request hoạt động
+- [x] Pipeline hoàn thành < 5s
 
 ## Risk Assessment
 - **Screen Recording permission:** macOS rất strict. User phải bật thủ công trong System Settings. Cần UX rõ ràng hướng dẫn

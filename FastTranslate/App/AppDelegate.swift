@@ -50,13 +50,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func setupHotkeys() {
         // Prompt for Accessibility permission if not yet granted.
         // Required so CGEvent.post() can simulate ⌘+C to read selected text.
+        #if !DEBUG
         if !AXIsProcessTrusted() {
             let opts = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true] as CFDictionary
             AXIsProcessTrustedWithOptions(opts)
         }
+        #endif
 
         let service = TranslationService()
-        let manager = HotkeyManager(translationService: service, floatingPanel: floatingPanel)
+        let manager = HotkeyManager(
+            translationService: service,
+            floatingPanel: floatingPanel,
+            screenCaptureService: ScreenCaptureService(),
+            ocrService: OCRService()
+        )
         manager.register()
         hotkeyManager = manager
     }

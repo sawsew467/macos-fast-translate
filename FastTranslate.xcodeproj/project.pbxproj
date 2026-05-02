@@ -19,14 +19,18 @@
 		8ABAEDED638E21112B18B89B /* TranslationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC96BA25B86F82EB77EF7204 /* TranslationProvider.swift */; };
 		A1446A3F79FDB5DB6BDE9EDA /* FastTranslateApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24D55CE698491D500D02B0E0 /* FastTranslateApp.swift */; };
 		B485BCE33A57AA49904103F6 /* FloatingPanelController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B1E25598B115393F26D6778 /* FloatingPanelController.swift */; };
+		B742D405861DCC4948D7EB45 /* ScreenCaptureKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11E18FEF8B6ADF94F74A92F6 /* ScreenCaptureKit.framework */; };
 		B9CD93460571D1DA2007C1E7 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AC78F8B6C6E5259E4608B58 /* Constants.swift */; };
+		DC2A3F16EDB89FEFFE429BB0 /* OCRService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0396A28C564EE1EF73F2C70 /* OCRService.swift */; };
 		DF88809DDC5B03D0E584D614 /* TranslationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B82F1A185658243C2287B09 /* TranslationService.swift */; };
+		EC7B12164D21FA56210446A0 /* ScreenCaptureService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8CF4D8E92B29C1407B01B64 /* ScreenCaptureService.swift */; };
 		FDF1D29066C016D2C34F64A6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2410F309D1E5B5BBAEF3EC72 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		00E6DC9D78142C0B9D887CFE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		0B82F1A185658243C2287B09 /* TranslationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationService.swift; sourceTree = "<group>"; };
+		11E18FEF8B6ADF94F74A92F6 /* ScreenCaptureKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ScreenCaptureKit.framework; path = System/Library/Frameworks/ScreenCaptureKit.framework; sourceTree = SDKROOT; };
 		1AC78F8B6C6E5259E4608B58 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		2410F309D1E5B5BBAEF3EC72 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		24D55CE698491D500D02B0E0 /* FastTranslateApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FastTranslateApp.swift; sourceTree = "<group>"; };
@@ -39,6 +43,8 @@
 		97DA6300D18F1BFB56F812AC /* LanguageDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageDetector.swift; sourceTree = "<group>"; };
 		AC96BA25B86F82EB77EF7204 /* TranslationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationProvider.swift; sourceTree = "<group>"; };
 		C0DBB76FCFF017B4AE03585D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		D0396A28C564EE1EF73F2C70 /* OCRService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OCRService.swift; sourceTree = "<group>"; };
+		D8CF4D8E92B29C1407B01B64 /* ScreenCaptureService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenCaptureService.swift; sourceTree = "<group>"; };
 		DE08135A73BB5FB0FBD9B8BD /* HotkeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyManager.swift; sourceTree = "<group>"; };
 		E0CD2AFC50E2FAE900C16D2B /* FastTranslate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FastTranslate.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F2DE42A656661C5719C20F74 /* SelectedTextReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedTextReader.swift; sourceTree = "<group>"; };
@@ -51,6 +57,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				61CE1F26E7483065E2525499 /* Carbon.framework in Frameworks */,
+				B742D405861DCC4948D7EB45 /* ScreenCaptureKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -119,6 +126,7 @@
 			isa = PBXGroup;
 			children = (
 				695A619BC0DF8716CA2CA76A /* Carbon.framework */,
+				11E18FEF8B6ADF94F74A92F6 /* ScreenCaptureKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -128,7 +136,9 @@
 			children = (
 				DE08135A73BB5FB0FBD9B8BD /* HotkeyManager.swift */,
 				97DA6300D18F1BFB56F812AC /* LanguageDetector.swift */,
+				D0396A28C564EE1EF73F2C70 /* OCRService.swift */,
 				4C77F685E48C2858ED8F88C8 /* OpenAITranslationProvider.swift */,
+				D8CF4D8E92B29C1407B01B64 /* ScreenCaptureService.swift */,
 				F2DE42A656661C5719C20F74 /* SelectedTextReader.swift */,
 				AC96BA25B86F82EB77EF7204 /* TranslationProvider.swift */,
 				0B82F1A185658243C2287B09 /* TranslationService.swift */,
@@ -183,8 +193,6 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1600;
-				TargetAttributes = {
-				};
 			};
 			buildConfigurationList = 30D719892646085CE0EDE947 /* Build configuration list for PBXProject "FastTranslate" */;
 			developmentRegion = en;
@@ -228,7 +236,9 @@
 				0341E2B59EBA8BC30D92C206 /* HotkeyManager.swift in Sources */,
 				59CA86294CC279E70F945752 /* LanguageDetector.swift in Sources */,
 				7A38A6F68245482F8D1D02E6 /* MultilineTextField.swift in Sources */,
+				DC2A3F16EDB89FEFFE429BB0 /* OCRService.swift in Sources */,
 				203B0BF756B5E665270596E1 /* OpenAITranslationProvider.swift in Sources */,
+				EC7B12164D21FA56210446A0 /* ScreenCaptureService.swift in Sources */,
 				1FDC627224F68A379F4BCE49 /* SelectedTextReader.swift in Sources */,
 				565A07966F7A3ADA20B12626 /* TranslationModels.swift in Sources */,
 				707E8BCBB9DFFBD33BD64486 /* TranslationPopoverView.swift in Sources */,
@@ -364,11 +374,18 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = FastTranslate/Resources/FastTranslate.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = YWSHDN5Y3H;
 				INFOPLIST_FILE = FastTranslate/Resources/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.fasttranslate.app;
 				PRODUCT_NAME = FastTranslate;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 			};
 			name = Debug;
@@ -378,11 +395,18 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = FastTranslate/Resources/FastTranslate.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = YWSHDN5Y3H;
 				INFOPLIST_FILE = FastTranslate/Resources/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.fasttranslate.app;
 				PRODUCT_NAME = FastTranslate;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 			};
 			name = Release;
