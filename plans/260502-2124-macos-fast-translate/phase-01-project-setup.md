@@ -1,7 +1,7 @@
 ---
 phase: 1
 title: "Project Setup"
-status: pending
+status: completed
 priority: P0
 effort: "2h"
 dependencies: []
@@ -126,13 +126,13 @@ struct FastTranslateApp: App {
 11. Build & run, verify menu bar icon hiện, click mở popover, không có dock icon
 
 ## Success Criteria
-- [ ] `xcodegen generate` chạy thành công
-- [ ] `xcodebuild build` không lỗi
+- [x] `xcodegen generate` chạy thành công
+- [x] `xcodebuild build` không lỗi
 - [ ] App hiện icon trên menu bar (SF Symbol "character.bubble")
 - [ ] Click icon mở popover (placeholder view)
 - [ ] Click ngoài popover → popover đóng
 - [ ] Không có dock icon
-- [ ] macOS 14+ target
+- [x] macOS 14+ target
 
 ## Risk Assessment
 - **XcodeGen version mismatch:** Verify `xcodegen --version` tương thích với Xcode 26.3

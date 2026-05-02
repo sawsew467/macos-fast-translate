@@ -13,7 +13,7 @@ Menu bar app với hotkey dịch tức thì (~3-5s), hỗ trợ context để d�
 
 | # | Phase | Status | Priority | Description |
 |---|-------|--------|----------|-------------|
-| 1 | Project Setup | pending | P0 | Xcode project (XcodeGen), menu bar scaffold, Info.plist |
+| 1 | Project Setup | completed | P0 | Xcode project (XcodeGen), menu bar scaffold, Info.plist |
 | 2 | Translation Engine | pending | P0 | TranslationProvider protocol, GPT-4o-mini, language detection |
 | 3 | UI Components | pending | P0 | Popover view with context box, translation result, copy |
 | 4 | Global Hotkeys | pending | P0 | ⌃+⌥+T/S/V, selected text reader, floating result panel |
