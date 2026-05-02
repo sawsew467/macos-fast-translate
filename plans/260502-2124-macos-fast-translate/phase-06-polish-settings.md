@@ -1,5 +1,5 @@
 ---
-phase: 7
+phase: 6
 title: "Settings & Polish"
 status: pending
 priority: P2
@@ -7,7 +7,7 @@ effort: "4h"
 dependencies: [1, 2, 3]
 ---
 
-# Phase 7: Settings & Polish
+# Phase 6: Settings & Polish
 
 ## Overview
 Settings panel, persistent context, API key management (Keychain), translation history, launch at login, first-launch onboarding.
