@@ -1,116 +1,143 @@
 # FastTranslate
 
-A lightweight native macOS menu bar app for instant Vietnamese ↔ English translation, powered by AI.
+A lightweight native macOS menu bar app for instant Vietnamese ↔ English translation, powered by GPT-4o-mini.
 
 ![macOS 14+](https://img.shields.io/badge/macOS-14%2B-blue)
 ![Swift 5.9+](https://img.shields.io/badge/Swift-5.9%2B-orange)
+![Zero Dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-## Why?
+## The Problem
 
-If you communicate with English-speaking clients daily but don't write English well, you probably do this a lot:
+If you work with English-speaking clients daily, you probably do this dozens of times:
 
-1. Open ChatGPT/Claude → type Vietnamese → copy translation → paste into chat (**30-60s**)
-2. Screenshot client messages → upload to AI → read translation (**30-60s**)
-3. End up with tons of junk screenshot files
+1. Open ChatGPT → type Vietnamese → copy translation → paste into Slack/email (**30-60s**)
+2. Screenshot a client message → upload to AI → wait for translation (**30-60s**)
+3. End up with tons of junk screenshot files cluttering your desktop
 
-**FastTranslate reduces this to 3-5 seconds with zero junk files.**
+**FastTranslate reduces each translation to 2-3 seconds — right from any app, with zero context switching.**
+
+## Demo
+
+| Translate Selected Text | Screenshot OCR → Translate |
+|:-----------------------:|:--------------------------:|
+| Select text → `⌃⌥T` → instant result | `⌃⌥S` → drag region → auto-translate |
 
 ## Features
 
-### Translate Selected Text (`⌃+⌥+T`)
-Select text in any app → press hotkey → floating panel shows translation near your cursor.
+### Translate Selected Text (`⌃⌥T`)
+Select text in **any app** → press the hotkey → a floating panel streams the translation token-by-token near your cursor. Works in Chrome, Slack, VS Code, Zalo — anywhere.
 
-### Screenshot OCR → Translate (`⌃+⌥+S`)
-Press hotkey → drag to select screen region → OCR extracts text → translates automatically. No screenshot files saved to disk.
+### Screenshot OCR → Translate (`⌃⌥S`)
+Press the hotkey → drag to select a screen region → Vision OCR extracts the text → translation streams instantly. No screenshot files saved to disk.
 
-### Translate Clipboard (`⌃+⌥+V`)
-Copy text → press hotkey → see translation → optionally replace clipboard and paste.
+### Menu Bar Popover
+Click the menu bar icon → type or paste text with optional context → get translation. Useful for longer passages.
 
-### Manual Translation (Click Menu Bar)
-Click the menu bar icon → type text with optional context → get translation.
+### Real-time Streaming
+Translations appear **token-by-token** as GPT-4o-mini generates them — no waiting for the full response.
 
 ### Smart Context System
-Send additional context for more accurate translations:
+Provide context for more accurate, natural translations:
 
-| Context Type | Description |
-|-------------|-------------|
-| **Persistent** | Set once in Settings, sent with every translation (e.g., "professional but friendly tone") |
-| **Per-message** | Type in the popover for a specific translation (e.g., "discussing a production bug") |
-| **Screenshot** | Capture a wider area — AI uses the full conversation as context |
+| Context Layer | Description | Example |
+|:-------------|:------------|:--------|
+| **Persistent** | Set once in Settings, always sent | "Use professional but friendly tone" |
+| **Per-message** | One-time context for a specific translation | "This is about a production database bug" |
+| **Screenshot** | Full screen region text used as conversation context | Capture the full chat thread for context |
+
+### Translation History
+Last 50 translations are saved and searchable. Access from the menu bar popover.
 
 ## Installation
 
-### Prerequisites
-- macOS 14 (Sonoma) or later
-- [OpenAI API key](https://platform.openai.com/api-keys)
+### Download
+Download the latest `.dmg` from [Releases](https://github.com/sawsew467/macos-fast-translate/releases).
 
 ### Build from Source
+
+**Prerequisites:** macOS 14+ and Xcode 15+
+
 ```bash
-# Clone
-git clone https://github.com/YOUR_USERNAME/macos-fast-translate.git
+git clone https://github.com/sawsew467/macos-fast-translate.git
 cd macos-fast-translate
-
-# Generate Xcode project
-xcodegen generate
-
-# Open in Xcode
 open FastTranslate.xcodeproj
-
-# Build & Run (⌘+R)
+# Press ⌘R to build and run
 ```
 
+No package managers, no `pod install`, no `swift package resolve` — zero external dependencies.
+
 ### First Launch
-1. Enter your OpenAI API key
-2. Grant **Accessibility** permission (for global hotkeys + reading selected text)
-3. Grant **Screen Recording** permission (for screenshot OCR)
+
+1. **Enter your OpenAI API key** — the onboarding wizard validates it automatically
+2. **Grant Accessibility** — required for global hotkeys and reading selected text
+3. **Grant Screen Recording** — required for screenshot OCR (optional if you don't use `⌃⌥S`)
 
 ## Usage
 
 | Shortcut | Action |
-|----------|--------|
-| `⌃+⌥+T` | Translate selected text |
-| `⌃+⌥+S` | Screenshot region → OCR → translate |
-| `⌃+⌥+V` | Translate clipboard content |
-| `⌘+,` | Open Settings |
+|:---------|:-------|
+| `⌃⌥T` | Translate selected text in any app |
+| `⌃⌥S` | Screenshot region → OCR → translate |
+| Click menu bar icon | Open translation popover |
+| `⌘,` | Open Settings |
 
-All shortcuts are customizable in Settings.
+## Architecture
 
-## Cost
-
-Uses **GPT-4o-mini** by default — extremely cheap:
-
-| Usage | Monthly Cost |
-|-------|-------------|
-| 50 messages/day | ~$0.15 |
-| 100 messages/day | ~$0.30 |
-| 200 messages/day | ~$0.60 |
-
-Optionally switch to **Claude Sonnet** for complex/nuanced translations.
+```
+FastTranslate/
+├── App/                  # App entry point, AppDelegate, menu bar setup
+├── Models/               # Translation models, streaming state
+├── Services/             # Core logic
+│   ├── TranslationService       # Translation coordinator, context merging, history
+│   ├── OpenAITranslationProvider # GPT-4o-mini API (SSE streaming)
+│   ├── HotkeyManager            # Carbon API global hotkeys
+│   ├── SelectedTextReader       # AX API + clipboard fallback
+│   ├── ScreenCaptureService     # Region selection overlay
+│   ├── OCRService               # Apple Vision text recognition
+│   └── LanguageDetector         # Vi/En detection via Unicode analysis
+├── Views/                # SwiftUI views, floating panel, settings
+├── Utils/                # Keychain helper, constants
+└── Resources/            # Info.plist, entitlements, assets
+```
 
 ## Tech Stack
 
-- **Swift + SwiftUI + AppKit** — pure native, ~10MB, no Electron
-- **GPT-4o-mini** — fast, cheap, natural translations
-- **Apple Vision** — offline OCR, supports Vietnamese
-- **Zero external dependencies** — all Apple native frameworks
+| Component | Technology | Why |
+|:----------|:-----------|:----|
+| UI | SwiftUI + AppKit | Native macOS, ~10MB binary |
+| Translation | GPT-4o-mini (SSE streaming) | Fast, cheap, natural results |
+| OCR | Apple Vision | Offline, supports Vietnamese |
+| Hotkeys | Carbon Events API | Works globally across all apps |
+| Text reading | Accessibility API | Primary; clipboard simulation as fallback |
+| Storage | Keychain + UserDefaults | Secure API key storage |
 
-## Permissions
+## Cost
 
-| Permission | Why |
-|-----------|-----|
-| Accessibility | Read selected text via simulated ⌘+C, register global hotkeys |
-| Screen Recording | Capture screen regions for OCR |
+GPT-4o-mini is extremely affordable:
+
+| Daily Usage | Monthly Cost |
+|:-----------|:------------|
+| 50 translations | ~$0.15 |
+| 100 translations | ~$0.30 |
+| 200 translations | ~$0.60 |
+
+## Security
+
+- API keys stored in **macOS Keychain** (not in files or UserDefaults)
+- No data sent anywhere except OpenAI's API
+- `.env` files are gitignored
+- App is **notarized** by Apple for distribution
 
 ## Contributing
 
-Contributions are welcome! Please read the docs:
+Contributions welcome! See the docs for architecture details:
 
-- [`docs/product-overview.md`](docs/product-overview.md) — product features and use cases
 - [`docs/system-architecture.md`](docs/system-architecture.md) — architecture and data flows
 - [`docs/code-standards.md`](docs/code-standards.md) — coding conventions
 - [`docs/tech-stack.md`](docs/tech-stack.md) — technology choices
+- [`docs/product-overview.md`](docs/product-overview.md) — product features and use cases
 
 ## License
 
-MIT
+[MIT](LICENSE)

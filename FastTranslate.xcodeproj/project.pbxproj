@@ -398,15 +398,16 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = YWSHDN5Y3H;
+				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = FastTranslate/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Dịch Nhanh En-Vi";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.fasttranslate.app;
 				PRODUCT_NAME = FastTranslate;
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -423,15 +424,16 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = YWSHDN5Y3H;
+				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = FastTranslate/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Dịch Nhanh En-Vi";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.fasttranslate.app;
 				PRODUCT_NAME = FastTranslate;
 				PROVISIONING_PROFILE_SPECIFIER = "";

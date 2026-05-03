@@ -2,8 +2,9 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+    <!-- Sandbox disabled — global hotkeys (CGEvent tap) and screen capture require it off -->
     <key>com.apple.security.app-sandbox</key>
-    <true/>
+    <false/>
     <!-- Allow outbound network requests (OpenAI / Claude API) -->
     <key>com.apple.security.network.client</key>
     <true/>
