@@ -19,9 +19,9 @@ If you work with English-speaking clients daily, you probably do this dozens of 
 
 ## Demo
 
-| Translate Selected Text | Screenshot OCR → Translate |
-|:-----------------------:|:--------------------------:|
-| Select text → `⌃⌥T` → instant result | `⌃⌥S` → drag region → auto-translate |
+> Select text in any app → press `⌃⌥T` → translation appears instantly near your cursor
+
+![FastTranslate Demo](assets/demo-translate-selected-text.png)
 
 ## Features
 
