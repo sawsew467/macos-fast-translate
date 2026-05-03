@@ -5,7 +5,6 @@ import SwiftUI
 /// Supports both instant display (full result) and streaming mode (progressive tokens).
 final class FloatingPanelController {
     private var window: NSWindow?
-    private var outsideMonitor: Any?
 
     private let panelWidth: CGFloat = 360
     /// Fixed height for streaming panel — text scrolls within, no window resize jitter.
@@ -40,8 +39,6 @@ final class FloatingPanelController {
     func dismiss() {
         window?.orderOut(nil)
         window = nil
-        if let m = outsideMonitor { NSEvent.removeMonitor(m) }
-        outsideMonitor = nil
     }
 
     // MARK: - Private
@@ -78,19 +75,12 @@ final class FloatingPanelController {
         win.makeKeyAndOrderFront(nil)
 
         window = win
-        installOutsideClickMonitor()
     }
 
     private func copyAndDismiss(_ text: String) {
         NSPasteboard.general.clearContents()
         NSPasteboard.general.setString(text, forType: .string)
         dismiss()
-    }
-
-    private func installOutsideClickMonitor() {
-        outsideMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown]) { [weak self] _ in
-            self?.dismiss()
-        }
     }
 
     /// Positions the panel below-right of `point`, nudging inward if it would go off-screen.
