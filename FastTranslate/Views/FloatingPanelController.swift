@@ -7,10 +7,12 @@ import SwiftUI
 final class FloatingPanelController {
     private var window: NSWindow?
     private var outsideMonitor: Any?
-    private var resizeCancellable: AnyCancellable?
+    private var finalizeCancellable: AnyCancellable?
     private var anchorPoint: NSPoint = .zero
 
     private let panelWidth: CGFloat = 360
+    /// Fixed height for streaming panel — text scrolls within, no window resize jitter.
+    private let streamingHeight: CGFloat = 200
 
     func show(result: TranslationResult, near point: NSPoint) {
         dismiss()
@@ -35,17 +37,21 @@ final class FloatingPanelController {
             onClose: { [weak self] in self?.dismiss() }
         )
 
-        presentWindow(rootView: contentView, near: point)
+        // Use fixed height during streaming — no resize, no jitter
+        presentWindow(rootView: contentView, near: point, fixedHeight: streamingHeight)
 
-        // Resize window as streamed text grows
-        resizeCancellable = state.$streamedText
-            .throttle(for: .milliseconds(80), scheduler: RunLoop.main, latest: true)
-            .sink { [weak self] _ in self?.relayoutWindow() }
+        // One final resize after streaming completes to fit content
+        finalizeCancellable = state.$isStreaming
+            .dropFirst()
+            .filter { !$0 }
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in self?.finalizeWindowSize() }
     }
 
     func dismiss() {
-        resizeCancellable?.cancel()
-        resizeCancellable = nil
+        finalizeCancellable?.cancel()
+        finalizeCancellable = nil
         window?.orderOut(nil)
         window = nil
         if let m = outsideMonitor { NSEvent.removeMonitor(m) }
@@ -54,7 +60,7 @@ final class FloatingPanelController {
 
     // MARK: - Private
 
-    private func presentWindow<V: View>(rootView: V, near point: NSPoint) {
+    private func presentWindow<V: View>(rootView: V, near point: NSPoint, fixedHeight: CGFloat? = nil) {
         anchorPoint = point
         let hosting = NSHostingController(rootView: rootView)
 
@@ -70,9 +76,15 @@ final class FloatingPanelController {
         win.contentViewController = hosting
         win.ignoresMouseEvents = false
 
-        hosting.view.layoutSubtreeIfNeeded()
-        let fittingHeight = max(80, min(500, hosting.view.fittingSize.height))
-        let size = NSSize(width: panelWidth, height: fittingHeight)
+        let height: CGFloat
+        if let fixed = fixedHeight {
+            height = fixed
+        } else {
+            hosting.view.layoutSubtreeIfNeeded()
+            height = max(80, min(500, hosting.view.fittingSize.height))
+        }
+
+        let size = NSSize(width: panelWidth, height: height)
         let frame = adjustedFrame(size: size, near: point)
 
         win.setFrame(frame, display: false)
@@ -82,11 +94,9 @@ final class FloatingPanelController {
         installOutsideClickMonitor()
     }
 
-    /// Recalculate window height after streamed text changes.
-    private func relayoutWindow() {
-        guard let win = window,
-              let hosting = win.contentViewController as? NSHostingController<StreamingPanelContent>
-        else { return }
+    /// Single resize after streaming ends — fits content up to max height.
+    private func finalizeWindowSize() {
+        guard let win = window, let hosting = win.contentViewController else { return }
 
         hosting.view.layoutSubtreeIfNeeded()
         let fittingHeight = max(80, min(500, hosting.view.fittingSize.height))
@@ -94,7 +104,7 @@ final class FloatingPanelController {
         let newFrame = adjustedFrame(size: newSize, near: anchorPoint)
 
         NSAnimationContext.runAnimationGroup { ctx in
-            ctx.duration = 0.08
+            ctx.duration = 0.15
             win.animator().setFrame(newFrame, display: true)
         }
     }
@@ -183,27 +193,37 @@ struct StreamingPanelContent: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            // Content area
-            if let error = state.error {
-                Text(error)
-                    .font(.system(size: 13))
-                    .foregroundStyle(.red)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            } else if state.streamedText.isEmpty && state.isStreaming {
-                HStack(spacing: 6) {
-                    ProgressView().scaleEffect(0.7)
-                    Text("Translating…")
-                        .font(.system(size: 13))
-                        .foregroundStyle(.secondary)
+            // Content area — ScrollView prevents overflow, auto-scrolls during streaming
+            ScrollViewReader { proxy in
+                ScrollView(.vertical, showsIndicators: true) {
+                    VStack(alignment: .leading, spacing: 0) {
+                        if let error = state.error {
+                            Text(error)
+                                .font(.system(size: 13))
+                                .foregroundStyle(.red)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        } else if state.streamedText.isEmpty && state.isStreaming {
+                            HStack(spacing: 6) {
+                                ProgressView().scaleEffect(0.7)
+                                Text("Translating…")
+                                    .font(.system(size: 13))
+                                    .foregroundStyle(.secondary)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        } else {
+                            Text(state.streamedText + (state.isStreaming ? "▊" : ""))
+                                .font(.system(size: 13))
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .textSelection(.enabled)
+                        }
+
+                        // Invisible anchor for auto-scroll
+                        Color.clear.frame(height: 1).id("bottom")
+                    }
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-            } else {
-                Text(state.streamedText + (state.isStreaming ? "▊" : ""))
-                    .font(.system(size: 13))
-                    .fixedSize(horizontal: false, vertical: true)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .textSelection(.enabled)
+                .onChange(of: state.streamedText) { _ in
+                    proxy.scrollTo("bottom", anchor: .bottom)
+                }
             }
 
             // Footer
