@@ -3,33 +3,68 @@ import Carbon.HIToolbox
 
 /// Reads the text currently selected in the frontmost application.
 ///
-/// Strategy: backup clipboard → simulate ⌘+C → poll until clipboard changes → restore clipboard.
-/// Requires Accessibility permission so CGEvent.post() can inject the keypress.
+/// Strategy:
+///   1. Try the Accessibility API (`kAXSelectedTextAttribute`) — fast, no side effects.
+///   2. Fall back to clipboard simulation: backup clipboard → simulate ⌘+C → poll → restore.
+/// Requires Accessibility permission.
 struct SelectedTextReader {
 
     /// Returns the selected text, or `nil` if nothing is selected or Accessibility is not granted.
     static func readSelectedText() async -> String? {
         let tag = "SelectedTextReader"
 
-        // --- Permission check ---
-        let trusted = AXIsProcessTrusted()
-        print("[\(tag)] AXIsProcessTrusted = \(trusted)")
-        if !trusted {
-            print("[\(tag)] ❌ No Accessibility permission — CGEvent.post() will be ignored")
+        guard AXIsProcessTrusted() else {
+            print("[\(tag)] ❌ No Accessibility permission")
             return nil
         }
 
+        // --- Try 1: Accessibility API (fast, no clipboard side effects) ---
+        if let text = readViaAccessibilityAPI(), !text.isEmpty {
+            print("[\(tag)] ✅ Got text via AX API (\(text.count) chars)")
+            return text
+        }
+
+        // --- Try 2: Clipboard simulation fallback ---
+        print("[\(tag)] AX API returned nil, falling back to clipboard simulation")
+        return await readViaClipboard()
+    }
+
+    // MARK: - Accessibility API
+
+    private static func readViaAccessibilityAPI() -> String? {
+        guard let app = NSWorkspace.shared.frontmostApplication else { return nil }
+        let axApp = AXUIElementCreateApplication(app.processIdentifier)
+
+        var focusedElement: CFTypeRef?
+        guard AXUIElementCopyAttributeValue(
+            axApp,
+            kAXFocusedUIElementAttribute as CFString,
+            &focusedElement
+        ) == .success else { return nil }
+
+        var selectedText: CFTypeRef?
+        guard AXUIElementCopyAttributeValue(
+            focusedElement as! AXUIElement,
+            kAXSelectedTextAttribute as CFString,
+            &selectedText
+        ) == .success else { return nil }
+
+        return selectedText as? String
+    }
+
+    // MARK: - Clipboard Simulation
+
+    private static func readViaClipboard() async -> String? {
+        let tag = "SelectedTextReader.clipboard"
         let pasteboard = NSPasteboard.general
         let changeCountBefore = pasteboard.changeCount
         let backup = pasteboard.string(forType: .string)
-        print("[\(tag)] clipboard changeCount before = \(changeCountBefore), backup = \(backup?.prefix(40) ?? "nil")")
 
-        // Brief pause so the hotkey press doesn't disturb the selection in the frontmost app
+        // Brief pause so the hotkey keystrokes settle before we inject ⌘+C
         try? await Task.sleep(nanoseconds: 100_000_000) // 100 ms
 
-        // --- Simulate ⌘+C ---
-        let source = CGEventSource(stateID: .hidSystemState)
-        print("[\(tag)] CGEventSource = \(source != nil ? "OK" : "nil")")
+        // Use .privateState so physical modifier keys (⌃⌥ from the hotkey) don't leak into the event
+        let source = CGEventSource(stateID: .privateState)
 
         guard
             let keyDown = CGEvent(keyboardEventSource: source, virtualKey: CGKeyCode(kVK_ANSI_C), keyDown: true),
@@ -41,34 +76,28 @@ struct SelectedTextReader {
 
         keyDown.flags = .maskCommand
         keyUp.flags   = .maskCommand
-        print("[\(tag)] Posting ⌘+C keyDown via cgSessionEventTap…")
         keyDown.post(tap: .cgSessionEventTap)
         keyUp.post(tap: .cgSessionEventTap)
-        print("[\(tag)] ⌘+C posted")
 
-        // --- Poll for clipboard change (up to 500 ms, 10 × 50 ms) ---
+        // Poll for clipboard change (up to 500 ms)
         var selectedText: String?
-        for i in 0 ..< 10 {
+        for _ in 0 ..< 10 {
             try? await Task.sleep(nanoseconds: 50_000_000) // 50 ms
-            let current = pasteboard.changeCount
-            print("[\(tag)] poll \(i+1)/10 — changeCount = \(current)")
-            if current != changeCountBefore {
+            if pasteboard.changeCount != changeCountBefore {
                 selectedText = pasteboard.string(forType: .string)
-                print("[\(tag)] ✅ Clipboard changed! text = \(selectedText?.prefix(80) ?? "nil")")
                 break
             }
         }
 
         if selectedText == nil {
-            print("[\(tag)] ❌ Clipboard did not change after 500 ms — no text was selected or ⌘+C was not received")
+            print("[\(tag)] ❌ Clipboard did not change — ⌘+C may not have reached the target app")
         }
 
-        // --- Restore original clipboard ---
+        // Restore original clipboard
         pasteboard.clearContents()
         if let backup {
             pasteboard.setString(backup, forType: .string)
         }
-        print("[\(tag)] clipboard restored")
 
         return selectedText
     }

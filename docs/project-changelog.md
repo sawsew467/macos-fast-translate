@@ -2,9 +2,14 @@
 
 ## [Unreleased] - 2026-05-03
 
+### Fixed
+- ⌃⌥T hotkey always showing "No text selected" — root cause: `CGEventSource(.hidSystemState)` leaked physical ⌃⌥ modifiers into simulated ⌘+C
+- Added AX API (`kAXSelectedTextAttribute`) as primary text reader (fast, no clipboard side effects); clipboard simulation kept as fallback with `.privateState`
+
 ### Removed
 - Claude/Anthropic provider support: removed `.claude` case from `ProviderType` enum, keychain constant, API key settings UI section, and doc comments
 - Provider picker from General Settings (only OpenAI remains, picker was redundant)
+- Clipboard translate hotkey placeholder (⌃⌥V) — unused after Phase 6 scope change
 
 ### Changed
 - App now exclusively uses OpenAI (GPT-4o mini) as translation backend

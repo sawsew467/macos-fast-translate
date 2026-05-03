@@ -5,14 +5,12 @@ enum Constants {
     enum HotkeyCode {
         static let translate: UInt32 = 17   // kVK_ANSI_T
         static let screenshot: UInt32 = 1   // kVK_ANSI_S
-        static let clipboard: UInt32 = 9    // kVK_ANSI_V
     }
 
     // MARK: - Hotkey IDs (unique per registered hotkey, used in Carbon EventHotKeyID)
     enum HotkeyIDs {
         static let translate: UInt32 = 1
         static let screenshot: UInt32 = 2
-        static let clipboard: UInt32 = 3
     }
 
     // MARK: - Keychain account names (not UserDefaults)

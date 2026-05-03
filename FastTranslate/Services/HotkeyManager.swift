@@ -6,10 +6,9 @@ private let kHotkeySignature: FourCharCode = 0x4654524C
 
 /// Registers global keyboard shortcuts using the Carbon `RegisterEventHotKey` API.
 ///
-/// Three hotkeys are registered:
-///   - ⌃⌥T  — translate currently selected text (active)
-///   - ⌃⌥S  — screenshot OCR (Phase 5 placeholder)
-///   - ⌃⌥V  — translate clipboard (Phase 6 placeholder)
+/// Two hotkeys are registered:
+///   - ⌃⌥T  — translate currently selected text
+///   - ⌃⌥S  — screenshot OCR
 ///
 /// Rationale for Carbon over CGEventTap:
 /// `RegisterEventHotKey` does not require Accessibility permission just to register.
@@ -69,7 +68,6 @@ final class HotkeyManager {
 
         registerHotkey(keyCode: Constants.HotkeyCode.translate,   id: Constants.HotkeyIDs.translate)
         registerHotkey(keyCode: Constants.HotkeyCode.screenshot,  id: Constants.HotkeyIDs.screenshot)
-        registerHotkey(keyCode: Constants.HotkeyCode.clipboard,   id: Constants.HotkeyIDs.clipboard)
     }
 
     private func registerHotkey(keyCode: UInt32, id: UInt32) {
@@ -95,8 +93,6 @@ final class HotkeyManager {
             handleTranslateSelected()
         case Constants.HotkeyIDs.screenshot:
             handleScreenshotOCR()
-        case Constants.HotkeyIDs.clipboard:
-            print("HotkeyManager: ⌃⌥V — Clipboard translate (Phase 6 placeholder)")
         default:
             break
         }
