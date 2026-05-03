@@ -7,7 +7,16 @@
 - `StreamingTranslationState` observable model for reactive panel updates
 - `translateStream()` protocol method with default single-shot fallback
 - `translateStreaming()` on TranslationService for hotkey/screenshot flows
-- Auto-resizing floating panel during token streaming (Combine throttle, 80ms)
+- Floating panel drag-to-move and edge/corner resize
+- `scripts/clean-reset.sh` for quick app data reset (Keychain, UserDefaults, history, DerivedData)
+
+### Changed
+- Panel no longer auto-dismisses on outside click — close via X button, Copy, or new translation
+- Streaming panel uses fixed 200px height with ScrollView + auto-scroll instead of per-token window resize
+
+### Fixed
+- Streaming panel jitter caused by per-token window resize recalculating position
+- Panel shrinking/text overflow after stream completion (`fittingSize` returns near-zero for ScrollView)
 
 ### Fixed
 - ⌃⌥T hotkey always showing "No text selected" — root cause: `CGEventSource(.hidSystemState)` leaked physical ⌃⌥ modifiers into simulated ⌘+C
