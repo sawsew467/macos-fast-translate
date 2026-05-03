@@ -1,78 +1,72 @@
 # FastTranslate — Product Overview
 
-## Sản phẩm là gì?
-macOS menu bar app dịch nhanh Tiếng Việt ↔ Tiếng Anh. Dùng AI (GPT-4o-mini) để dịch tự nhiên, hỗ trợ gửi kèm context để dịch chính xác hơn. App gọn nhẹ, chạy nền, truy cập qua icon menu bar hoặc phím tắt.
+## What is it?
+A native macOS menu bar app for instant Vietnamese ↔ English translation. Powered by GPT-4o-mini with real-time streaming, smart context system, and screenshot OCR — all accessible via global hotkeys without leaving your current app.
 
-## Giải quyết vấn đề gì?
-Người dùng Việt giao tiếp với khách nước ngoài hàng ngày qua chat (Slack, Discord, email...). Workflow hiện tại rất chậm:
-1. Mở ChatGPT/Claude → gõ tiếng Việt → copy bản dịch → paste vào chat (~30-60s/lần)
-2. Đọc tin khách: chụp ảnh → upload vào AI → đọc bản dịch (~30-60s/lần)
-3. Tạo rất nhiều ảnh chụp màn hình rác
+## Problem
+Vietnamese professionals communicating with English-speaking clients daily face a slow, repetitive workflow:
 
-**FastTranslate giảm từ 30-60s xuống 3-5s/lần, không tạo file rác.**
+1. Open ChatGPT → type Vietnamese → copy translation → paste into chat (**30-60s per message**)
+2. Screenshot client messages → upload to AI → read translation (**30-60s per message**)
+3. Desktop cluttered with junk screenshot files
 
-## Ai dùng?
-- Người Việt làm việc với khách/đồng nghiệp nói tiếng Anh
-- Developer, freelancer, nhân viên support, sales
-- Người viết tiếng Anh chưa tốt, cần AI hỗ trợ dịch tự nhiên
+**FastTranslate reduces each translation to 2-3 seconds with zero context switching and zero junk files.**
 
-## 4 cách dùng chính
+## Target Users
+- Vietnamese professionals working with English-speaking clients or colleagues
+- Developers, freelancers, support staff, sales teams
+- Anyone who needs fast, natural AI translation integrated into their daily workflow
 
-### 1. Dịch text đang bôi đen (`⌃+⌥+T`)
-**Dùng khi:** Viết tin nhắn tiếng Việt xong, muốn dịch sang Anh gửi cho khách.
-```
-Bôi đen text → ⌃+⌥+T → popup hiện bản dịch → click copy → paste gửi khách
-```
-Cũng dùng ngược lại: bôi đen tin nhắn tiếng Anh của khách → dịch sang Việt để đọc.
+## Core Features
 
-### 2. Chụp màn hình → dịch (`⌃+⌥+S`)
-**Dùng khi:** Đọc tin nhắn khách mà không thể bôi đen (ảnh, app không cho select text).
-```
-⌃+⌥+S → kéo chọn vùng tin nhắn → OCR đọc chữ → dịch → popup hiện kết quả
-```
-- Không tạo file ảnh trên disk (xử lý trong bộ nhớ)
-- Chụp vùng rộng (cả đoạn chat) → AI dùng ngữ cảnh cuộc hội thoại để dịch chính xác hơn
+### 1. Translate Selected Text (`⌃⌥T`)
+Select text in **any app** → press hotkey → floating panel streams the translation near your cursor.
 
-### 3. Dịch thủ công (click menu bar)
-**Dùng khi:** Muốn gõ text và thêm context cụ thể.
-```
-Click icon menu bar → gõ text + context → xem bản dịch → copy
-```
+Works both ways: select Vietnamese text to translate to English, or select English text to translate to Vietnamese.
 
-## Context — dịch chính xác hơn
+### 2. Screenshot OCR → Translate (`⌃⌥S`)
+Press hotkey → drag to select a screen region → Vision OCR extracts text → translation streams instantly.
 
-Lợi thế lớn so với Google Translate: gửi kèm **ngữ cảnh** để AI dịch đúng ý.
+- No screenshot files saved to disk (processed in memory)
+- Capture a wider area (full chat thread) for better context-aware translation
 
-| Loại context | Cách dùng | Ví dụ |
-|--------------|-----------|-------|
-| **Persistent** | Set 1 lần trong Settings, gửi kèm mọi bản dịch | "I'm a software developer, professional but friendly tone" |
-| **Per-message** | Gõ trong popover cho 1 lần dịch cụ thể | "đang thảo luận về bug trên production" |
-| **Screenshot** | Chụp vùng rộng, AI dùng cả đoạn chat làm context | Chụp cả cuộc hội thoại, không chỉ 1 tin nhắn |
+### 3. Menu Bar Popover
+Click the menu bar icon → type or paste text with optional context → get translation. Best for longer passages or when you need specific context.
 
-**Ví dụ thực tế:**
-- Không context: "Em deploy lại giúp em" → "Please help me deploy again" (chung chung)
-- Có context "production server bug fix": "Em deploy lại giúp em" → "Could you redeploy the fix for me?" (chính xác)
+## Smart Context System
 
-## Đặc điểm kỹ thuật
-- **Native macOS** — Swift, ~10MB, không phải Electron
-- **AI Translation** — GPT-4o-mini, streaming token-by-token
-- **OCR offline** — Vision framework của Apple, đọc chữ Vi+En không cần internet
-- **Tự nhận diện ngôn ngữ** — gõ tiếng Việt → tự dịch sang Anh, và ngược lại
-- **Phím tắt toàn cục** — hoạt động từ bất kỳ app nào
-- **Không tạo file rác** — screenshot xử lý trong bộ nhớ
-- **Chi phí rẻ** — ~7,000 VND/tháng (GPT-4o-mini, 100 tin/ngày)
+A key advantage over Google Translate: provide **context** for more accurate, natural translations.
 
-## Yêu cầu hệ thống
-- macOS 14 (Sonoma) trở lên
+| Context Layer | How to Use | Example |
+|:-------------|:-----------|:--------|
+| **Persistent** | Set once in Settings, sent with every translation | "Professional but friendly tone" |
+| **Per-message** | Type in the popover for a specific translation | "Discussing a production database bug" |
+| **Screenshot** | Capture a wider area — AI uses the full text as context | Capture the entire chat thread, not just one message |
+
+**Real-world example:**
+- Without context: "Em deploy lại giúp em" → "Please help me deploy again" (generic)
+- With context "production server bug fix": "Em deploy lại giúp em" → "Could you redeploy the fix for me?" (accurate)
+
+## Technical Highlights
+- **Native macOS** — Swift + SwiftUI + AppKit, ~10MB binary, no Electron
+- **Real-time streaming** — translations appear token-by-token via SSE
+- **Offline OCR** — Apple Vision framework, supports Vietnamese and English
+- **Auto language detection** — type Vietnamese → translates to English, and vice versa
+- **Global hotkeys** — work from any app via Carbon Events API
+- **Zero junk files** — screenshots processed in memory
+- **Low cost** — ~$0.30/month with GPT-4o-mini at 100 translations/day
+- **Zero external dependencies** — 100% Apple native frameworks
+
+## System Requirements
+- macOS 14 (Sonoma) or later
 - OpenAI API key
-- Cấp quyền Accessibility (cho phím tắt + đọc text bôi đen)
-- Cấp quyền Screen Recording (cho chụp màn hình OCR)
+- Accessibility permission (for global hotkeys + reading selected text)
+- Screen Recording permission (for screenshot OCR)
 
-## Phím tắt
-| Phím tắt | Hành động |
-|----------|-----------|
-| `⌃+⌥+T` | Dịch text đang bôi đen |
-| `⌃+⌥+S` | Chụp vùng màn hình → OCR → dịch |
-| `⌘+,`   | Mở Settings |
+## Keyboard Shortcuts
 
-Phím tắt có thể đổi trong Settings.
+| Shortcut | Action |
+|:---------|:-------|
+| `⌃⌥T` | Translate selected text |
+| `⌃⌥S` | Screenshot region → OCR → translate |
+| `⌘,` | Open Settings |
