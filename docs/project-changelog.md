@@ -1,5 +1,14 @@
 # Project Changelog
 
+## [1.0.0] - 2026-05-03
+
+### Added
+- App icon with Vi↔En speech bubbles and flag design
+- All required macOS icon sizes (16–1024px) for App Store submission
+- `LSApplicationCategoryType` (Productivity) for App Store validation
+- App Sandbox entitlement enabled for App Store distribution
+- Info.plist version variables synced to build settings (`MARKETING_VERSION`, `CURRENT_PROJECT_VERSION`)
+
 ## [Unreleased] - 2026-05-03
 
 ### Added
