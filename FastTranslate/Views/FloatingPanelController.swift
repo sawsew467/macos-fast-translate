@@ -1,5 +1,4 @@
 import AppKit
-import Combine
 import SwiftUI
 
 /// Borderless floating window that shows a translation result near the cursor.
@@ -7,8 +6,6 @@ import SwiftUI
 final class FloatingPanelController {
     private var window: NSWindow?
     private var outsideMonitor: Any?
-    private var finalizeCancellable: AnyCancellable?
-    private var anchorPoint: NSPoint = .zero
 
     private let panelWidth: CGFloat = 360
     /// Fixed height for streaming panel — text scrolls within, no window resize jitter.
@@ -29,7 +26,6 @@ final class FloatingPanelController {
     /// Show panel immediately with loading state, then stream tokens in.
     func showStreaming(state: StreamingTranslationState, near point: NSPoint) {
         dismiss()
-        anchorPoint = point
 
         let contentView = StreamingPanelContent(
             state: state,
@@ -37,21 +33,11 @@ final class FloatingPanelController {
             onClose: { [weak self] in self?.dismiss() }
         )
 
-        // Use fixed height during streaming — no resize, no jitter
+        // Fixed height — text scrolls within, no resize jitter
         presentWindow(rootView: contentView, near: point, fixedHeight: streamingHeight)
-
-        // One final resize after streaming completes to fit content
-        finalizeCancellable = state.$isStreaming
-            .dropFirst()
-            .filter { !$0 }
-            .first()
-            .receive(on: RunLoop.main)
-            .sink { [weak self] _ in self?.finalizeWindowSize() }
     }
 
     func dismiss() {
-        finalizeCancellable?.cancel()
-        finalizeCancellable = nil
         window?.orderOut(nil)
         window = nil
         if let m = outsideMonitor { NSEvent.removeMonitor(m) }
@@ -61,7 +47,6 @@ final class FloatingPanelController {
     // MARK: - Private
 
     private func presentWindow<V: View>(rootView: V, near point: NSPoint, fixedHeight: CGFloat? = nil) {
-        anchorPoint = point
         let hosting = NSHostingController(rootView: rootView)
 
         let win = NSWindow(
@@ -92,21 +77,6 @@ final class FloatingPanelController {
 
         window = win
         installOutsideClickMonitor()
-    }
-
-    /// Single resize after streaming ends — fits content up to max height.
-    private func finalizeWindowSize() {
-        guard let win = window, let hosting = win.contentViewController else { return }
-
-        hosting.view.layoutSubtreeIfNeeded()
-        let fittingHeight = max(80, min(500, hosting.view.fittingSize.height))
-        let newSize = NSSize(width: panelWidth, height: fittingHeight)
-        let newFrame = adjustedFrame(size: newSize, near: anchorPoint)
-
-        NSAnimationContext.runAnimationGroup { ctx in
-            ctx.duration = 0.15
-            win.animator().setFrame(newFrame, display: true)
-        }
     }
 
     private func copyAndDismiss(_ text: String) {
