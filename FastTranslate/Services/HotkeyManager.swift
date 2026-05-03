@@ -112,8 +112,7 @@ final class HotkeyManager {
             }
             do {
                 let fullText = try await ocrService.recognizeText(from: cgImage)
-                let result = try await translationService.translate(fullText)
-                floatingPanel.show(result: result, near: anchorPoint)
+                try streamTranslation(fullText, near: anchorPoint)
             } catch {
                 showBriefMessage(error.localizedDescription, near: anchorPoint)
             }
@@ -121,8 +120,6 @@ final class HotkeyManager {
     }
 
     private func handleTranslateSelected() {
-        // Capture mouse location at the moment the hotkey fires (before the async translation delay)
-        // Mouse is always at the END of the selection — the most natural anchor point
         let anchorPoint = NSEvent.mouseLocation
         print("[HotkeyManager] hotkey fired — mouseLocation = \(anchorPoint)")
         Task { @MainActor in
@@ -131,10 +128,36 @@ final class HotkeyManager {
                 return
             }
             do {
-                let result = try await translationService.translate(text)
-                floatingPanel.show(result: result, near: anchorPoint)
+                try streamTranslation(text, near: anchorPoint)
             } catch {
-                print("HotkeyManager: translation error — \(error.localizedDescription)")
+                showBriefMessage(error.localizedDescription, near: anchorPoint)
+            }
+        }
+    }
+
+    /// Show panel immediately, then pipe streamed tokens into it.
+    @MainActor
+    private func streamTranslation(_ text: String, near point: NSPoint) throws {
+        let (source, target, stream) = try translationService.translateStreaming(text)
+
+        let state = StreamingTranslationState(
+            sourceText: text,
+            sourceLanguage: source,
+            targetLanguage: target,
+            provider: translationService.activeProviderType
+        )
+        floatingPanel.showStreaming(state: state, near: point)
+
+        Task { @MainActor in
+            do {
+                for try await chunk in stream {
+                    state.streamedText += chunk
+                }
+                state.isStreaming = false
+                translationService.addToHistory(state.completedResult)
+            } catch {
+                state.isStreaming = false
+                state.error = error.localizedDescription
             }
         }
     }

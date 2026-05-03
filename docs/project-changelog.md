@@ -2,6 +2,13 @@
 
 ## [Unreleased] - 2026-05-03
 
+### Added
+- Streaming translation UX: panel appears instantly on ⌃⌥T/⌃⌥S with loading state, tokens stream progressively from OpenAI SSE
+- `StreamingTranslationState` observable model for reactive panel updates
+- `translateStream()` protocol method with default single-shot fallback
+- `translateStreaming()` on TranslationService for hotkey/screenshot flows
+- Auto-resizing floating panel during token streaming (Combine throttle, 80ms)
+
 ### Fixed
 - ⌃⌥T hotkey always showing "No text selected" — root cause: `CGEventSource(.hidSystemState)` leaked physical ⌃⌥ modifiers into simulated ⌘+C
 - Added AX API (`kAXSelectedTextAttribute`) as primary text reader (fast, no clipboard side effects); clipboard simulation kept as fallback with `.privateState`

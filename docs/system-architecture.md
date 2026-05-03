@@ -63,7 +63,8 @@ macOS menu bar-only app (no dock icon, no main window). Luôn chạy nền, truy
 | **ScreenCaptureService** | `Services/ScreenCaptureService.swift` | Region selection overlay + capture |
 | **ClipboardService** | `Services/ClipboardService.swift` | NSPasteboard read/write |
 | **TranslationPopoverView** | `Views/TranslationPopoverView.swift` | Main popover UI |
-| **FloatingPanelController** | `Views/FloatingPanelController.swift` | Floating result window |
+| **StreamingTranslationState** | `Models/StreamingTranslationState.swift` | Observable state for streaming panel (loading → tokens → done) |
+| **FloatingPanelController** | `Views/FloatingPanelController.swift` | Floating result window (static + streaming modes) |
 | **SettingsView** | `Views/SettingsView.swift` | Settings window with tabs |
 
 ## Data Flow
@@ -81,25 +82,29 @@ User types text in popover
   → Display in popover output area
 ```
 
-### 2. Hotkey Translation (⌃+⌥+T)
+### 2. Hotkey Translation (⌃+⌥+T) — Streaming
 ```
 User selects text in any app → ⌃+⌥+T
   → HotkeyManager receives Carbon event
   → SelectedTextReader.readSelectedText()
-    → Backup clipboard → simulate ⌘+C → read → restore
-  → TranslationService.translate(text)
-  → FloatingPanelController.show(result, near: cursor)
+    → AX API (primary) or clipboard simulation (fallback)
+  → TranslationService.translateStreaming(text)
+    → Returns (source, target, AsyncThrowingStream)
+  → FloatingPanelController.showStreaming(state, near: cursor) ← instant
+  → for await chunk in stream → state.streamedText += chunk ← progressive
+  → TranslationService.addToHistory(result) ← after stream done
 ```
 
-### 3. Screenshot OCR Translation (⌃+⌥+S)
+### 3. Screenshot OCR Translation (⌃+⌥+S) — Streaming
 ```
 User presses ⌃+⌥+S
   → ScreenCaptureService.captureRegion()
     → Fullscreen overlay → user drags selection → CGImage
   → OCRService.recognizeText(cgImage)
     → VNRecognizeTextRequest → extracted text
-  → TranslationService.translate(text, screenshotContext: fullText)
-  → FloatingPanelController.show(result, near: cursor)
+  → TranslationService.translateStreaming(text)
+  → FloatingPanelController.showStreaming(state, near: cursor) ← instant
+  → for await chunk in stream → state.streamedText += chunk ← progressive
 ```
 
 ### 4. Clipboard Translation (⌃+⌥+V)

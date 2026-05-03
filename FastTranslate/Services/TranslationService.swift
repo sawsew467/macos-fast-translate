@@ -73,6 +73,45 @@ final class TranslationService: ObservableObject {
         return result
     }
 
+    /// Start a streaming translation. Returns language info + token stream.
+    /// Caller is responsible for consuming the stream and calling addToHistory() after.
+    func translateStreaming(
+        _ text: String,
+        perMessageContext: String? = nil,
+        screenshotContext: String? = nil
+    ) throws -> (source: Language, target: Language, stream: AsyncThrowingStream<String, Error>) {
+        guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            throw TranslationError.emptyInput
+        }
+
+        let source = LanguageDetector.detect(text)
+        let target = source.toggled
+
+        let persistent = persistentContext.isEmpty ? nil : persistentContext
+        let context = TranslationContext(
+            persistent: persistent,
+            perMessage: perMessageContext,
+            screenshot: screenshotContext
+        )
+
+        guard let provider = providers[activeProviderType] else {
+            throw TranslationError.invalidResponse
+        }
+
+        let stream = provider.translateStream(text, from: source, to: target, context: context)
+        return (source, target, stream)
+    }
+
+    /// Save a completed translation to history. Called by hotkey handlers after streaming finishes.
+    func addToHistory(_ result: TranslationResult) {
+        lastResult = result
+        history.insert(result, at: 0)
+        if history.count > maxHistoryCount {
+            history = Array(history.prefix(maxHistoryCount))
+        }
+        saveHistory()
+    }
+
     // MARK: - History persistence
 
     private func historyFileURL() -> URL? {

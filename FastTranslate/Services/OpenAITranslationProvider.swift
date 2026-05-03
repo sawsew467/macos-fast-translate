@@ -60,6 +60,79 @@ final class OpenAITranslationProvider: TranslationProvider {
         return content.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
+    // MARK: - Streaming
+
+    func translateStream(
+        _ text: String,
+        from source: Language,
+        to target: Language,
+        context: TranslationContext?
+    ) -> AsyncThrowingStream<String, Error> {
+        AsyncThrowingStream { continuation in
+            Task {
+                do {
+                    let request = try self.buildStreamRequest(text, from: source, to: target, context: context)
+                    let (bytes, response) = try await URLSession.shared.bytes(for: request)
+
+                    guard let http = response as? HTTPURLResponse else {
+                        continuation.finish(throwing: TranslationError.invalidResponse)
+                        return
+                    }
+                    switch http.statusCode {
+                    case 200: break
+                    case 401: continuation.finish(throwing: TranslationError.noAPIKey); return
+                    case 429: continuation.finish(throwing: TranslationError.rateLimited); return
+                    default:  continuation.finish(throwing: TranslationError.invalidResponse); return
+                    }
+
+                    for try await line in bytes.lines {
+                        guard line.hasPrefix("data: ") else { continue }
+                        let payload = String(line.dropFirst(6))
+                        if payload == "[DONE]" { break }
+                        guard let data = payload.data(using: .utf8),
+                              let chunk = try? JSONDecoder().decode(ChatStreamChunk.self, from: data),
+                              let content = chunk.choices.first?.delta.content
+                        else { continue }
+                        continuation.yield(content)
+                    }
+                    continuation.finish()
+                } catch let error as TranslationError {
+                    continuation.finish(throwing: error)
+                } catch {
+                    continuation.finish(throwing: TranslationError.networkError(error))
+                }
+            }
+        }
+    }
+
+    private func buildStreamRequest(
+        _ text: String,
+        from source: Language,
+        to target: Language,
+        context: TranslationContext?
+    ) throws -> URLRequest {
+        let apiKey = KeychainHelper.load(account: Constants.KeychainAccount.openAIAPIKey) ?? ""
+        guard !apiKey.isEmpty else { throw TranslationError.noAPIKey }
+
+        let body = ChatStreamRequest(
+            model: "gpt-4o-mini",
+            messages: [
+                ChatMessage(role: "system", content: systemPrompt(source: source, to: target, context: context)),
+                ChatMessage(role: "user", content: text)
+            ],
+            temperature: 0.3,
+            maxTokens: 2048,
+            stream: true
+        )
+
+        var request = URLRequest(url: endpoint)
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try JSONEncoder().encode(body)
+        return request
+    }
+
     // MARK: - Prompt builder
 
     private func systemPrompt(source: Language, to target: Language, context: TranslationContext?) -> String {
@@ -102,5 +175,26 @@ private struct ChatMessage: Codable {
 
 private struct ChatResponse: Decodable {
     struct Choice: Decodable { let message: ChatMessage }
+    let choices: [Choice]
+}
+
+private struct ChatStreamRequest: Encodable {
+    let model: String
+    let messages: [ChatMessage]
+    let temperature: Double
+    let maxTokens: Int
+    let stream: Bool
+
+    enum CodingKeys: String, CodingKey {
+        case model, messages, temperature, stream
+        case maxTokens = "max_tokens"
+    }
+}
+
+private struct ChatStreamChunk: Decodable {
+    struct Choice: Decodable {
+        struct Delta: Decodable { let content: String? }
+        let delta: Delta
+    }
     let choices: [Choice]
 }
