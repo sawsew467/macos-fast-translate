@@ -51,13 +51,15 @@ final class FloatingPanelController {
 
         let win = NSWindow(
             contentRect: NSRect(x: -9999, y: -9999, width: panelWidth, height: 600),
-            styleMask: [],
+            styleMask: [.resizable],
             backing: .buffered,
             defer: false
         )
         win.level = .floating
         win.isOpaque = false
         win.backgroundColor = .clear
+        win.isMovableByWindowBackground = true
+        win.minSize = NSSize(width: 240, height: 100)
         win.contentViewController = hosting
         win.ignoresMouseEvents = false
 
