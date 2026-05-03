@@ -33,11 +33,11 @@ macOS menu bar-only app (no dock icon, no main window). Luôn chạy nền, truy
 │                 │                                  │
 │       ┌─────────┼──────────┐                      │
 │       ▼         ▼          ▼                      │
-│  ┌─────────┐ ┌────────┐ ┌──────────┐             │
-│  │ OpenAI  │ │ Claude │ │  OCR     │             │
-│  │ GPT-4o  │ │ Sonnet │ │ Service  │             │
-│  │ -mini   │ │(option)│ │ (Vision) │             │
-│  └─────────┘ └────────┘ └──────────┘             │
+│  ┌──────────────────┐  ┌──────────┐              │
+│  │ OpenAI GPT-4o    │  │  OCR     │              │
+│  │ -mini (SSE       │  │ Service  │              │
+│  │  streaming)      │  │ (Vision) │              │
+│  └──────────────────┘  └──────────┘              │
 │                                                   │
 │  ┌─────────────────────────────────────┐         │
 │  │         FloatingPanelController     │         │
@@ -107,14 +107,6 @@ User presses ⌃+⌥+S
   → for await chunk in stream → state.streamedText += chunk ← progressive
 ```
 
-### 4. Clipboard Translation (⌃+⌥+V)
-```
-User presses ⌃+⌥+V
-  → ClipboardService.readText()
-  → TranslationService.translate(text)
-  → FloatingPanelController.show(result)
-    → [Copy] or [Replace & Paste]
-```
 
 ## Context System (3 Layers)
 ```

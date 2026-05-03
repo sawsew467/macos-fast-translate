@@ -4,7 +4,7 @@
 - **Swift 5.9+** — native macOS development
 - **macOS 14+ (Sonoma)** — minimum deployment target
 - **Xcode 15+** — build toolchain
-- **XcodeGen** — generate Xcode project from YAML
+- **Xcode 15+** — build toolchain
 
 ## UI Framework
 - **SwiftUI** — popover views, settings panel, translation results
@@ -18,9 +18,8 @@
 - **ServiceManagement** — launch at login (`SMAppService`)
 - **Security** — Keychain API key storage
 
-## Translation Providers
-- **GPT-4o-mini (OpenAI API)** — default, fast, cheap (~$0.3/tháng), dịch tự nhiên
-- **Claude Sonnet (Anthropic API)** — optional, cho văn bản phức tạp
+## Translation Provider
+- **GPT-4o-mini (OpenAI API)** — fast, cheap (~$0.3/tháng), SSE streaming, dịch tự nhiên
 
 ## Context System
 - **Persistent context** — set 1 lần trong Settings, gửi kèm mọi bản dịch
