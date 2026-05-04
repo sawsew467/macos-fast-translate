@@ -396,10 +396,11 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = FastTranslate/Resources/FastTranslate.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = YWSHDN5Y3H;
+				DEVELOPMENT_TEAM = 64C89R8JPX;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = FastTranslate/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Dịch Nhanh En-Vi";
@@ -422,10 +423,11 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = FastTranslate/Resources/FastTranslate.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = YWSHDN5Y3H;
+				DEVELOPMENT_TEAM = 64C89R8JPX;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = FastTranslate/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Dịch Nhanh En-Vi";

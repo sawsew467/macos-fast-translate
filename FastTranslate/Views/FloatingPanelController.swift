@@ -45,19 +45,29 @@ final class FloatingPanelController {
 
     private func presentWindow<V: View>(rootView: V, near point: NSPoint, fixedHeight: CGFloat? = nil) {
         let hosting = NSHostingController(rootView: rootView)
+        hosting.view.wantsLayer = true
+        hosting.view.layer?.backgroundColor = NSColor.clear.cgColor
+        hosting.view.layer?.cornerRadius = floatingPanelCornerRadius
+        hosting.view.layer?.cornerCurve = .continuous
+        hosting.view.layer?.masksToBounds = true
 
         let win = NSWindow(
             contentRect: NSRect(x: -9999, y: -9999, width: panelWidth, height: 600),
-            styleMask: [.resizable],
+            styleMask: [],
             backing: .buffered,
             defer: false
         )
         win.level = .floating
         win.isOpaque = false
         win.backgroundColor = .clear
+        win.hasShadow = false
         win.isMovableByWindowBackground = true
-        win.minSize = NSSize(width: 240, height: 100)
         win.contentViewController = hosting
+        win.contentView?.wantsLayer = true
+        win.contentView?.layer?.backgroundColor = NSColor.clear.cgColor
+        win.contentView?.layer?.cornerRadius = floatingPanelCornerRadius
+        win.contentView?.layer?.cornerCurve = .continuous
+        win.contentView?.layer?.masksToBounds = true
         win.ignoresMouseEvents = false
 
         let height: CGFloat
@@ -109,7 +119,7 @@ private struct FloatingPanelContent: View {
     let onClose: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        panelContainer {
             Text(result.translatedText)
                 .font(.system(size: 13))
                 .fixedSize(horizontal: false, vertical: true)
@@ -120,8 +130,9 @@ private struct FloatingPanelContent: View {
                 Button(action: onCopy) {
                     Label("Copy", systemImage: "doc.on.doc")
                         .font(.system(size: 12))
+                        .foregroundStyle(.primary)
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(.bordered)
                 .controlSize(.small)
 
                 Text("\(result.sourceLanguage.displayName) → \(result.targetLanguage.displayName) · \(result.provider.displayName)")
@@ -139,10 +150,6 @@ private struct FloatingPanelContent: View {
                 .buttonStyle(.plain)
             }
         }
-        .padding(12)
-        .background(.regularMaterial)
-        .cornerRadius(10)
-        .shadow(color: .black.opacity(0.25), radius: 8, x: 0, y: 4)
     }
 }
 
@@ -154,7 +161,7 @@ struct StreamingPanelContent: View {
     let onClose: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        panelContainer {
             // Content area — ScrollView prevents overflow, auto-scrolls during streaming
             ScrollViewReader { proxy in
                 ScrollView(.vertical, showsIndicators: true) {
@@ -193,8 +200,9 @@ struct StreamingPanelContent: View {
                 Button(action: onCopy) {
                     Label("Copy", systemImage: "doc.on.doc")
                         .font(.system(size: 12))
+                        .foregroundStyle(.primary)
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(.bordered)
                 .controlSize(.small)
                 .disabled(state.isStreaming || state.streamedText.isEmpty)
 
@@ -213,9 +221,22 @@ struct StreamingPanelContent: View {
                 .buttonStyle(.plain)
             }
         }
-        .padding(12)
-        .background(.regularMaterial)
-        .cornerRadius(10)
-        .shadow(color: .black.opacity(0.25), radius: 8, x: 0, y: 4)
     }
+}
+
+// MARK: - Shared panel chrome
+
+private let floatingPanelCornerRadius: CGFloat = 18
+
+/// Use a compositing group so material and shadow are both clipped to the same
+/// rounded rectangle. This avoids the light square corners visible on bright backgrounds.
+private func panelContainer<Content: View>(@ViewBuilder content: () -> Content) -> some View {
+    VStack(alignment: .leading, spacing: 8, content: content)
+        .padding(12)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .background(.regularMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: floatingPanelCornerRadius, style: .continuous))
+        .mask(RoundedRectangle(cornerRadius: floatingPanelCornerRadius, style: .continuous))
+        .compositingGroup()
+        .shadow(color: .black.opacity(0.18), radius: 10, x: 0, y: 4)
 }
