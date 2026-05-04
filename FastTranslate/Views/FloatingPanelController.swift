@@ -291,6 +291,12 @@ struct StreamingPanelContent: View {
                                     .foregroundStyle(.secondary)
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)
+                        } else if state.presentation == .conversation {
+                            ConversationTranscriptView(
+                                text: state.streamedText,
+                                isStreaming: state.isStreaming
+                            )
+                            .textSelection(.enabled)
                         } else {
                             Text(state.streamedText + (state.isStreaming ? "▊" : ""))
                                 .font(.system(size: 13))
@@ -333,6 +339,72 @@ struct StreamingPanelContent: View {
                 .buttonStyle(.plain)
             }
         }
+    }
+}
+
+private struct ConversationTranscriptView: View {
+    let text: String
+    let isStreaming: Bool
+
+    private var messages: [ChatTranscriptMessage] {
+        ChatTranscriptMessage.parse(text + (isStreaming ? "▊" : ""))
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            ForEach(messages) { message in
+                VStack(alignment: .leading, spacing: 4) {
+                    if let header = message.header {
+                        Text(header)
+                            .font(.system(size: 11, weight: .semibold, design: .rounded))
+                            .foregroundStyle(.secondary)
+                    }
+
+                    Text(message.body)
+                        .font(.system(size: 13))
+                        .foregroundStyle(.primary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 8)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(.primary.opacity(0.06), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+private struct ChatTranscriptMessage: Identifiable {
+    let id = UUID()
+    let header: String?
+    let body: String
+
+    static func parse(_ text: String) -> [ChatTranscriptMessage] {
+        let lines = text.split(separator: "\n", omittingEmptySubsequences: false).map(String.init)
+        var messages: [ChatTranscriptMessage] = []
+        var currentHeader: String?
+        var currentBody: [String] = []
+
+        func flush() {
+            let body = currentBody.joined(separator: "\n").trimmingCharacters(in: .whitespacesAndNewlines)
+            guard currentHeader != nil || !body.isEmpty else { return }
+            messages.append(ChatTranscriptMessage(header: currentHeader, body: body))
+            currentHeader = nil
+            currentBody = []
+        }
+
+        for line in lines {
+            let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines)
+            if trimmed.hasPrefix("[") && trimmed.contains("]") && trimmed.count <= 80 {
+                flush()
+                currentHeader = trimmed.trimmingCharacters(in: CharacterSet(charactersIn: "[]"))
+            } else {
+                currentBody.append(line)
+            }
+        }
+        flush()
+        return messages.isEmpty ? [ChatTranscriptMessage(header: nil, body: text)] : messages
     }
 }
 

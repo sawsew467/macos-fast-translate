@@ -108,8 +108,13 @@ final class HotkeyManager {
                 return
             }
             do {
-                let fullText = try await ocrService.recognizeText(from: cgImage)
-                try streamTranslation(fullText, near: anchorPoint)
+                let document = try await ocrService.recognizeDocument(from: cgImage)
+                try streamTranslation(
+                    document.text,
+                    near: anchorPoint,
+                    perMessageContext: document.translationContext,
+                    presentation: document.presentation
+                )
             } catch {
                 floatingPanel.showMessage(error.localizedDescription, systemImage: "exclamationmark.triangle", near: anchorPoint)
             }
@@ -134,14 +139,23 @@ final class HotkeyManager {
 
     /// Show panel immediately, then pipe streamed tokens into it.
     @MainActor
-    private func streamTranslation(_ text: String, near point: NSPoint) throws {
-        let (source, target, stream) = try translationService.translateStreaming(text)
+    private func streamTranslation(
+        _ text: String,
+        near point: NSPoint,
+        perMessageContext: String? = nil,
+        presentation: TranslationPresentation = .plain
+    ) throws {
+        let (source, target, stream) = try translationService.translateStreaming(
+            text,
+            perMessageContext: perMessageContext
+        )
 
         let state = StreamingTranslationState(
             sourceText: text,
             sourceLanguage: source,
             targetLanguage: target,
-            provider: translationService.activeProviderType
+            provider: translationService.activeProviderType,
+            presentation: presentation
         )
         floatingPanel.showStreaming(
             state: state,
@@ -159,7 +173,10 @@ final class HotkeyManager {
         do {
             let (source, target, stream) = try translationService.translateStreaming(
                 state.sourceText,
-                targetLanguage: targetLanguage
+                targetLanguage: targetLanguage,
+                perMessageContext: state.presentation == .conversation
+                    ? "Translate this chat transcript message-by-message. Preserve speaker names, timestamps, mentions, emojis, and message order. Return [speaker timestamp] headers followed by translated message text."
+                    : nil
             )
             state.streamedText = ""
             state.error = nil
