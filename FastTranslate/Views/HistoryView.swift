@@ -8,6 +8,9 @@ struct HistoryView: View {
     @State private var searchText = ""
     @State private var selectedID: String?
     @State private var copiedMessage: String?
+    @State private var isShowingClearConfirmation = false
+    @State private var isSelecting = false
+    @State private var selectedForDeletion = Set<String>()
 
     private var filtered: [HistoryEntry] {
         let mapped = entries.enumerated().map { index, result in
@@ -45,12 +48,36 @@ struct HistoryView: View {
 
     private var sidebar: some View {
         VStack(alignment: .leading, spacing: 14) {
-            VStack(alignment: .leading, spacing: 4) {
-                Text("History")
-                    .font(.system(size: 24, weight: .bold))
-                Text("\(entries.count) saved translations")
-                    .font(.system(size: 12))
-                    .foregroundStyle(.secondary)
+            HStack(alignment: .top, spacing: 10) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("History")
+                        .font(.system(size: 24, weight: .bold))
+                    Text("\(entries.count) saved translations")
+                        .font(.system(size: 12))
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+
+                Button(isSelecting ? "Done" : "Select") {
+                    withAnimation(.easeInOut(duration: 0.15)) {
+                        isSelecting.toggle()
+                        selectedForDeletion.removeAll()
+                    }
+                }
+                .buttonStyle(.plain)
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundStyle(entries.isEmpty ? AnyShapeStyle(.tertiary) : AnyShapeStyle(.primary))
+                .padding(.horizontal, 10)
+                .frame(height: 30)
+                .background(.regularMaterial, in: Capsule(style: .continuous))
+                .overlay { Capsule(style: .continuous).stroke(.primary.opacity(0.08), lineWidth: 1) }
+                .disabled(entries.isEmpty)
+                .help(isSelecting ? "Exit selection" : "Select translations")
+            }
+
+            if isSelecting {
+                selectionToolbar
             }
 
             searchBar
@@ -63,9 +90,15 @@ struct HistoryView: View {
                         ForEach(filtered) { entry in
                             HistoryRowView(
                                 result: entry.result,
-                                isSelected: selectedEntry?.id == entry.id
+                                isSelected: selectedEntry?.id == entry.id,
+                                isSelecting: isSelecting,
+                                isMarked: selectedForDeletion.contains(entry.id)
                             ) {
-                                selectedID = entry.id
+                                if isSelecting {
+                                    toggleSelection(entry.id)
+                                } else {
+                                    selectedID = entry.id
+                                }
                             }
                         }
                     }
@@ -76,6 +109,16 @@ struct HistoryView: View {
         .padding(18)
         .frame(width: 310)
         .frame(maxHeight: .infinity, alignment: .topLeading)
+        .confirmationDialog(
+            "Clear all translation history?",
+            isPresented: $isShowingClearConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button("Clear History", role: .destructive, action: clearHistory)
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("This removes all saved translations from this Mac. This action cannot be undone.")
+        }
     }
 
     private var searchBar: some View {
@@ -95,6 +138,43 @@ struct HistoryView: View {
                 }
                 .buttonStyle(.plain)
             }
+        }
+        .padding(.horizontal, 12)
+        .frame(height: 36)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .stroke(.primary.opacity(0.08), lineWidth: 1)
+        }
+    }
+
+    private var selectionToolbar: some View {
+        HStack(spacing: 10) {
+            Button(selectedForDeletion.count == filtered.count ? "Deselect All" : "Select All") {
+                if selectedForDeletion.count == filtered.count {
+                    selectedForDeletion.removeAll()
+                } else {
+                    selectedForDeletion = Set(filtered.map(\.id))
+                }
+            }
+            .buttonStyle(.plain)
+            .font(.system(size: 12, weight: .semibold))
+
+            Spacer()
+
+            Text("\(selectedForDeletion.count) selected")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+
+            Button(role: .destructive) {
+                isShowingClearConfirmation = true
+            } label: {
+                Label("Delete", systemImage: "trash")
+                    .font(.system(size: 12, weight: .semibold))
+            }
+            .buttonStyle(.plain)
+            .foregroundStyle(selectedForDeletion.isEmpty ? AnyShapeStyle(.tertiary) : AnyShapeStyle(.red))
+            .disabled(selectedForDeletion.isEmpty)
         }
         .padding(.horizontal, 12)
         .frame(height: 36)
@@ -158,12 +238,45 @@ struct HistoryView: View {
         }
     }
 
+    private func clearHistory() {
+        if isSelecting {
+            deleteSelectedHistoryItems()
+            return
+        }
+
+        entries = []
+        selectedID = nil
+        searchText = ""
+        copiedMessage = nil
+
+        guard let url = historyFileURL() else { return }
+        try? FileManager.default.removeItem(at: url)
+    }
+
+    private func deleteSelectedHistoryItems() {
+        let deleting = Set(filtered.filter { selectedForDeletion.contains($0.id) }.map { $0.identity })
+        entries.removeAll { deleting.contains(HistoryEntry.identity(for: $0)) }
+
+        if let currentSelectedID = selectedID, selectedForDeletion.contains(currentSelectedID) {
+            self.selectedID = filtered.first?.id
+        }
+        selectedForDeletion.removeAll()
+        isSelecting = false
+        saveHistoryToDisk()
+    }
+
+    private func toggleSelection(_ id: String) {
+        if selectedForDeletion.contains(id) {
+            selectedForDeletion.remove(id)
+        } else {
+            selectedForDeletion.insert(id)
+        }
+    }
+
     // MARK: - Data
 
     private func loadFromDisk() {
-        guard let url = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
-            .first?
-            .appendingPathComponent("FastTranslate/history.json"),
+        guard let url = historyFileURL(),
               FileManager.default.fileExists(atPath: url.path),
               let data = try? Data(contentsOf: url),
               let loaded = try? JSONDecoder().decode([TranslationResult].self, from: data)
@@ -171,22 +284,52 @@ struct HistoryView: View {
         entries = loaded
         selectedID = filtered.first?.id
     }
+
+    private func historyFileURL() -> URL? {
+        FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
+            .first?
+            .appendingPathComponent("FastTranslate/history.json")
+    }
+
+    private func saveHistoryToDisk() {
+        guard let url = historyFileURL() else { return }
+        try? FileManager.default.createDirectory(
+            at: url.deletingLastPathComponent(),
+            withIntermediateDirectories: true
+        )
+        guard let data = try? JSONEncoder().encode(entries) else { return }
+        try? data.write(to: url, options: .atomic)
+    }
 }
 
 private struct HistoryEntry: Identifiable {
     let id: String
     let result: TranslationResult
+
+    var identity: String { Self.identity(for: result) }
+
+    static func identity(for result: TranslationResult) -> String {
+        "\(result.timestamp.timeIntervalSince1970)|\(result.sourceText)|\(result.translatedText)"
+    }
 }
 
 private struct HistoryRowView: View {
     let result: TranslationResult
     let isSelected: Bool
+    let isSelecting: Bool
+    let isMarked: Bool
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
             VStack(alignment: .leading, spacing: 8) {
                 HStack(spacing: 8) {
+                    if isSelecting {
+                        Image(systemName: isMarked ? "checkmark.circle.fill" : "circle")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundStyle(isMarked ? AnyShapeStyle(.blue) : AnyShapeStyle(.tertiary))
+                    }
+
                     Text("\(result.sourceLanguage.shortName) -> \(result.targetLanguage.shortName)")
                         .font(.system(size: 11, weight: .bold, design: .rounded))
                         .padding(.horizontal, 8)
@@ -217,14 +360,20 @@ private struct HistoryRowView: View {
             .background(rowBackground, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
             .overlay {
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .stroke(isSelected ? Color.primary.opacity(0.16) : Color.primary.opacity(0.07), lineWidth: 1)
+                    .stroke(rowStrokeColor, lineWidth: 1)
             }
         }
         .buttonStyle(.plain)
     }
 
     private var rowBackground: some ShapeStyle {
-        isSelected ? AnyShapeStyle(.primary.opacity(0.08)) : AnyShapeStyle(.regularMaterial)
+        if isMarked { return AnyShapeStyle(.blue.opacity(0.10)) }
+        return isSelected && !isSelecting ? AnyShapeStyle(.primary.opacity(0.08)) : AnyShapeStyle(.regularMaterial)
+    }
+
+    private var rowStrokeColor: Color {
+        if isMarked { return .blue.opacity(0.35) }
+        return isSelected && !isSelecting ? .primary.opacity(0.16) : .primary.opacity(0.07)
     }
 }
 
