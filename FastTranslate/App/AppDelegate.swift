@@ -44,11 +44,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         popover = NSPopover()
         popover.contentSize = NSSize(width: 380, height: 340)
         popover.behavior = .transient
-        let popoverView = TranslationPopoverView { [weak self] result in
-            guard let self else { return }
-            let mousePoint = NSEvent.mouseLocation
-            self.floatingPanel.show(result: result, near: mousePoint)
-        }
+        let popoverView = TranslationPopoverView()
         popover.contentViewController = NSHostingController(rootView: popoverView)
     }
 

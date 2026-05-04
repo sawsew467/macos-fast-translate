@@ -9,9 +9,6 @@ struct TranslationPopoverView: View {
     @State private var contextText = ""
     @State private var errorMessage: String?
 
-    // Injected by AppDelegate for floating panel callback
-    var onShowFloating: ((TranslationResult) -> Void)?
-
     private let popoverWidth: CGFloat = 380
     private let compactHeight: CGFloat = 340
     private let expandedHeight: CGFloat = 420
@@ -265,7 +262,6 @@ struct TranslationPopoverView: View {
                     targetLanguage: selectedTargetLanguage,
                     perMessageContext: ctx.isEmpty ? nil : ctx
                 )
-                onShowFloating?(result)
             } catch {
                 errorMessage = error.localizedDescription
             }
