@@ -161,10 +161,24 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let window = NSWindow(contentViewController: controller)
         window.title = "Welcome to FastTranslate"
         window.styleMask = [.titled, .closable]
-        window.center()
+        window.setFrame(NSRect(origin: .zero, size: NSSize(width: 760, height: 540)), display: false)
+        centerOnMainScreen(window)
         window.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
         onboardingWindow = window
+    }
+
+    private func centerOnMainScreen(_ window: NSWindow) {
+        guard let frame = NSScreen.main?.visibleFrame else {
+            window.center()
+            return
+        }
+        let size = window.frame.size
+        let origin = NSPoint(
+            x: frame.midX - size.width / 2,
+            y: frame.midY - size.height / 2
+        )
+        window.setFrameOrigin(origin)
     }
 
     // MARK: - Smoke test (DEBUG only)
