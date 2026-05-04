@@ -5,6 +5,7 @@ import SwiftUI
 /// Supports both instant display (full result) and streaming mode (progressive tokens).
 final class FloatingPanelController {
     private var window: NSWindow?
+    private var animationDelegate: WindowAnimationDelegate?
 
     private let panelWidth: CGFloat = 360
     private let minPanelHeight: CGFloat = 120
@@ -41,6 +42,7 @@ final class FloatingPanelController {
     func dismiss() {
         window?.orderOut(nil)
         window = nil
+        animationDelegate = nil
     }
 
     // MARK: - Private
@@ -63,6 +65,7 @@ final class FloatingPanelController {
         win.isOpaque = false
         win.backgroundColor = .clear
         win.hasShadow = false
+        win.isMovable = true
         win.isMovableByWindowBackground = true
         // Lock horizontal resizing while keeping the top/bottom resize affordance.
         win.minSize = NSSize(width: panelWidth, height: minPanelHeight)
@@ -87,9 +90,24 @@ final class FloatingPanelController {
         let frame = adjustedFrame(size: size, near: point)
 
         win.setFrame(frame, display: false)
+        animationDelegate = WindowAnimationDelegate(window: win)
+        win.delegate = animationDelegate
         win.makeKeyAndOrderFront(nil)
+        animateIn(hosting.view)
 
         window = win
+    }
+
+    private func animateIn(_ view: NSView) {
+        view.alphaValue = 0
+        view.layer?.anchorPoint = CGPoint(x: 0.5, y: 0.5)
+        view.layer?.transform = CATransform3DMakeScale(0.97, 0.97, 1)
+        NSAnimationContext.runAnimationGroup { context in
+            context.duration = 0.16
+            context.timingFunction = CAMediaTimingFunction(name: .easeOut)
+            view.animator().alphaValue = 1
+            view.layer?.transform = CATransform3DIdentity
+        }
     }
 
     private func copyAndDismiss(_ text: String) {
@@ -116,6 +134,20 @@ final class FloatingPanelController {
     }
 }
 
+private final class WindowAnimationDelegate: NSObject, NSWindowDelegate {
+    weak var window: NSWindow?
+
+    init(window: NSWindow) {
+        self.window = window
+    }
+
+    func windowDidResize(_ notification: Notification) {
+        guard let view = window?.contentView else { return }
+        view.layer?.cornerRadius = floatingPanelCornerRadius
+        view.layer?.masksToBounds = true
+    }
+}
+
 // MARK: - Static result view (existing)
 
 private struct FloatingPanelContent: View {
@@ -132,13 +164,7 @@ private struct FloatingPanelContent: View {
                 .textSelection(.enabled)
 
             HStack(alignment: .center, spacing: 8) {
-                Button(action: onCopy) {
-                    Label("Copy", systemImage: "doc.on.doc")
-                        .font(.system(size: 12))
-                        .foregroundStyle(.primary)
-                }
-                .buttonStyle(.bordered)
-                .controlSize(.small)
+                copyButton(action: onCopy)
 
                 Text("\(result.sourceLanguage.displayName) → \(result.targetLanguage.displayName) · \(result.provider.displayName)")
                     .font(.caption2)
@@ -202,14 +228,8 @@ struct StreamingPanelContent: View {
 
             // Footer
             HStack(alignment: .center, spacing: 8) {
-                Button(action: onCopy) {
-                    Label("Copy", systemImage: "doc.on.doc")
-                        .font(.system(size: 12))
-                        .foregroundStyle(.primary)
-                }
-                .buttonStyle(.bordered)
-                .controlSize(.small)
-                .disabled(state.isStreaming || state.streamedText.isEmpty)
+                copyButton(action: onCopy)
+                    .disabled(state.isStreaming || state.streamedText.isEmpty)
 
                 Text("\(state.sourceLanguage.displayName) → \(state.targetLanguage.displayName) · \(state.provider.displayName)")
                     .font(.caption2)
@@ -232,16 +252,64 @@ struct StreamingPanelContent: View {
 // MARK: - Shared panel chrome
 
 private let floatingPanelCornerRadius: CGFloat = 18
+private let floatingPanelShape = RoundedRectangle(cornerRadius: floatingPanelCornerRadius, style: .continuous)
 
-/// Use a compositing group so material and shadow are both clipped to the same
-/// rounded rectangle. This avoids the light square corners visible on bright backgrounds.
+@ViewBuilder
 private func panelContainer<Content: View>(@ViewBuilder content: () -> Content) -> some View {
+    if #available(macOS 26.0, *) {
+        GlassEffectContainer(spacing: 8) {
+            panelContent(content)
+                .glassEffect(.regular, in: floatingPanelShape)
+        }
+    } else {
+        panelContent(content)
+            .background(.regularMaterial)
+            .clipShape(floatingPanelShape)
+            .mask(floatingPanelShape)
+            .compositingGroup()
+            .shadow(color: .black.opacity(0.14), radius: 18, x: 0, y: 10)
+            .shadow(color: .black.opacity(0.06), radius: 3, x: 0, y: 1)
+    }
+}
+
+private func panelContent<Content: View>(_ content: () -> Content) -> some View {
     VStack(alignment: .leading, spacing: 8, content: content)
         .padding(12)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(.regularMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: floatingPanelCornerRadius, style: .continuous))
-        .mask(RoundedRectangle(cornerRadius: floatingPanelCornerRadius, style: .continuous))
-        .compositingGroup()
-        .shadow(color: .black.opacity(0.18), radius: 10, x: 0, y: 4)
+}
+
+@ViewBuilder
+private func copyButton(action: @escaping () -> Void) -> some View {
+    if #available(macOS 26.0, *) {
+        Button(action: action) {
+            Label("Copy", systemImage: "doc.on.doc")
+                .font(.system(size: 12, weight: .medium))
+                .foregroundStyle(.primary)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 5)
+                .glassEffect(.regular.interactive(), in: Capsule(style: .continuous))
+        }
+        .buttonStyle(.plain)
+        .controlSize(.small)
+    } else {
+        Button(action: action) {
+            copyLabel
+        }
+        .buttonStyle(.plain)
+        .controlSize(.small)
+    }
+}
+
+private var copyLabel: some View {
+    Label("Copy", systemImage: "doc.on.doc")
+        .font(.system(size: 12, weight: .medium))
+        .foregroundStyle(.primary)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 5)
+        .background(.ultraThinMaterial)
+        .overlay {
+            Capsule(style: .continuous)
+                .stroke(.primary.opacity(0.12), lineWidth: 1)
+        }
+        .clipShape(Capsule(style: .continuous))
 }
