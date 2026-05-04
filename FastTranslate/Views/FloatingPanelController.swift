@@ -7,6 +7,8 @@ final class FloatingPanelController {
     private var window: NSWindow?
 
     private let panelWidth: CGFloat = 360
+    private let minPanelHeight: CGFloat = 120
+    private let maxPanelHeight: CGFloat = 560
     /// Fixed height for streaming panel — text scrolls within, no window resize jitter.
     private let streamingHeight: CGFloat = 200
 
@@ -53,7 +55,7 @@ final class FloatingPanelController {
 
         let win = NSWindow(
             contentRect: NSRect(x: -9999, y: -9999, width: panelWidth, height: 600),
-            styleMask: [],
+            styleMask: [.resizable],
             backing: .buffered,
             defer: false
         )
@@ -62,6 +64,9 @@ final class FloatingPanelController {
         win.backgroundColor = .clear
         win.hasShadow = false
         win.isMovableByWindowBackground = true
+        // Lock horizontal resizing while keeping the top/bottom resize affordance.
+        win.minSize = NSSize(width: panelWidth, height: minPanelHeight)
+        win.maxSize = NSSize(width: panelWidth, height: maxPanelHeight)
         win.contentViewController = hosting
         win.contentView?.wantsLayer = true
         win.contentView?.layer?.backgroundColor = NSColor.clear.cgColor
@@ -75,7 +80,7 @@ final class FloatingPanelController {
             height = fixed
         } else {
             hosting.view.layoutSubtreeIfNeeded()
-            height = max(80, min(500, hosting.view.fittingSize.height))
+            height = max(minPanelHeight, min(maxPanelHeight, hosting.view.fittingSize.height))
         }
 
         let size = NSSize(width: panelWidth, height: height)
