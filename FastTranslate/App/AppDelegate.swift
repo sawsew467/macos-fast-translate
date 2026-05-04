@@ -160,12 +160,46 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let controller = NSHostingController(rootView: view)
         let window = NSWindow(contentViewController: controller)
         window.title = "Welcome to FastTranslate"
-        window.styleMask = [.titled, .closable]
-        window.setFrame(NSRect(origin: .zero, size: NSSize(width: 760, height: 540)), display: false)
+        window.styleMask = [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView]
+        window.titleVisibility = .hidden
+        window.titlebarAppearsTransparent = true
+        window.backgroundColor = .clear
+        window.isOpaque = false
+        window.hasShadow = true
+        window.isMovableByWindowBackground = true
+        window.setFrame(NSRect(origin: .zero, size: NSSize(width: 760, height: 570)), display: false)
+        window.minSize = NSSize(width: 760, height: 570)
+        window.maxSize = NSSize(width: 760, height: 570)
+        configureOnboardingWindowChrome(window)
         centerOnMainScreen(window)
         window.makeKeyAndOrderFront(nil)
+        DispatchQueue.main.async { [weak self, weak window] in
+            guard let self, let window else { return }
+            self.positionOnboardingTrafficButtons(in: window)
+            window.standardWindowButton(.zoomButton)?.isEnabled = false
+        }
         NSApp.activate(ignoringOtherApps: true)
         onboardingWindow = window
+    }
+
+    private func configureOnboardingWindowChrome(_ window: NSWindow) {
+        guard let frameView = window.contentView?.superview else { return }
+
+        frameView.wantsLayer = true
+        frameView.layer?.cornerRadius = 24
+        frameView.layer?.cornerCurve = .continuous
+        frameView.layer?.masksToBounds = true
+
+        let effectView = NSVisualEffectView(frame: frameView.bounds)
+        effectView.autoresizingMask = [.width, .height]
+        effectView.blendingMode = .behindWindow
+        effectView.material = .hudWindow
+        effectView.state = .active
+        effectView.wantsLayer = true
+        effectView.layer?.cornerRadius = 24
+        effectView.layer?.cornerCurve = .continuous
+        effectView.layer?.masksToBounds = true
+        frameView.addSubview(effectView, positioned: .below, relativeTo: nil)
     }
 
     private func centerOnMainScreen(_ window: NSWindow) {
@@ -179,6 +213,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             y: frame.midY - size.height / 2
         )
         window.setFrameOrigin(origin)
+    }
+
+    private func positionOnboardingTrafficButtons(in window: NSWindow) {
+        for (index, type) in [NSWindow.ButtonType.closeButton, .miniaturizeButton, .zoomButton].enumerated() {
+            guard let button = window.standardWindowButton(type) else { continue }
+            var frame = button.frame
+            let superHeight = button.superview?.bounds.height ?? window.frame.height
+            frame.origin.x = 24 + CGFloat(index) * 22
+            frame.origin.y = superHeight - frame.height - 20
+            button.setFrameOrigin(frame.origin)
+        }
     }
 
     // MARK: - Smoke test (DEBUG only)

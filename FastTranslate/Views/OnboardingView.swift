@@ -15,8 +15,6 @@ struct OnboardingView: View {
 
     var body: some View {
         ZStack {
-            onboardingBackground
-
             VStack(spacing: 0) {
                 header
 
@@ -33,12 +31,10 @@ struct OnboardingView: View {
                 navigationButtons
                     .padding(24)
             }
+            .padding(.top, 30)
         }
-        .frame(width: 760, height: 540)
-    }
-
-    private var onboardingBackground: some View {
-        Color(NSColor.windowBackgroundColor).ignoresSafeArea()
+        .frame(width: 760, height: 570)
+        .background(Color.clear)
     }
 
     private var header: some View {
@@ -62,7 +58,7 @@ struct OnboardingView: View {
             .fixedSize(horizontal: true, vertical: false)
         }
         .padding(.horizontal, 28)
-        .padding(.top, 24)
+        .padding(.top, 18)
         .padding(.bottom, 10)
     }
 
@@ -193,6 +189,8 @@ struct OnboardingView: View {
 }
 
 
+
+
 private struct LiquidGlassCardModifier: ViewModifier {
     let cornerRadius: CGFloat
 
@@ -288,7 +286,7 @@ private struct SetupCard<Content: View>: View {
         }
         .padding(28)
         .frame(maxWidth: .infinity)
-        .modifier(LiquidGlassCardModifier(cornerRadius: 30))
+        .modifier(LiquidGlassCardModifier(cornerRadius: 24))
     }
 }
 
