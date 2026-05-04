@@ -22,9 +22,6 @@ final class HotkeyManager {
     private let screenCaptureService: ScreenCaptureService
     private let ocrService: OCRService
 
-    /// Brief floating window shown when no text is selected.
-    private var messageWindow: NSWindow?
-
     init(
         translationService: TranslationService,
         floatingPanel: FloatingPanelController,
@@ -106,7 +103,7 @@ final class HotkeyManager {
             let anchorPoint = NSEvent.mouseLocation
             guard let cgImage = await screenCaptureService.captureRegion() else {
                 if !ScreenCaptureService.hasPermission() {
-                    showBriefMessage("Screen Recording permission required", near: anchorPoint)
+                    floatingPanel.showMessage("Screen Recording permission required", systemImage: "record.circle", near: anchorPoint)
                 }
                 return
             }
@@ -114,7 +111,7 @@ final class HotkeyManager {
                 let fullText = try await ocrService.recognizeText(from: cgImage)
                 try streamTranslation(fullText, near: anchorPoint)
             } catch {
-                showBriefMessage(error.localizedDescription, near: anchorPoint)
+                floatingPanel.showMessage(error.localizedDescription, systemImage: "exclamationmark.triangle", near: anchorPoint)
             }
         }
     }
@@ -124,13 +121,13 @@ final class HotkeyManager {
         print("[HotkeyManager] hotkey fired — mouseLocation = \(anchorPoint)")
         Task { @MainActor in
             guard let text = await SelectedTextReader.readSelectedText(), !text.isEmpty else {
-                showBriefMessage("No text selected", near: anchorPoint)
+                floatingPanel.showMessage("No text selected", systemImage: "text.cursor", near: anchorPoint)
                 return
             }
             do {
                 try streamTranslation(text, near: anchorPoint)
             } catch {
-                showBriefMessage(error.localizedDescription, near: anchorPoint)
+                floatingPanel.showMessage(error.localizedDescription, systemImage: "exclamationmark.triangle", near: anchorPoint)
             }
         }
     }
@@ -146,8 +143,37 @@ final class HotkeyManager {
             targetLanguage: target,
             provider: translationService.activeProviderType
         )
-        floatingPanel.showStreaming(state: state, near: point)
+        floatingPanel.showStreaming(
+            state: state,
+            near: point,
+            onTargetLanguageChange: { [weak self] language in
+                self?.restartTranslation(state: state, targetLanguage: language)
+            }
+        )
 
+        consume(stream, into: state)
+    }
+
+    @MainActor
+    private func restartTranslation(state: StreamingTranslationState, targetLanguage: Language) {
+        do {
+            let (source, target, stream) = try translationService.translateStreaming(
+                state.sourceText,
+                targetLanguage: targetLanguage
+            )
+            state.streamedText = ""
+            state.error = nil
+            state.isStreaming = true
+            state.targetLanguage = target
+            consume(stream, into: state)
+        } catch {
+            state.isStreaming = false
+            state.error = error.localizedDescription
+        }
+    }
+
+    @MainActor
+    private func consume(_ stream: AsyncThrowingStream<String, Error>, into state: StreamingTranslationState) {
         Task { @MainActor in
             do {
                 for try await chunk in stream {
@@ -162,44 +188,6 @@ final class HotkeyManager {
         }
     }
 
-    /// Displays a small 2-second floating banner with a plain text message.
-    @MainActor
-    private func showBriefMessage(_ message: String, near point: NSPoint) {
-        messageWindow?.orderOut(nil)
-
-        let label = NSTextField(labelWithString: message)
-        label.font = .systemFont(ofSize: 13)
-        label.textColor = .secondaryLabelColor
-        label.sizeToFit()
-
-        let padding: CGFloat = 10
-        let contentSize = NSSize(
-            width: label.frame.width + padding * 2,
-            height: label.frame.height + padding * 2
-        )
-        label.frame = NSRect(x: padding, y: padding, width: label.frame.width, height: label.frame.height)
-
-        let offset: CGFloat = 12
-        let origin = NSPoint(x: point.x + offset, y: point.y + offset)
-
-        let win = NSWindow(
-            contentRect: NSRect(origin: origin, size: contentSize),
-            styleMask: [],
-            backing: .buffered,
-            defer: false
-        )
-        win.level = .floating
-        win.isOpaque = false
-        win.backgroundColor = NSColor.windowBackgroundColor.withAlphaComponent(0.92)
-        win.contentView?.addSubview(label)
-        win.orderFront(nil)
-        messageWindow = win
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
-            self?.messageWindow?.orderOut(nil)
-            self?.messageWindow = nil
-        }
-    }
 }
 
 // MARK: - C-compatible Carbon event callback

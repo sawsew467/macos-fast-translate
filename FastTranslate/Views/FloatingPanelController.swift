@@ -25,14 +25,34 @@ final class FloatingPanelController {
         presentWindow(rootView: contentView, near: point)
     }
 
+    func showMessage(_ message: String, systemImage: String = "exclamationmark.triangle", near point: NSPoint) {
+        dismiss()
+
+        let contentView = FloatingMessagePanelContent(
+            message: message,
+            systemImage: systemImage,
+            onClose: { [weak self] in self?.dismiss() }
+        )
+        presentWindow(rootView: contentView, near: point, fixedHeight: 64, isResizable: false)
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.4) { [weak self] in
+            self?.dismiss()
+        }
+    }
+
     /// Show panel immediately with loading state, then stream tokens in.
-    func showStreaming(state: StreamingTranslationState, near point: NSPoint) {
+    func showStreaming(
+        state: StreamingTranslationState,
+        near point: NSPoint,
+        onTargetLanguageChange: ((Language) -> Void)? = nil
+    ) {
         dismiss()
 
         let contentView = StreamingPanelContent(
             state: state,
             onCopy:  { [weak self] in self?.copyAndDismiss(state.streamedText) },
-            onClose: { [weak self] in self?.dismiss() }
+            onClose: { [weak self] in self?.dismiss() },
+            onTargetLanguageChange: onTargetLanguageChange
         )
 
         // Fixed height — text scrolls within, no resize jitter
@@ -47,7 +67,12 @@ final class FloatingPanelController {
 
     // MARK: - Private
 
-    private func presentWindow<V: View>(rootView: V, near point: NSPoint, fixedHeight: CGFloat? = nil) {
+    private func presentWindow<V: View>(
+        rootView: V,
+        near point: NSPoint,
+        fixedHeight: CGFloat? = nil,
+        isResizable: Bool = true
+    ) {
         let hosting = NSHostingController(rootView: rootView)
         hosting.view.wantsLayer = true
         hosting.view.layer?.backgroundColor = NSColor.clear.cgColor
@@ -57,7 +82,7 @@ final class FloatingPanelController {
 
         let win = NSWindow(
             contentRect: NSRect(x: -9999, y: -9999, width: panelWidth, height: 600),
-            styleMask: [.resizable],
+            styleMask: isResizable ? [.resizable] : [],
             backing: .buffered,
             defer: false
         )
@@ -67,9 +92,12 @@ final class FloatingPanelController {
         win.hasShadow = false
         win.isMovable = true
         win.isMovableByWindowBackground = true
-        // Lock horizontal resizing while keeping the top/bottom resize affordance.
-        win.minSize = NSSize(width: panelWidth, height: minPanelHeight)
-        win.maxSize = NSSize(width: panelWidth, height: maxPanelHeight)
+        // Keep the default width as the minimum so the footer controls never collapse.
+        if isResizable {
+            win.minSize = NSSize(width: panelWidth, height: minPanelHeight)
+            win.maxSize = NSSize(width: CGFloat.greatestFiniteMagnitude, height: maxPanelHeight)
+            win.contentMinSize = NSSize(width: panelWidth, height: minPanelHeight)
+        }
         win.contentViewController = hosting
         win.contentView?.wantsLayer = true
         win.contentView?.layer?.backgroundColor = NSColor.clear.cgColor
@@ -90,7 +118,11 @@ final class FloatingPanelController {
         let frame = adjustedFrame(size: size, near: point)
 
         win.setFrame(frame, display: false)
-        animationDelegate = WindowAnimationDelegate(window: win)
+        animationDelegate = WindowAnimationDelegate(
+            window: win,
+            minSize: NSSize(width: panelWidth, height: minPanelHeight),
+            maxSize: NSSize(width: CGFloat.greatestFiniteMagnitude, height: maxPanelHeight)
+        )
         win.delegate = animationDelegate
         win.makeKeyAndOrderFront(nil)
         animateIn(hosting.view)
@@ -136,15 +168,63 @@ final class FloatingPanelController {
 
 private final class WindowAnimationDelegate: NSObject, NSWindowDelegate {
     weak var window: NSWindow?
+    let minSize: NSSize
+    let maxSize: NSSize
 
-    init(window: NSWindow) {
+    init(window: NSWindow, minSize: NSSize, maxSize: NSSize) {
         self.window = window
+        self.minSize = minSize
+        self.maxSize = maxSize
+    }
+
+    func windowWillResize(_ sender: NSWindow, to frameSize: NSSize) -> NSSize {
+        NSSize(
+            width: min(max(frameSize.width, minSize.width), maxSize.width),
+            height: min(max(frameSize.height, minSize.height), maxSize.height)
+        )
     }
 
     func windowDidResize(_ notification: Notification) {
-        guard let view = window?.contentView else { return }
+        guard let window, let view = window.contentView else { return }
+        if window.frame.width < minSize.width || window.frame.height < minSize.height {
+            let clampedSize = windowWillResize(window, to: window.frame.size)
+            window.setFrame(NSRect(origin: window.frame.origin, size: clampedSize), display: true)
+        }
         view.layer?.cornerRadius = floatingPanelCornerRadius
         view.layer?.masksToBounds = true
+    }
+}
+
+
+private struct FloatingMessagePanelContent: View {
+    let message: String
+    let systemImage: String
+    let onClose: () -> Void
+
+    var body: some View {
+        panelContainer {
+            HStack(alignment: .center, spacing: 12) {
+                Image(systemName: systemImage)
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(.secondary)
+                    .frame(width: 32, height: 32)
+                    .modifier(GlassCircleModifier())
+
+                Text(message)
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(.primary)
+                    .lineLimit(2)
+
+                Spacer(minLength: 8)
+
+                Button(action: onClose) {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundStyle(.secondary)
+                }
+                .buttonStyle(.plain)
+            }
+        }
     }
 }
 
@@ -166,7 +246,7 @@ private struct FloatingPanelContent: View {
             HStack(alignment: .center, spacing: 8) {
                 copyButton(action: onCopy)
 
-                Text("\(result.sourceLanguage.displayName) → \(result.targetLanguage.displayName) · \(result.provider.displayName)")
+                Text("\(result.sourceLanguage.displayName) → \(result.targetLanguage.displayName)")
                     .font(.caption2)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
@@ -190,6 +270,7 @@ struct StreamingPanelContent: View {
     @ObservedObject var state: StreamingTranslationState
     let onCopy: () -> Void
     let onClose: () -> Void
+    let onTargetLanguageChange: ((Language) -> Void)?
 
     var body: some View {
         panelContainer {
@@ -231,7 +312,13 @@ struct StreamingPanelContent: View {
                 copyButton(action: onCopy)
                     .disabled(state.isStreaming || state.streamedText.isEmpty)
 
-                Text("\(state.sourceLanguage.displayName) → \(state.targetLanguage.displayName) · \(state.provider.displayName)")
+                targetLanguageMenu(
+                    selected: state.targetLanguage,
+                    isDisabled: state.isStreaming,
+                    onSelect: { language in onTargetLanguageChange?(language) }
+                )
+
+                Text("\(state.sourceLanguage.displayName) → \(state.targetLanguage.displayName)")
                     .font(.caption2)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
@@ -297,6 +384,58 @@ private func copyButton(action: @escaping () -> Void) -> some View {
         }
         .buttonStyle(.plain)
         .controlSize(.small)
+    }
+}
+
+@ViewBuilder
+private func targetLanguageMenu(
+    selected: Language,
+    isDisabled: Bool,
+    onSelect: @escaping (Language) -> Void
+) -> some View {
+    Menu {
+        ForEach(Language.targetOptions) { language in
+            Button(language.displayName) { onSelect(language) }
+        }
+    } label: {
+        Text(selected.shortName)
+            .lineLimit(1)
+            .font(.caption2.weight(.medium))
+            .foregroundStyle(.primary)
+            .padding(.horizontal, 8)
+        .padding(.vertical, 5)
+        .modifier(GlassCapsuleModifier())
+    }
+    .menuStyle(.borderlessButton)
+    .fixedSize(horizontal: true, vertical: false)
+    .disabled(isDisabled)
+}
+
+private struct GlassCircleModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(macOS 26.0, *) {
+            content.glassEffect(.regular.interactive(), in: Circle())
+        } else {
+            content
+                .background(.ultraThinMaterial, in: Circle())
+                .overlay { Circle().stroke(.primary.opacity(0.10), lineWidth: 1) }
+        }
+    }
+}
+
+private struct GlassCapsuleModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(macOS 26.0, *) {
+            content.glassEffect(.regular.interactive(), in: Capsule(style: .continuous))
+        } else {
+            content
+                .background(.ultraThinMaterial)
+                .overlay {
+                    Capsule(style: .continuous)
+                        .stroke(.primary.opacity(0.12), lineWidth: 1)
+                }
+                .clipShape(Capsule(style: .continuous))
+        }
     }
 }
 

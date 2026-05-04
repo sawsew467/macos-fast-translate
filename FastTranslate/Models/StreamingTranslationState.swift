@@ -7,10 +7,10 @@ final class StreamingTranslationState: ObservableObject {
     @Published var streamedText = ""
     @Published var isStreaming = true
     @Published var error: String?
+    @Published var targetLanguage: Language
 
     let sourceText: String
     let sourceLanguage: Language
-    let targetLanguage: Language
     let provider: ProviderType
 
     init(
