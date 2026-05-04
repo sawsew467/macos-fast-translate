@@ -83,7 +83,7 @@ struct SelectedTextReader {
         let tag = "SelectedTextReader.clipboard"
         let pasteboard = NSPasteboard.general
         let changeCountBefore = pasteboard.changeCount
-        let backupItems = pasteboard.pasteboardItems ?? []
+        let backupItems = (pasteboard.pasteboardItems ?? []).map(clonePasteboardItem)
 
         // Brief pause so the hotkey keystrokes settle before we inject Cmd+C.
         try? await Task.sleep(nanoseconds: 180_000_000) // 180 ms
@@ -120,7 +120,7 @@ struct SelectedTextReader {
         }
 
         if selectedText == nil {
-            print("[\(tag)] ❌ Clipboard did not change — ⌘+C may not have reached the target app")
+            print("[\(tag)] Clipboard did not change - Cmd+C may not have reached the target app")
         }
 
         // Restore original clipboard as completely as possible.
@@ -130,5 +130,17 @@ struct SelectedTextReader {
         }
 
         return selectedText?.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private static func clonePasteboardItem(_ item: NSPasteboardItem) -> NSPasteboardItem {
+        let clone = NSPasteboardItem()
+        for type in item.types {
+            if let data = item.data(forType: type) {
+                clone.setData(data, forType: type)
+            } else if let string = item.string(forType: type) {
+                clone.setString(string, forType: type)
+            }
+        }
+        return clone
     }
 }
