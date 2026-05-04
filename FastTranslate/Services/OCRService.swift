@@ -18,7 +18,7 @@ enum OCRError: LocalizedError {
 // MARK: - OCR Service
 
 /// Extracts text from a CGImage using Apple's Vision framework.
-/// Supports Vietnamese diacritics (vi-VN) and English (en-US).
+/// Supports common Latin and CJK languages used by the translation flow.
 final class OCRService {
 
     /// Recognises text in `image`, returning lines sorted top-to-bottom.
@@ -27,7 +27,11 @@ final class OCRService {
         try await Task.detached(priority: .userInitiated) {
             let request = VNRecognizeTextRequest()
             request.recognitionLevel = .accurate
-            request.recognitionLanguages = ["vi-VN", "en-US"]
+            request.recognitionLanguages = Self.supportedRecognitionLanguages(for: request)
+
+            if #available(macOS 13.0, *) {
+                request.automaticallyDetectsLanguage = true
+            }
             request.usesLanguageCorrection = true
 
             let handler = VNImageRequestHandler(cgImage: image, options: [:])
@@ -53,5 +57,25 @@ final class OCRService {
             }
             return text
         }.value
+    }
+
+    /// Keep Vision OCR multilingual, but only pass languages supported by the
+    /// current macOS revision. Unsupported hard-coded languages can make CJK
+    /// recognition fail before translation starts.
+    private static func supportedRecognitionLanguages(for request: VNRecognizeTextRequest) -> [String] {
+        let preferredLanguages = [
+            "vi-VN", "en-US", "ja-JP", "ko-KR",
+            "zh-Hans", "zh-Hant", "fr-FR", "de-DE",
+            "es-ES", "pt-BR", "it-IT", "ru-RU",
+            "th-TH", "id-ID"
+        ]
+
+        do {
+            let supported = try request.supportedRecognitionLanguages()
+            let filtered = preferredLanguages.filter { supported.contains($0) }
+            return filtered.isEmpty ? supported : filtered
+        } catch {
+            return preferredLanguages
+        }
     }
 }

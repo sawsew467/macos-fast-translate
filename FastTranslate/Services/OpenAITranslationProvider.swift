@@ -136,11 +136,15 @@ final class OpenAITranslationProvider: TranslationProvider {
     // MARK: - Prompt builder
 
     private func systemPrompt(source: Language, to target: Language, context: TranslationContext?) -> String {
+        let sourceInstruction = source == .autoDetect
+            ? "Automatically detect the source language"
+            : "The source language is \(source.displayName)"
+
         var prompt = """
-        You are a professional translator between Vietnamese and English.
-        Translate the following text from \(source.displayName) to \(target.displayName).
-        Return ONLY the translated text. Do not add explanations or notes.
-        Keep the same tone and register as the original.
+        You are a professional translator for any language.
+        \(sourceInstruction) and translate the user's text to \(target.displayName).
+        Return ONLY the translated text. Do not add explanations, language labels, or notes.
+        Preserve the original meaning, formatting, tone, register, names, URLs, and code-like text.
         """
 
         let parts = [context?.persistent, context?.perMessage, context?.screenshot.map { "Surrounding text: \($0)" }]

@@ -22,6 +22,12 @@ final class TranslationService: ObservableObject {
         return ProviderType(rawValue: raw) ?? .openAI
     }
 
+    var defaultTargetLanguage: Language {
+        let raw = UserDefaults.standard.string(forKey: Constants.UserDefaultsKey.defaultTargetLanguage) ?? ""
+        let language = Language(rawValue: raw) ?? .vietnamese
+        return language == .autoDetect ? .vietnamese : language
+    }
+
     init() {
         providers = [.openAI: OpenAITranslationProvider()]
         loadHistory()
@@ -30,6 +36,7 @@ final class TranslationService: ObservableObject {
     /// Translate text with optional per-message and screenshot context layers.
     func translate(
         _ text: String,
+        targetLanguage: Language? = nil,
         perMessageContext: String? = nil,
         screenshotContext: String? = nil
     ) async throws -> TranslationResult {
@@ -41,7 +48,8 @@ final class TranslationService: ObservableObject {
         defer { isTranslating = false }
 
         let source = LanguageDetector.detect(text)
-        let target = source.toggled
+        let requestedTarget = targetLanguage ?? defaultTargetLanguage
+        let target = source == requestedTarget ? requestedTarget.fallbackTarget : requestedTarget
 
         let persistent = persistentContext.isEmpty ? nil : persistentContext
         let context = TranslationContext(
@@ -77,6 +85,7 @@ final class TranslationService: ObservableObject {
     /// Caller is responsible for consuming the stream and calling addToHistory() after.
     func translateStreaming(
         _ text: String,
+        targetLanguage: Language? = nil,
         perMessageContext: String? = nil,
         screenshotContext: String? = nil
     ) throws -> (source: Language, target: Language, stream: AsyncThrowingStream<String, Error>) {
@@ -85,7 +94,8 @@ final class TranslationService: ObservableObject {
         }
 
         let source = LanguageDetector.detect(text)
-        let target = source.toggled
+        let requestedTarget = targetLanguage ?? defaultTargetLanguage
+        let target = source == requestedTarget ? requestedTarget.fallbackTarget : requestedTarget
 
         let persistent = persistentContext.isEmpty ? nil : persistentContext
         let context = TranslationContext(

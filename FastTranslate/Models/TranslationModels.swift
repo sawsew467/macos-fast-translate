@@ -2,23 +2,70 @@ import Foundation
 
 // MARK: - Language
 
-enum Language: String, CaseIterable, Codable {
+enum Language: String, CaseIterable, Codable, Identifiable {
+    case autoDetect = "auto"
     case vietnamese = "vi"
     case english = "en"
+    case japanese = "ja"
+    case korean = "ko"
+    case simplifiedChinese = "zh-Hans"
+    case traditionalChinese = "zh-Hant"
+    case french = "fr"
+    case german = "de"
+    case spanish = "es"
+    case portuguese = "pt"
+    case italian = "it"
+    case russian = "ru"
+    case thai = "th"
+    case indonesian = "id"
+
+    var id: String { rawValue }
+
+    static var targetOptions: [Language] { allCases.filter { $0 != .autoDetect } }
 
     var displayName: String {
         switch self {
+        case .autoDetect: return "Auto Detect"
         case .vietnamese: return "Vietnamese"
         case .english: return "English"
+        case .japanese: return "Japanese"
+        case .korean: return "Korean"
+        case .simplifiedChinese: return "Chinese (Simplified)"
+        case .traditionalChinese: return "Chinese (Traditional)"
+        case .french: return "French"
+        case .german: return "German"
+        case .spanish: return "Spanish"
+        case .portuguese: return "Portuguese"
+        case .italian: return "Italian"
+        case .russian: return "Russian"
+        case .thai: return "Thai"
+        case .indonesian: return "Indonesian"
         }
     }
 
-    /// Returns the opposite language for Vi↔En toggle
-    var toggled: Language {
+    var shortName: String {
         switch self {
-        case .vietnamese: return .english
-        case .english: return .vietnamese
+        case .autoDetect: return "Auto"
+        case .vietnamese: return "VN"
+        case .english: return "EN"
+        case .japanese: return "JP"
+        case .korean: return "KR"
+        case .simplifiedChinese: return "CN"
+        case .traditionalChinese: return "TW"
+        case .french: return "FR"
+        case .german: return "DE"
+        case .spanish: return "ES"
+        case .portuguese: return "PT"
+        case .italian: return "IT"
+        case .russian: return "RU"
+        case .thai: return "TH"
+        case .indonesian: return "ID"
         }
+    }
+
+    /// Legacy Vi-En fallback used when source already matches the target language.
+    var fallbackTarget: Language {
+        self == .english ? .vietnamese : .english
     }
 }
 
