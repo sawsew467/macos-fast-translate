@@ -3,57 +3,73 @@ import AppKit
 
 struct TranslationPopoverView: View {
     @StateObject private var service = TranslationService()
+    @AppStorage(Constants.UserDefaultsKey.defaultTargetLanguage) private var defaultTargetLanguage = Language.vietnamese.rawValue
     @State private var inputText = ""
     @State private var showContext = false
     @State private var contextText = ""
     @State private var errorMessage: String?
 
-    // Injected by AppDelegate for floating panel callback
-    var onShowFloating: ((TranslationResult) -> Void)?
+    private let popoverWidth: CGFloat = 380
+    private let compactHeight: CGFloat = 340
+    private let expandedHeight: CGFloat = 420
+    private let outerPadding: CGFloat = 18
+    private let popoverShape = RoundedRectangle(cornerRadius: 26, style: .continuous)
 
     var body: some View {
-        VStack(spacing: 8) {
-            headerBar
-            if showContext { contextEditor }
-            inputEditor
-            outputDisplay
-            footerBar
+        popoverContainer {
+            VStack(alignment: .leading, spacing: 12) {
+                headerBar
+                if showContext { contextEditor }
+                inputEditor
+                outputDisplay
+                Spacer(minLength: 0)
+                footerBar
+            }
+            .padding(outerPadding)
         }
-        .padding(12)
-        .frame(width: 380, height: showContext ? 420 : 340)
+        .frame(width: popoverWidth, height: showContext ? expandedHeight : compactHeight)
     }
 
     // MARK: - Header
 
     private var headerBar: some View {
-        HStack {
+        HStack(spacing: 10) {
             Text(languageLabel)
-                .font(.system(size: 13, weight: .medium))
+                .font(.system(size: 13, weight: .semibold))
                 .foregroundStyle(.secondary)
+                .lineLimit(1)
+
             Spacer()
+
+            targetLanguageMenu
         }
     }
 
     private var languageLabel: String {
-        guard let last = service.lastResult else { return "Vi ↔ En" }
-        return "\(last.sourceLanguage.displayName) → \(last.targetLanguage.displayName)"
+        guard let last = service.lastResult else { return "Auto Detect" }
+        return "\(last.sourceLanguage.displayName) -> \(last.targetLanguage.displayName)"
+    }
+
+    private var selectedTargetLanguage: Language {
+        Language(rawValue: defaultTargetLanguage) ?? .vietnamese
     }
 
     // MARK: - Context editor
 
     private var contextEditor: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: 6) {
             Text("Context")
-                .font(.caption)
+                .font(.caption.weight(.medium))
                 .foregroundStyle(.secondary)
-            textBox(text: $contextText, height: 60, placeholder: "Add context for better translation…")
+            textBox(text: $contextText, height: 58, placeholder: "Add context for better translation...")
         }
+        .transition(.opacity.combined(with: .move(edge: .top)))
     }
 
     // MARK: - Input
 
     private var inputEditor: some View {
-        textBox(text: $inputText, height: 80, placeholder: "Enter text to translate…") {
+        textBox(text: $inputText, height: showContext ? 76 : 92, placeholder: "Enter text to translate...") {
             triggerTranslation()
         }
     }
@@ -67,89 +83,157 @@ struct TranslationPopoverView: View {
         onEnter: (() -> Void)? = nil
     ) -> some View {
         MultilineTextField(text: text, placeholder: placeholder, onEnter: onEnter)
-        .frame(height: height)
-        .background(Color(NSColor.controlBackgroundColor))
-        .cornerRadius(6)
-        .overlay(
-            RoundedRectangle(cornerRadius: 6)
-                .stroke(Color(NSColor.separatorColor), lineWidth: 1)
-        )
+            .frame(height: height)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 8)
+            .background(.background.opacity(0.42), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .stroke(.primary.opacity(0.10), lineWidth: 1)
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
 
     // MARK: - Output
 
     private var outputDisplay: some View {
-        Group {
+        ZStack {
             if service.isTranslating {
-                HStack {
+                HStack(spacing: 8) {
                     ProgressView().scaleEffect(0.8)
-                    Text("Translating…").foregroundStyle(.secondary).font(.system(size: 13))
+                    Text("Translating...")
+                        .foregroundStyle(.secondary)
+                        .font(.system(size: 13, weight: .medium))
                 }
-                .frame(maxWidth: .infinity, minHeight: 80, alignment: .center)
-                .background(Color(NSColor.controlBackgroundColor))
-                .cornerRadius(6)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
             } else if let error = errorMessage {
                 Text(error)
                     .foregroundStyle(.red)
                     .font(.system(size: 13))
-                    .padding(8)
-                    .frame(maxWidth: .infinity, minHeight: 80, alignment: .topLeading)
-                    .background(Color(NSColor.controlBackgroundColor))
-                    .cornerRadius(6)
-                    .overlay(RoundedRectangle(cornerRadius: 6).stroke(Color.red.opacity(0.3), lineWidth: 1))
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             } else if let result = service.lastResult {
                 ScrollView {
                     Text(result.translatedText)
                         .font(.system(size: 14))
                         .textSelection(.enabled)
                         .frame(maxWidth: .infinity, alignment: .topLeading)
-                        .padding(8)
                 }
-                .frame(height: 80)
-                .background(Color(NSColor.controlBackgroundColor))
-                .cornerRadius(6)
-                .overlay(RoundedRectangle(cornerRadius: 6).stroke(Color(NSColor.separatorColor), lineWidth: 1))
             } else {
                 Text("Translation will appear here")
                     .foregroundStyle(.tertiary)
-                    .font(.system(size: 13))
-                    .padding(8)
-                    .frame(maxWidth: .infinity, minHeight: 80, alignment: .topLeading)
-                    .background(Color(NSColor.controlBackgroundColor))
-                    .cornerRadius(6)
+                    .font(.system(size: 14, weight: .medium))
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             }
         }
+        .padding(14)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .background(.background.opacity(0.32), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
     }
 
     // MARK: - Footer
 
     private var footerBar: some View {
         HStack(spacing: 8) {
-            Button(action: copyTranslation) {
-                Label("Copy", systemImage: "doc.on.doc").font(.system(size: 13))
+            popoverActionButton("Copy", systemImage: "doc.on.doc", isProminent: true, isDisabled: service.lastResult == nil) {
+                copyTranslation()
             }
-            .buttonStyle(.bordered)
-            .disabled(service.lastResult == nil)
 
-            Button(action: toggleContext) {
-                Label(showContext ? "Hide Context" : "Context", systemImage: "text.bubble")
-                    .font(.system(size: 13))
+            popoverActionButton(showContext ? "Hide" : "Context", systemImage: "text.bubble") {
+                toggleContext()
             }
-            .buttonStyle(.plain)
 
-            Button(action: openHistoryWindow) {
-                Label("History", systemImage: "clock")
-                    .font(.system(size: 13))
+            popoverActionButton("History", systemImage: "clock") {
+                openHistoryWindow()
             }
-            .buttonStyle(.plain)
 
-            Spacer()
+            Spacer(minLength: 0)
 
-            Button(action: clearAll) {
-                Label("Clear", systemImage: "xmark.circle").font(.system(size: 13))
+            popoverIconButton(systemImage: "xmark.circle", label: "Clear") {
+                clearAll()
             }
-            .buttonStyle(.plain)
+        }
+        .frame(maxWidth: .infinity, minHeight: 34)
+    }
+
+    private var targetLanguageMenu: some View {
+        Menu {
+            ForEach(Language.targetOptions) { language in
+                Button(language.displayName) { defaultTargetLanguage = language.rawValue }
+            }
+        } label: {
+            Text(selectedTargetLanguage.shortName)
+                .font(.caption2.weight(.bold))
+                .foregroundStyle(.primary)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+                .modifier(PopoverGlassCapsuleModifier())
+        }
+        .menuStyle(.borderlessButton)
+        .fixedSize(horizontal: true, vertical: false)
+    }
+
+    @ViewBuilder
+    private func popoverActionButton(
+        _ title: String,
+        systemImage: String,
+        isProminent: Bool = false,
+        isDisabled: Bool = false,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            HStack(spacing: 7) {
+                Image(systemName: systemImage)
+                    .font(.system(size: 14, weight: .medium))
+                Text(title)
+                    .font(.system(size: 13, weight: .medium))
+                    .lineLimit(1)
+                    .fixedSize(horizontal: true, vertical: false)
+            }
+            .foregroundStyle(.primary.opacity(isDisabled ? 0.36 : 0.88))
+            .padding(.horizontal, 10)
+            .frame(height: 34)
+            .background {
+                if isProminent {
+                    Capsule(style: .continuous).fill(.primary.opacity(0.06))
+                }
+            }
+            .modifier(PopoverGlassCapsuleModifier())
+        }
+        .buttonStyle(.plain)
+        .disabled(isDisabled)
+    }
+
+    private func popoverIconButton(systemImage: String, label: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: 7) {
+                Image(systemName: systemImage)
+                    .font(.system(size: 14, weight: .medium))
+                Text(label)
+                    .font(.system(size: 13, weight: .medium))
+                    .lineLimit(1)
+                    .fixedSize(horizontal: true, vertical: false)
+            }
             .foregroundStyle(.secondary)
+            .frame(height: 34)
+        }
+        .buttonStyle(.plain)
+    }
+
+    @ViewBuilder
+    private func popoverContainer<Content: View>(@ViewBuilder content: () -> Content) -> some View {
+        if #available(macOS 26.0, *) {
+            GlassEffectContainer(spacing: 0) {
+                content()
+                    .glassEffect(.regular, in: popoverShape)
+            }
+        } else {
+            content()
+                .background(.regularMaterial)
+                .clipShape(popoverShape)
+                .overlay {
+                    popoverShape.stroke(.primary.opacity(0.10), lineWidth: 1)
+                }
         }
     }
 
@@ -173,8 +257,11 @@ struct TranslationPopoverView: View {
         Task {
             do {
                 let ctx = contextText.trimmingCharacters(in: .whitespacesAndNewlines)
-                let result = try await service.translate(text, perMessageContext: ctx.isEmpty ? nil : ctx)
-                onShowFloating?(result)
+                let result = try await service.translate(
+                    text,
+                    targetLanguage: selectedTargetLanguage,
+                    perMessageContext: ctx.isEmpty ? nil : ctx
+                )
             } catch {
                 errorMessage = error.localizedDescription
             }
@@ -198,3 +285,18 @@ struct TranslationPopoverView: View {
     }
 }
 
+private struct PopoverGlassCapsuleModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(macOS 26.0, *) {
+            content.glassEffect(.regular.interactive(), in: Capsule(style: .continuous))
+        } else {
+            content
+                .background(.ultraThinMaterial)
+                .overlay {
+                    Capsule(style: .continuous)
+                        .stroke(.primary.opacity(0.12), lineWidth: 1)
+                }
+                .clipShape(Capsule(style: .continuous))
+        }
+    }
+}

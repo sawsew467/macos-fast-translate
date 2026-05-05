@@ -5,8 +5,11 @@ import SwiftUI
 /// Supports both instant display (full result) and streaming mode (progressive tokens).
 final class FloatingPanelController {
     private var window: NSWindow?
+    private var animationDelegate: WindowAnimationDelegate?
 
     private let panelWidth: CGFloat = 360
+    private let minPanelHeight: CGFloat = 120
+    private let maxPanelHeight: CGFloat = 560
     /// Fixed height for streaming panel — text scrolls within, no window resize jitter.
     private let streamingHeight: CGFloat = 200
 
@@ -22,14 +25,34 @@ final class FloatingPanelController {
         presentWindow(rootView: contentView, near: point)
     }
 
+    func showMessage(_ message: String, systemImage: String = "exclamationmark.triangle", near point: NSPoint) {
+        dismiss()
+
+        let contentView = FloatingMessagePanelContent(
+            message: message,
+            systemImage: systemImage,
+            onClose: { [weak self] in self?.dismiss() }
+        )
+        presentWindow(rootView: contentView, near: point, fixedHeight: 64, isResizable: false)
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.4) { [weak self] in
+            self?.dismiss()
+        }
+    }
+
     /// Show panel immediately with loading state, then stream tokens in.
-    func showStreaming(state: StreamingTranslationState, near point: NSPoint) {
+    func showStreaming(
+        state: StreamingTranslationState,
+        near point: NSPoint,
+        onTargetLanguageChange: ((Language) -> Void)? = nil
+    ) {
         dismiss()
 
         let contentView = StreamingPanelContent(
             state: state,
             onCopy:  { [weak self] in self?.copyAndDismiss(state.streamedText) },
-            onClose: { [weak self] in self?.dismiss() }
+            onClose: { [weak self] in self?.dismiss() },
+            onTargetLanguageChange: onTargetLanguageChange
         )
 
         // Fixed height — text scrolls within, no resize jitter
@@ -39,25 +62,48 @@ final class FloatingPanelController {
     func dismiss() {
         window?.orderOut(nil)
         window = nil
+        animationDelegate = nil
     }
 
     // MARK: - Private
 
-    private func presentWindow<V: View>(rootView: V, near point: NSPoint, fixedHeight: CGFloat? = nil) {
+    private func presentWindow<V: View>(
+        rootView: V,
+        near point: NSPoint,
+        fixedHeight: CGFloat? = nil,
+        isResizable: Bool = true
+    ) {
         let hosting = NSHostingController(rootView: rootView)
+        hosting.view.wantsLayer = true
+        hosting.view.layer?.backgroundColor = NSColor.clear.cgColor
+        hosting.view.layer?.cornerRadius = floatingPanelCornerRadius
+        hosting.view.layer?.cornerCurve = .continuous
+        hosting.view.layer?.masksToBounds = true
 
         let win = NSWindow(
             contentRect: NSRect(x: -9999, y: -9999, width: panelWidth, height: 600),
-            styleMask: [.resizable],
+            styleMask: isResizable ? [.resizable] : [],
             backing: .buffered,
             defer: false
         )
         win.level = .floating
         win.isOpaque = false
         win.backgroundColor = .clear
+        win.hasShadow = false
+        win.isMovable = true
         win.isMovableByWindowBackground = true
-        win.minSize = NSSize(width: 240, height: 100)
+        // Keep the default width as the minimum so the footer controls never collapse.
+        if isResizable {
+            win.minSize = NSSize(width: panelWidth, height: minPanelHeight)
+            win.maxSize = NSSize(width: CGFloat.greatestFiniteMagnitude, height: maxPanelHeight)
+            win.contentMinSize = NSSize(width: panelWidth, height: minPanelHeight)
+        }
         win.contentViewController = hosting
+        win.contentView?.wantsLayer = true
+        win.contentView?.layer?.backgroundColor = NSColor.clear.cgColor
+        win.contentView?.layer?.cornerRadius = floatingPanelCornerRadius
+        win.contentView?.layer?.cornerCurve = .continuous
+        win.contentView?.layer?.masksToBounds = true
         win.ignoresMouseEvents = false
 
         let height: CGFloat
@@ -65,16 +111,35 @@ final class FloatingPanelController {
             height = fixed
         } else {
             hosting.view.layoutSubtreeIfNeeded()
-            height = max(80, min(500, hosting.view.fittingSize.height))
+            height = max(minPanelHeight, min(maxPanelHeight, hosting.view.fittingSize.height))
         }
 
         let size = NSSize(width: panelWidth, height: height)
         let frame = adjustedFrame(size: size, near: point)
 
         win.setFrame(frame, display: false)
+        animationDelegate = WindowAnimationDelegate(
+            window: win,
+            minSize: NSSize(width: panelWidth, height: minPanelHeight),
+            maxSize: NSSize(width: CGFloat.greatestFiniteMagnitude, height: maxPanelHeight)
+        )
+        win.delegate = animationDelegate
         win.makeKeyAndOrderFront(nil)
+        animateIn(hosting.view)
 
         window = win
+    }
+
+    private func animateIn(_ view: NSView) {
+        view.alphaValue = 0
+        view.layer?.anchorPoint = CGPoint(x: 0.5, y: 0.5)
+        view.layer?.transform = CATransform3DMakeScale(0.97, 0.97, 1)
+        NSAnimationContext.runAnimationGroup { context in
+            context.duration = 0.16
+            context.timingFunction = CAMediaTimingFunction(name: .easeOut)
+            view.animator().alphaValue = 1
+            view.layer?.transform = CATransform3DIdentity
+        }
     }
 
     private func copyAndDismiss(_ text: String) {
@@ -101,6 +166,68 @@ final class FloatingPanelController {
     }
 }
 
+private final class WindowAnimationDelegate: NSObject, NSWindowDelegate {
+    weak var window: NSWindow?
+    let minSize: NSSize
+    let maxSize: NSSize
+
+    init(window: NSWindow, minSize: NSSize, maxSize: NSSize) {
+        self.window = window
+        self.minSize = minSize
+        self.maxSize = maxSize
+    }
+
+    func windowWillResize(_ sender: NSWindow, to frameSize: NSSize) -> NSSize {
+        NSSize(
+            width: min(max(frameSize.width, minSize.width), maxSize.width),
+            height: min(max(frameSize.height, minSize.height), maxSize.height)
+        )
+    }
+
+    func windowDidResize(_ notification: Notification) {
+        guard let window, let view = window.contentView else { return }
+        if window.frame.width < minSize.width || window.frame.height < minSize.height {
+            let clampedSize = windowWillResize(window, to: window.frame.size)
+            window.setFrame(NSRect(origin: window.frame.origin, size: clampedSize), display: true)
+        }
+        view.layer?.cornerRadius = floatingPanelCornerRadius
+        view.layer?.masksToBounds = true
+    }
+}
+
+
+private struct FloatingMessagePanelContent: View {
+    let message: String
+    let systemImage: String
+    let onClose: () -> Void
+
+    var body: some View {
+        panelContainer {
+            HStack(alignment: .center, spacing: 12) {
+                Image(systemName: systemImage)
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(.secondary)
+                    .frame(width: 32, height: 32)
+                    .modifier(GlassCircleModifier())
+
+                Text(message)
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(.primary)
+                    .lineLimit(2)
+
+                Spacer(minLength: 8)
+
+                Button(action: onClose) {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundStyle(.secondary)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
+}
+
 // MARK: - Static result view (existing)
 
 private struct FloatingPanelContent: View {
@@ -109,7 +236,7 @@ private struct FloatingPanelContent: View {
     let onClose: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        panelContainer {
             Text(result.translatedText)
                 .font(.system(size: 13))
                 .fixedSize(horizontal: false, vertical: true)
@@ -117,14 +244,9 @@ private struct FloatingPanelContent: View {
                 .textSelection(.enabled)
 
             HStack(alignment: .center, spacing: 8) {
-                Button(action: onCopy) {
-                    Label("Copy", systemImage: "doc.on.doc")
-                        .font(.system(size: 12))
-                }
-                .buttonStyle(.borderedProminent)
-                .controlSize(.small)
+                copyButton(action: onCopy)
 
-                Text("\(result.sourceLanguage.displayName) → \(result.targetLanguage.displayName) · \(result.provider.displayName)")
+                Text("\(result.sourceLanguage.displayName) → \(result.targetLanguage.displayName)")
                     .font(.caption2)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
@@ -139,10 +261,6 @@ private struct FloatingPanelContent: View {
                 .buttonStyle(.plain)
             }
         }
-        .padding(12)
-        .background(.regularMaterial)
-        .cornerRadius(10)
-        .shadow(color: .black.opacity(0.25), radius: 8, x: 0, y: 4)
     }
 }
 
@@ -152,9 +270,10 @@ struct StreamingPanelContent: View {
     @ObservedObject var state: StreamingTranslationState
     let onCopy: () -> Void
     let onClose: () -> Void
+    let onTargetLanguageChange: ((Language) -> Void)?
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        panelContainer {
             // Content area — ScrollView prevents overflow, auto-scrolls during streaming
             ScrollViewReader { proxy in
                 ScrollView(.vertical, showsIndicators: true) {
@@ -172,6 +291,12 @@ struct StreamingPanelContent: View {
                                     .foregroundStyle(.secondary)
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)
+                        } else if state.presentation == .conversation {
+                            ConversationTranscriptView(
+                                text: state.streamedText,
+                                isStreaming: state.isStreaming
+                            )
+                            .textSelection(.enabled)
                         } else {
                             Text(state.streamedText + (state.isStreaming ? "▊" : ""))
                                 .font(.system(size: 13))
@@ -190,15 +315,16 @@ struct StreamingPanelContent: View {
 
             // Footer
             HStack(alignment: .center, spacing: 8) {
-                Button(action: onCopy) {
-                    Label("Copy", systemImage: "doc.on.doc")
-                        .font(.system(size: 12))
-                }
-                .buttonStyle(.borderedProminent)
-                .controlSize(.small)
-                .disabled(state.isStreaming || state.streamedText.isEmpty)
+                copyButton(action: onCopy)
+                    .disabled(state.isStreaming || state.streamedText.isEmpty)
 
-                Text("\(state.sourceLanguage.displayName) → \(state.targetLanguage.displayName) · \(state.provider.displayName)")
+                targetLanguageMenu(
+                    selected: state.targetLanguage,
+                    isDisabled: state.isStreaming,
+                    onSelect: { language in onTargetLanguageChange?(language) }
+                )
+
+                Text("\(state.sourceLanguage.displayName) → \(state.targetLanguage.displayName)")
                     .font(.caption2)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
@@ -213,9 +339,188 @@ struct StreamingPanelContent: View {
                 .buttonStyle(.plain)
             }
         }
-        .padding(12)
-        .background(.regularMaterial)
-        .cornerRadius(10)
-        .shadow(color: .black.opacity(0.25), radius: 8, x: 0, y: 4)
     }
+}
+
+private struct ConversationTranscriptView: View {
+    let text: String
+    let isStreaming: Bool
+
+    private var messages: [ChatTranscriptMessage] {
+        ChatTranscriptMessage.parse(text + (isStreaming ? "▊" : ""))
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            ForEach(messages) { message in
+                VStack(alignment: .leading, spacing: 4) {
+                    if let header = message.header {
+                        Text(header)
+                            .font(.system(size: 11, weight: .semibold, design: .rounded))
+                            .foregroundStyle(.secondary)
+                    }
+
+                    Text(message.body)
+                        .font(.system(size: 13))
+                        .foregroundStyle(.primary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 8)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(.primary.opacity(0.06), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+private struct ChatTranscriptMessage: Identifiable {
+    let id = UUID()
+    let header: String?
+    let body: String
+
+    static func parse(_ text: String) -> [ChatTranscriptMessage] {
+        let lines = text.split(separator: "\n", omittingEmptySubsequences: false).map(String.init)
+        var messages: [ChatTranscriptMessage] = []
+        var currentHeader: String?
+        var currentBody: [String] = []
+
+        func flush() {
+            let body = currentBody.joined(separator: "\n").trimmingCharacters(in: .whitespacesAndNewlines)
+            guard currentHeader != nil || !body.isEmpty else { return }
+            messages.append(ChatTranscriptMessage(header: currentHeader, body: body))
+            currentHeader = nil
+            currentBody = []
+        }
+
+        for line in lines {
+            let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines)
+            if trimmed.hasPrefix("[") && trimmed.contains("]") && trimmed.count <= 80 {
+                flush()
+                currentHeader = trimmed.trimmingCharacters(in: CharacterSet(charactersIn: "[]"))
+            } else {
+                currentBody.append(line)
+            }
+        }
+        flush()
+        return messages.isEmpty ? [ChatTranscriptMessage(header: nil, body: text)] : messages
+    }
+}
+
+// MARK: - Shared panel chrome
+
+private let floatingPanelCornerRadius: CGFloat = 18
+private let floatingPanelShape = RoundedRectangle(cornerRadius: floatingPanelCornerRadius, style: .continuous)
+
+@ViewBuilder
+private func panelContainer<Content: View>(@ViewBuilder content: () -> Content) -> some View {
+    if #available(macOS 26.0, *) {
+        GlassEffectContainer(spacing: 8) {
+            panelContent(content)
+                .glassEffect(.regular, in: floatingPanelShape)
+        }
+    } else {
+        panelContent(content)
+            .background(.regularMaterial)
+            .clipShape(floatingPanelShape)
+            .mask(floatingPanelShape)
+            .compositingGroup()
+            .shadow(color: .black.opacity(0.14), radius: 18, x: 0, y: 10)
+            .shadow(color: .black.opacity(0.06), radius: 3, x: 0, y: 1)
+    }
+}
+
+private func panelContent<Content: View>(_ content: () -> Content) -> some View {
+    VStack(alignment: .leading, spacing: 8, content: content)
+        .padding(12)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+}
+
+@ViewBuilder
+private func copyButton(action: @escaping () -> Void) -> some View {
+    if #available(macOS 26.0, *) {
+        Button(action: action) {
+            Label("Copy", systemImage: "doc.on.doc")
+                .font(.system(size: 12, weight: .medium))
+                .foregroundStyle(.primary)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 5)
+                .glassEffect(.regular.interactive(), in: Capsule(style: .continuous))
+        }
+        .buttonStyle(.plain)
+        .controlSize(.small)
+    } else {
+        Button(action: action) {
+            copyLabel
+        }
+        .buttonStyle(.plain)
+        .controlSize(.small)
+    }
+}
+
+@ViewBuilder
+private func targetLanguageMenu(
+    selected: Language,
+    isDisabled: Bool,
+    onSelect: @escaping (Language) -> Void
+) -> some View {
+    Menu {
+        ForEach(Language.targetOptions) { language in
+            Button(language.displayName) { onSelect(language) }
+        }
+    } label: {
+        Text(selected.shortName)
+            .lineLimit(1)
+            .font(.caption2.weight(.medium))
+            .foregroundStyle(.primary)
+            .padding(.horizontal, 8)
+        .padding(.vertical, 5)
+        .modifier(GlassCapsuleModifier())
+    }
+    .menuStyle(.borderlessButton)
+    .fixedSize(horizontal: true, vertical: false)
+    .disabled(isDisabled)
+}
+
+private struct GlassCircleModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(macOS 26.0, *) {
+            content.glassEffect(.regular.interactive(), in: Circle())
+        } else {
+            content
+                .background(.ultraThinMaterial, in: Circle())
+                .overlay { Circle().stroke(.primary.opacity(0.10), lineWidth: 1) }
+        }
+    }
+}
+
+private struct GlassCapsuleModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(macOS 26.0, *) {
+            content.glassEffect(.regular.interactive(), in: Capsule(style: .continuous))
+        } else {
+            content
+                .background(.ultraThinMaterial)
+                .overlay {
+                    Capsule(style: .continuous)
+                        .stroke(.primary.opacity(0.12), lineWidth: 1)
+                }
+                .clipShape(Capsule(style: .continuous))
+        }
+    }
+}
+
+private var copyLabel: some View {
+    Label("Copy", systemImage: "doc.on.doc")
+        .font(.system(size: 12, weight: .medium))
+        .foregroundStyle(.primary)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 5)
+        .background(.ultraThinMaterial)
+        .overlay {
+            Capsule(style: .continuous)
+                .stroke(.primary.opacity(0.12), lineWidth: 1)
+        }
+        .clipShape(Capsule(style: .continuous))
 }

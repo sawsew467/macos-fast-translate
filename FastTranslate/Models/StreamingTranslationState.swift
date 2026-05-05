@@ -7,22 +7,25 @@ final class StreamingTranslationState: ObservableObject {
     @Published var streamedText = ""
     @Published var isStreaming = true
     @Published var error: String?
+    @Published var targetLanguage: Language
 
     let sourceText: String
     let sourceLanguage: Language
-    let targetLanguage: Language
     let provider: ProviderType
+    let presentation: TranslationPresentation
 
     init(
         sourceText: String,
         sourceLanguage: Language,
         targetLanguage: Language,
-        provider: ProviderType
+        provider: ProviderType,
+        presentation: TranslationPresentation = .plain
     ) {
         self.sourceText = sourceText
         self.sourceLanguage = sourceLanguage
         self.targetLanguage = targetLanguage
         self.provider = provider
+        self.presentation = presentation
     }
 
     /// Build a TranslationResult after streaming completes.
@@ -35,4 +38,9 @@ final class StreamingTranslationState: ObservableObject {
             provider: provider
         )
     }
+}
+
+enum TranslationPresentation {
+    case plain
+    case conversation
 }

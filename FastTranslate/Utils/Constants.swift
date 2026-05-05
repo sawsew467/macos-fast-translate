@@ -22,6 +22,7 @@ enum Constants {
     enum UserDefaultsKey {
         static let persistentContext = "persistent_context"
         static let defaultProvider = "default_provider"
+        static let defaultTargetLanguage = "default_target_language"
         static let hasLaunchedBefore = "has_launched_before"
         static let onboardingStep = "onboarding_step"
     }

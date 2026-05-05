@@ -32,24 +32,49 @@ struct SelectedTextReader {
     // MARK: - Accessibility API
 
     private static func readViaAccessibilityAPI() -> String? {
-        guard let app = NSWorkspace.shared.frontmostApplication else { return nil }
-        let axApp = AXUIElementCreateApplication(app.processIdentifier)
+        if let text = selectedText(from: AXUIElementCreateSystemWide()) {
+            return text
+        }
 
+        // During debug the app can briefly become frontmost after the hotkey.
+        // Prefer the real user-facing app instead of querying FastTranslate itself.
+        let candidates = NSWorkspace.shared.runningApplications.filter { app in
+            app.isActive && app.bundleIdentifier != Bundle.main.bundleIdentifier
+        } + NSWorkspace.shared.runningApplications.filter { app in
+            app.activationPolicy == .regular && app.bundleIdentifier != Bundle.main.bundleIdentifier
+        }
+
+        for app in candidates {
+            let axApp = AXUIElementCreateApplication(app.processIdentifier)
+            if let text = selectedText(from: axApp) {
+                return text
+            }
+        }
+
+        return nil
+    }
+
+    private static func selectedText(from element: AXUIElement) -> String? {
         var focusedElement: CFTypeRef?
-        guard AXUIElementCopyAttributeValue(
-            axApp,
+        let targetElement: AXUIElement
+        if AXUIElementCopyAttributeValue(
+            element,
             kAXFocusedUIElementAttribute as CFString,
             &focusedElement
-        ) == .success else { return nil }
+        ) == .success, let focusedElement {
+            targetElement = focusedElement as! AXUIElement
+        } else {
+            targetElement = element
+        }
 
         var selectedText: CFTypeRef?
         guard AXUIElementCopyAttributeValue(
-            focusedElement as! AXUIElement,
+            targetElement,
             kAXSelectedTextAttribute as CFString,
             &selectedText
         ) == .success else { return nil }
 
-        return selectedText as? String
+        return (selectedText as? String)?.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
     // MARK: - Clipboard Simulation
@@ -58,10 +83,13 @@ struct SelectedTextReader {
         let tag = "SelectedTextReader.clipboard"
         let pasteboard = NSPasteboard.general
         let changeCountBefore = pasteboard.changeCount
-        let backup = pasteboard.string(forType: .string)
+        let backupItems = (pasteboard.pasteboardItems ?? []).map(clonePasteboardItem)
 
-        // Brief pause so the hotkey keystrokes settle before we inject ⌘+C
-        try? await Task.sleep(nanoseconds: 100_000_000) // 100 ms
+        // Brief pause so the hotkey keystrokes settle before we inject Cmd+C.
+        try? await Task.sleep(nanoseconds: 180_000_000) // 180 ms
+
+        // Force a pasteboard change even when selected text matches existing clipboard text.
+        pasteboard.clearContents()
 
         // Use .privateState so physical modifier keys (⌃⌥ from the hotkey) don't leak into the event
         let source = CGEventSource(stateID: .privateState)
@@ -79,26 +107,40 @@ struct SelectedTextReader {
         keyDown.post(tap: .cgSessionEventTap)
         keyUp.post(tap: .cgSessionEventTap)
 
-        // Poll for clipboard change (up to 500 ms)
+        // Poll for clipboard content (up to 1.2s). Some apps copy asynchronously.
         var selectedText: String?
-        for _ in 0 ..< 10 {
+        for _ in 0 ..< 24 {
             try? await Task.sleep(nanoseconds: 50_000_000) // 50 ms
-            if pasteboard.changeCount != changeCountBefore {
-                selectedText = pasteboard.string(forType: .string)
+            if pasteboard.changeCount != changeCountBefore,
+               let copied = pasteboard.string(forType: .string),
+               !copied.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                selectedText = copied
                 break
             }
         }
 
         if selectedText == nil {
-            print("[\(tag)] ❌ Clipboard did not change — ⌘+C may not have reached the target app")
+            print("[\(tag)] Clipboard did not change - Cmd+C may not have reached the target app")
         }
 
-        // Restore original clipboard
+        // Restore original clipboard as completely as possible.
         pasteboard.clearContents()
-        if let backup {
-            pasteboard.setString(backup, forType: .string)
+        if !backupItems.isEmpty {
+            pasteboard.writeObjects(backupItems)
         }
 
-        return selectedText
+        return selectedText?.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private static func clonePasteboardItem(_ item: NSPasteboardItem) -> NSPasteboardItem {
+        let clone = NSPasteboardItem()
+        for type in item.types {
+            if let data = item.data(forType: type) {
+                clone.setData(data, forType: type)
+            } else if let string = item.string(forType: type) {
+                clone.setString(string, forType: type)
+            }
+        }
+        return clone
     }
 }

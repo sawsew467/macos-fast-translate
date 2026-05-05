@@ -2,7 +2,7 @@ import Foundation
 import Combine
 
 /// Coordinator for translation: detects language, merges 3 context layers, calls active provider.
-/// Publishes state for SwiftUI binding. History capped at 50 entries.
+/// Publishes state for SwiftUI binding. History is persisted locally.
 @MainActor
 final class TranslationService: ObservableObject {
     @Published var isTranslating = false
@@ -10,8 +10,6 @@ final class TranslationService: ObservableObject {
     @Published private(set) var history: [TranslationResult] = []
 
     private let providers: [ProviderType: any TranslationProvider]
-    private let maxHistoryCount = 50
-
     /// Persistent context set by user in Settings (Phase 7)
     var persistentContext: String {
         UserDefaults.standard.string(forKey: Constants.UserDefaultsKey.persistentContext) ?? ""
@@ -22,6 +20,12 @@ final class TranslationService: ObservableObject {
         return ProviderType(rawValue: raw) ?? .openAI
     }
 
+    var defaultTargetLanguage: Language {
+        let raw = UserDefaults.standard.string(forKey: Constants.UserDefaultsKey.defaultTargetLanguage) ?? ""
+        let language = Language(rawValue: raw) ?? .vietnamese
+        return language == .autoDetect ? .vietnamese : language
+    }
+
     init() {
         providers = [.openAI: OpenAITranslationProvider()]
         loadHistory()
@@ -30,6 +34,7 @@ final class TranslationService: ObservableObject {
     /// Translate text with optional per-message and screenshot context layers.
     func translate(
         _ text: String,
+        targetLanguage: Language? = nil,
         perMessageContext: String? = nil,
         screenshotContext: String? = nil
     ) async throws -> TranslationResult {
@@ -41,7 +46,8 @@ final class TranslationService: ObservableObject {
         defer { isTranslating = false }
 
         let source = LanguageDetector.detect(text)
-        let target = source.toggled
+        let requestedTarget = targetLanguage ?? defaultTargetLanguage
+        let target = source == requestedTarget ? requestedTarget.fallbackTarget : requestedTarget
 
         let persistent = persistentContext.isEmpty ? nil : persistentContext
         let context = TranslationContext(
@@ -64,11 +70,9 @@ final class TranslationService: ObservableObject {
             provider: activeProviderType
         )
 
+        loadHistory()
         lastResult = result
         history.insert(result, at: 0)
-        if history.count > maxHistoryCount {
-            history = Array(history.prefix(maxHistoryCount))
-        }
         saveHistory()
         return result
     }
@@ -77,6 +81,7 @@ final class TranslationService: ObservableObject {
     /// Caller is responsible for consuming the stream and calling addToHistory() after.
     func translateStreaming(
         _ text: String,
+        targetLanguage: Language? = nil,
         perMessageContext: String? = nil,
         screenshotContext: String? = nil
     ) throws -> (source: Language, target: Language, stream: AsyncThrowingStream<String, Error>) {
@@ -85,7 +90,8 @@ final class TranslationService: ObservableObject {
         }
 
         let source = LanguageDetector.detect(text)
-        let target = source.toggled
+        let requestedTarget = targetLanguage ?? defaultTargetLanguage
+        let target = source == requestedTarget ? requestedTarget.fallbackTarget : requestedTarget
 
         let persistent = persistentContext.isEmpty ? nil : persistentContext
         let context = TranslationContext(
@@ -104,11 +110,9 @@ final class TranslationService: ObservableObject {
 
     /// Save a completed translation to history. Called by hotkey handlers after streaming finishes.
     func addToHistory(_ result: TranslationResult) {
+        loadHistory()
         lastResult = result
         history.insert(result, at: 0)
-        if history.count > maxHistoryCount {
-            history = Array(history.prefix(maxHistoryCount))
-        }
         saveHistory()
     }
 
@@ -125,7 +129,10 @@ final class TranslationService: ObservableObject {
               FileManager.default.fileExists(atPath: url.path),
               let data = try? Data(contentsOf: url),
               let loaded = try? JSONDecoder().decode([TranslationResult].self, from: data)
-        else { return }
+        else {
+            history = []
+            return
+        }
         history = loaded
     }
 
