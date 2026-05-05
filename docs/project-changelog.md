@@ -1,6 +1,13 @@
 # Project Changelog
 
-## [Unreleased] - auto-update
+## [1.3.0] - 2026-05-06
+
+### Added
+- Show Settings window (About tab) when user opens app from Spotlight/Applications after onboarding
+- `applicationShouldHandleReopen` — reopening the running app brings up Settings instead of doing nothing
+- Login-item detection via Apple Events — auto-launch at login stays silent (no intrusive window on startup)
+
+## [1.2.0] - 2026-05-05
 
 ### Added
 - `UpdateService` — DIY GitHub Releases checker (zero external dependencies)

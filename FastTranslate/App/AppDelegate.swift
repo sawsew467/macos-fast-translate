@@ -20,6 +20,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         setupEventMonitor()
         setupHotkeys()
         checkFirstLaunch()
+        showSettingsIfManualLaunch()
         UpdateService.shared.checkOnLaunch()
         #if DEBUG
         runTranslationSmokeTest()
@@ -30,6 +31,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if let monitor = eventMonitor {
             NSEvent.removeMonitor(monitor)
         }
+    }
+
+    /// Show Settings → About when user reopens the app (e.g. clicks icon in Spotlight/Finder while running).
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows: Bool) -> Bool {
+        if !hasVisibleWindows {
+            openSettingsOnAboutTab()
+        }
+        return true
     }
 
     // MARK: - Setup
@@ -113,9 +122,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc private func checkForUpdates() {
+        openSettingsOnAboutTab()
+        UpdateService.shared.checkForUpdates()
+    }
+
+    /// Open Settings window and switch to About tab.
+    private func openSettingsOnAboutTab() {
         openSettings()
         NotificationCenter.default.post(name: .openAboutTab, object: nil)
-        UpdateService.shared.checkForUpdates()
     }
 
     @objc private func openSettings() {
@@ -162,6 +176,25 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         else { return }
         try? KeychainHelper.save(account: Constants.KeychainAccount.openAIAPIKey, value: oldKey)
         UserDefaults.standard.removeObject(forKey: udKey)
+    }
+
+    // MARK: - Launch behavior
+
+    /// Show Settings → About on manual launch (Spotlight/Finder) when onboarding is already done.
+    /// Skipped for login-item launches to avoid intrusive windows on system startup.
+    private func showSettingsIfManualLaunch() {
+        guard UserDefaults.standard.bool(forKey: Constants.UserDefaultsKey.hasLaunchedBefore),
+              !isLaunchedAsLoginItem
+        else { return }
+        openSettingsOnAboutTab()
+    }
+
+    /// Detect if the app was launched as a login item (SMAppService) via Apple Events.
+    private var isLaunchedAsLoginItem: Bool {
+        guard let event = NSAppleEventManager.shared().currentAppleEvent,
+              let propData = event.paramDescriptor(forKeyword: keyAEPropData)
+        else { return false }
+        return propData.enumCodeValue == UInt32(keyAELaunchedAsLogInItem)
     }
 
     // MARK: - First-launch onboarding
