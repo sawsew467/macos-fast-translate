@@ -19,18 +19,21 @@ Vietnamese professionals communicating with English-speaking clients daily face 
 
 ## Core Features
 
-### 1. Translate Selected Text (`⌃⌥T`)
+### 1. Translate Selected Text (default `⌃⌥T`)
 Select text in **any app** → press hotkey → floating panel streams the translation near your cursor.
 
-Works both ways: select Vietnamese text to translate to English, or select English text to translate to Vietnamese.
+Works both ways: select Vietnamese text to translate to English, or select English text to translate to Vietnamese. Smart multilingual detection auto-switches target language.
 
-### 2. Screenshot OCR → Translate (`⌃⌥S`)
+### 2. Screenshot OCR → Translate (default `⌃⌥S`)
 Press hotkey → drag to select a screen region → Vision OCR extracts text → translation streams instantly.
 
 - No screenshot files saved to disk (processed in memory)
 - Capture a wider area (full chat thread) for better context-aware translation
 
-### 3. Menu Bar Popover
+### 3. Customizable Hotkeys
+Rebind translate and screenshot shortcuts to any key combination in Settings → Hotkeys.
+
+### 4. Menu Bar Popover
 Click the menu bar icon → type or paste text with optional context → get translation. Best for longer passages or when you need specific context.
 
 ## Smart Context System
@@ -67,6 +70,8 @@ A key advantage over Google Translate: provide **context** for more accurate, na
 
 | Shortcut | Action |
 |:---------|:-------|
-| `⌃⌥T` | Translate selected text |
-| `⌃⌥S` | Screenshot region → OCR → translate |
+| `⌃⌥T` (default) | Translate selected text |
+| `⌃⌥S` (default) | Screenshot region → OCR → translate |
 | `⌘,` | Open Settings |
+
+All hotkeys are customizable in Settings → Hotkeys.

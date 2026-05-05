@@ -25,11 +25,17 @@ If you work with English-speaking clients daily, you probably do this dozens of 
 
 ## Features
 
-### Translate Selected Text (`⌃⌥T`)
+### Translate Selected Text (default `⌃⌥T`)
 Select text in **any app** → press the hotkey → a floating panel streams the translation token-by-token near your cursor. Works in Chrome, Slack, VS Code, Zalo — anywhere.
 
-### Screenshot OCR → Translate (`⌃⌥S`)
+### Screenshot OCR → Translate (default `⌃⌥S`)
 Press the hotkey → drag to select a screen region → Vision OCR extracts the text → translation streams instantly. No screenshot files saved to disk.
+
+### Customizable Hotkeys
+Rebind translate and screenshot shortcuts to any key combination in Settings → Hotkeys.
+
+### Smart Multilingual Detection
+Auto-detects source language and picks the right target — type Vietnamese to get English, type English to get Vietnamese.
 
 ### Menu Bar Popover
 Click the menu bar icon → type or paste text with optional context → get translation. Useful for longer passages.
@@ -47,7 +53,7 @@ Provide context for more accurate, natural translations:
 | **Screenshot** | Full screen region text used as conversation context | Capture the full chat thread for context |
 
 ### Translation History
-Last 50 translations are saved and searchable. Access from the menu bar popover.
+Last 50 translations are saved and searchable. Delete individual entries or browse from the menu bar popover.
 
 ## Installation
 
@@ -77,26 +83,29 @@ No package managers, no `pod install`, no `swift package resolve` — zero exter
 
 | Shortcut | Action |
 |:---------|:-------|
-| `⌃⌥T` | Translate selected text in any app |
-| `⌃⌥S` | Screenshot region → OCR → translate |
+| `⌃⌥T` (default) | Translate selected text in any app |
+| `⌃⌥S` (default) | Screenshot region → OCR → translate |
 | Click menu bar icon | Open translation popover |
 | `⌘,` | Open Settings |
+
+Hotkeys are customizable in Settings → Hotkeys.
 
 ## Architecture
 
 ```
 FastTranslate/
 ├── App/                  # App entry point, AppDelegate, menu bar setup
-├── Models/               # Translation models, streaming state
+├── Models/               # Translation models, streaming state, hotkey bindings
 ├── Services/             # Core logic
 │   ├── TranslationService       # Translation coordinator, context merging, history
 │   ├── OpenAITranslationProvider # GPT-4o-mini API (SSE streaming)
 │   ├── HotkeyManager            # Carbon API global hotkeys
+│   ├── HotkeyStore              # Persistent storage for custom hotkey bindings
 │   ├── SelectedTextReader       # AX API + clipboard fallback
 │   ├── ScreenCaptureService     # Region selection overlay
 │   ├── OCRService               # Apple Vision text recognition
 │   └── LanguageDetector         # Vi/En detection via Unicode analysis
-├── Views/                # SwiftUI views, floating panel, settings
+├── Views/                # SwiftUI views, floating panel, settings, hotkey recorder
 ├── Utils/                # Keychain helper, constants
 └── Resources/            # Info.plist, entitlements, assets
 ```

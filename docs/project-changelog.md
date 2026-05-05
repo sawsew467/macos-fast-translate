@@ -1,5 +1,28 @@
 # Project Changelog
 
+## [1.1.0] - 2026-05-05
+
+### Added
+- Customizable hotkey recording — users can now rebind translate/screenshot shortcuts in Settings
+- Selectable history deletion — delete individual translation entries from history
+- Smart multilingual target language detection — auto-switches target based on source language
+- OCR chat translation formatting — structured output for screenshot translations
+- Vertical resize for floating panel
+- Branded DMG packaging script (`scripts/build-dmg.sh`)
+- Uninstall script (`scripts/uninstall-fasttranslate.sh`)
+
+### Changed
+- Refreshed app icon artwork with updated design
+- Native glass effect for floating panel (vibrancy/blur)
+- Native glass onboarding window with refreshed setup UI
+- Floating panel rounded corners UI polish
+- Improved history and selected text handling
+
+### Fixed
+- Clipboard restored correctly with cloned items (no longer clobbered)
+- Popover translations stay inline instead of resetting
+- Floating panel resize clamped to valid bounds
+
 ## [1.0.0] - 2026-05-03
 
 ### Added

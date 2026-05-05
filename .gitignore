@@ -4,5 +4,6 @@
 *.xcuserstate
 xcschememanagement.plist
 *.dmg
+*.app
 .build/
 build/

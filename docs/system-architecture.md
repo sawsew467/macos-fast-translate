@@ -13,7 +13,7 @@ macOS menu bar-only app (no dock icon, no main window). Luôn chạy nền, truy
 │  │  Icon ⌘click  │  │  Slack, VSCode...)     │   │
 │  └──────┬───────┘  └──────────┬─────────────┘   │
 │         │                      │                  │
-│         ▼                      │ ⌃+⌥+T/S/V       │
+│         ▼                      │ Hotkeys          │
 │  ┌──────────────┐              ▼                  │
 │  │   Popover    │    ┌──────────────────┐         │
 │  │   (SwiftUI)  │    │  HotkeyManager   │         │
@@ -58,7 +58,10 @@ macOS menu bar-only app (no dock icon, no main window). Luôn chạy nền, truy
 | **OpenAITranslationProvider** | `Services/OpenAITranslationProvider.swift` | GPT-4o-mini API calls |
 | **LanguageDetector** | `Services/LanguageDetector.swift` | Vi/En detection via Unicode analysis |
 | **HotkeyManager** | `Services/HotkeyManager.swift` | Carbon global hotkey registration |
-| **SelectedTextReader** | `Services/SelectedTextReader.swift` | Read selected text via simulated ⌘+C |
+| **HotkeyStore** | `Services/HotkeyStore.swift` | Persistent storage for custom hotkey bindings |
+| **HotkeyBinding** | `Models/HotkeyBinding.swift` | Data model for hotkey key+modifiers |
+| **HotkeyRecorderView** | `Views/HotkeyRecorderView.swift` | NSView-based key recorder for Settings |
+| **SelectedTextReader** | `Services/SelectedTextReader.swift` | Read selected text via AX API + clipboard fallback |
 | **OCRService** | `Services/OCRService.swift` | Vision framework text recognition |
 | **ScreenCaptureService** | `Services/ScreenCaptureService.swift` | Region selection overlay + capture |
 | **ClipboardService** | `Services/ClipboardService.swift` | NSPasteboard read/write |
