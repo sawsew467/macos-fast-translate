@@ -20,6 +20,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         setupEventMonitor()
         setupHotkeys()
         checkFirstLaunch()
+        UpdateService.shared.checkOnLaunch()
         #if DEBUG
         runTranslationSmokeTest()
         #endif
@@ -99,12 +100,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func showStatusItemMenu(_ sender: NSStatusBarButton) {
         let menu = NSMenu()
+        let updatesItem = NSMenuItem(title: "Check for Updates…", action: #selector(checkForUpdates), keyEquivalent: "")
+        updatesItem.target = self
+        menu.addItem(updatesItem)
+        menu.addItem(.separator())
         let settingsItem = NSMenuItem(title: "Settings…", action: #selector(openSettings), keyEquivalent: ",")
         settingsItem.target = self
         menu.addItem(settingsItem)
         menu.addItem(.separator())
         menu.addItem(withTitle: "Quit FastTranslate", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         menu.popUp(positioning: nil, at: NSPoint(x: 0, y: sender.bounds.height + 4), in: sender)
+    }
+
+    @objc private func checkForUpdates() {
+        openSettings()
+        NotificationCenter.default.post(name: .openAboutTab, object: nil)
+        UpdateService.shared.checkForUpdates()
     }
 
     @objc private func openSettings() {

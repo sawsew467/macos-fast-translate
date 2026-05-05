@@ -1,5 +1,16 @@
 # Project Changelog
 
+## [Unreleased] - auto-update
+
+### Added
+- `UpdateService` — DIY GitHub Releases checker (zero external dependencies)
+  - Silent background check on launch; explicit check from Settings/menu
+  - Downloads versioned `.zip` asset, extracts, replaces `.app`, relaunches
+  - Falls back to browser (GitHub Releases page) if install fails
+- "About" tab in Settings — app icon, version, "Check for Updates" button, live status indicator
+- "Check for Updates…" item in status bar right-click menu
+- `build-dmg.sh` now produces `FastTranslate-{version}.zip` alongside `.dmg` (using `ditto`)
+
 ## [1.1.0] - 2026-05-05
 
 ### Added

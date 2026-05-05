@@ -160,4 +160,12 @@ else
 fi
 
 ls -lh "$DMG"
-echo "Done: $DMG"
+
+# Create versioned .zip of the signed app for auto-update (UpdateService expects a .zip asset in GitHub Releases)
+APP_VERSION=$(defaults read "$APP/Contents/Info.plist" CFBundleShortVersionString 2>/dev/null || echo "unknown")
+ZIP="$DIST/FastTranslate-${APP_VERSION}.zip"
+echo "==> Creating update ZIP: $ZIP"
+ditto -c -k --keepParent "$APP" "$ZIP"
+ls -lh "$ZIP"
+
+echo "Done: $DMG | $ZIP"

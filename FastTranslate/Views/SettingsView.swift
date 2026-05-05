@@ -1,19 +1,34 @@
 import SwiftUI
 import ServiceManagement
 
+extension Notification.Name {
+    static let openAboutTab = Notification.Name("FastTranslate.openAboutTab")
+}
+
 struct SettingsView: View {
+    @State private var selectedTab = 0
+
     var body: some View {
-        TabView {
+        TabView(selection: $selectedTab) {
             GeneralSettingsTab()
                 .tabItem { Label("General", systemImage: "gearshape") }
+                .tag(0)
             APIKeysSettingsTab()
                 .tabItem { Label("API Keys", systemImage: "key") }
+                .tag(1)
             HotkeysSettingsTab()
                 .tabItem { Label("Hotkeys", systemImage: "keyboard") }
+                .tag(2)
+            AboutSettingsTab()
+                .tabItem { Label("About", systemImage: "info.circle") }
+                .tag(3)
         }
         .padding(.top, 6)
         .frame(width: 560, height: 430)
         .background(SettingsBackground())
+        .onReceive(NotificationCenter.default.publisher(for: .openAboutTab)) { _ in
+            selectedTab = 3
+        }
     }
 }
 
@@ -199,6 +214,94 @@ struct HotkeysSettingsTab: View {
                 }
                 Spacer()
             }
+        }
+    }
+}
+
+// MARK: - About Tab
+
+struct AboutSettingsTab: View {
+    @ObservedObject private var updateService = UpdateService.shared
+
+    var body: some View {
+        SettingsPage(title: "About", subtitle: "Version info and software updates.") {
+            // App identity card
+            SettingsCard(systemImage: "app.badge", title: "FastTranslate", subtitle: "Fast Vi↔En translation for macOS.") {
+                HStack(spacing: 16) {
+                    if let icon = NSImage(named: "AppIcon") {
+                        Image(nsImage: icon)
+                            .resizable()
+                            .frame(width: 56, height: 56)
+                            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    }
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("FastTranslate")
+                            .font(.system(size: 15, weight: .semibold))
+                        Text("Version \(updateService.currentVersion)")
+                            .font(.system(size: 13))
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                }
+            }
+
+            // Update card
+            SettingsCard(systemImage: "arrow.down.circle", title: "Software Update", subtitle: "Check GitHub Releases for a newer version.") {
+                VStack(alignment: .leading, spacing: 12) {
+                    updateStatusView
+                    HStack(spacing: 10) {
+                        checkButton
+                        if case .available = updateService.state {
+                            installButton
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var updateStatusView: some View {
+        switch updateService.state {
+        case .idle:
+            EmptyView()
+        case .checking:
+            HStack(spacing: 8) {
+                ProgressView().scaleEffect(0.75)
+                Text("Checking for updates…").font(.caption).foregroundStyle(.secondary)
+            }
+        case .upToDate:
+            Label("You're up to date.", systemImage: "checkmark.circle.fill")
+                .font(.caption.weight(.medium))
+                .foregroundStyle(.green)
+        case .available(let version):
+            Label("Version \(version) is available.", systemImage: "arrow.down.circle.fill")
+                .font(.caption.weight(.medium))
+                .foregroundStyle(.blue)
+        case .installing:
+            HStack(spacing: 8) {
+                ProgressView().scaleEffect(0.75)
+                Text("Downloading update…").font(.caption).foregroundStyle(.secondary)
+            }
+        case .error(let msg):
+            Label(msg, systemImage: "exclamationmark.triangle.fill")
+                .font(.caption)
+                .foregroundStyle(.red)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private var checkButton: some View {
+        let isBusy = updateService.state == .checking || updateService.state == .installing
+        return SettingsButton("Check for Updates", systemImage: "arrow.clockwise", isPrimary: true) {
+            updateService.checkForUpdates()
+        }
+        .disabled(isBusy)
+    }
+
+    private var installButton: some View {
+        SettingsButton("Install Update", systemImage: "arrow.down.circle") {
+            updateService.installUpdate()
         }
     }
 }
