@@ -29,6 +29,9 @@
 		DF88809DDC5B03D0E584D614 /* TranslationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B82F1A185658243C2287B09 /* TranslationService.swift */; };
 		DFB0A895D91EF4C39AF0ED64 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C34028B515E4865C8A3860AB /* OnboardingView.swift */; };
 		EC7B12164D21FA56210446A0 /* ScreenCaptureService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8CF4D8E92B29C1407B01B64 /* ScreenCaptureService.swift */; };
+		CC3D4E5F6A7B8C9D0E1F2A3B /* HotkeyBinding.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F3 /* HotkeyBinding.swift */; };
+		DD4E5F6A7B8C9D0E1F2A3B4C /* HotkeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C3D4E5F6A7B8C9D0E1F3A4 /* HotkeyStore.swift */; };
+		EE5F6A7B8C9D0E1F2A3B4C5D /* HotkeyRecorderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D4E5F6A7B8C9D0E1F3A4B5 /* HotkeyRecorderView.swift */; };
 		FDF1D29066C016D2C34F64A6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2410F309D1E5B5BBAEF3EC72 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
@@ -58,6 +61,9 @@
 		E0CD2AFC50E2FAE900C16D2B /* FastTranslate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FastTranslate.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E3F0A1758224F2109004BB59 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		F2DE42A656661C5719C20F74 /* SelectedTextReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedTextReader.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6A7B8C9D0E1F3 /* HotkeyBinding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyBinding.swift; sourceTree = "<group>"; };
+		B2C3D4E5F6A7B8C9D0E1F3A4 /* HotkeyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyStore.swift; sourceTree = "<group>"; };
+		C3D4E5F6A7B8C9D0E1F3A4B5 /* HotkeyRecorderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyRecorderView.swift; sourceTree = "<group>"; };
 		F34E49E3BED91BC5DA80EBBF /* TranslationPopoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationPopoverView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -77,6 +83,7 @@
 		08F2116B9FD90D97B1B3583F /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				A1B2C3D4E5F6A7B8C9D0E1F3 /* HotkeyBinding.swift */,
 				BB2C3D4E5F6A7B8C9D0E1F2A /* StreamingTranslationState.swift */,
 				5B0B61BB39F7B81D8125813A /* TranslationModels.swift */,
 			);
@@ -88,6 +95,7 @@
 			children = (
 				3B1E25598B115393F26D6778 /* FloatingPanelController.swift */,
 				89037981F08DCDD31CBF4693 /* HistoryView.swift */,
+				C3D4E5F6A7B8C9D0E1F3A4B5 /* HotkeyRecorderView.swift */,
 				77AB337EE4A3E5AEFB184785 /* MultilineTextField.swift */,
 				C34028B515E4865C8A3860AB /* OnboardingView.swift */,
 				E3F0A1758224F2109004BB59 /* SettingsView.swift */,
@@ -150,6 +158,7 @@
 			isa = PBXGroup;
 			children = (
 				DE08135A73BB5FB0FBD9B8BD /* HotkeyManager.swift */,
+				B2C3D4E5F6A7B8C9D0E1F3A4 /* HotkeyStore.swift */,
 				97DA6300D18F1BFB56F812AC /* LanguageDetector.swift */,
 				D0396A28C564EE1EF73F2C70 /* OCRService.swift */,
 				4C77F685E48C2858ED8F88C8 /* OpenAITranslationProvider.swift */,
@@ -249,7 +258,10 @@
 				A1446A3F79FDB5DB6BDE9EDA /* FastTranslateApp.swift in Sources */,
 				B485BCE33A57AA49904103F6 /* FloatingPanelController.swift in Sources */,
 				4505D92EB40EBBF5F26C929D /* HistoryView.swift in Sources */,
+				CC3D4E5F6A7B8C9D0E1F2A3B /* HotkeyBinding.swift in Sources */,
 				0341E2B59EBA8BC30D92C206 /* HotkeyManager.swift in Sources */,
+				EE5F6A7B8C9D0E1F2A3B4C5D /* HotkeyRecorderView.swift in Sources */,
+				DD4E5F6A7B8C9D0E1F2A3B4C /* HotkeyStore.swift in Sources */,
 				4269706F5B5A588EAB57516C /* KeychainHelper.swift in Sources */,
 				59CA86294CC279E70F945752 /* LanguageDetector.swift in Sources */,
 				7A38A6F68245482F8D1D02E6 /* MultilineTextField.swift in Sources */,

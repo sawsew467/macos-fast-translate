@@ -159,13 +159,45 @@ struct APIKeysSettingsTab: View {
 // MARK: - Hotkeys Tab
 
 struct HotkeysSettingsTab: View {
+    @StateObject private var hotkeyStore = HotkeyStore.shared
+
     var body: some View {
         SettingsPage(title: "Hotkeys", subtitle: "Quick actions available globally while the app is running.") {
-            SettingsCard(systemImage: "keyboard", title: "Current Shortcuts", subtitle: "Customization is planned for a later version.") {
+            SettingsCard(systemImage: "keyboard", title: "Shortcuts", subtitle: "Click a shortcut field, then press your desired key combo.") {
                 VStack(spacing: 10) {
-                    HotkeyRow(title: "Translate Selected Text", value: "⌃⌥T", systemImage: "character.cursor.ibeam")
-                    HotkeyRow(title: "Screenshot OCR", value: "⌃⌥S", systemImage: "viewfinder")
+                    HotkeyRecorderRow(
+                        title: "Translate Selected Text",
+                        systemImage: "character.cursor.ibeam",
+                        action: .translate,
+                        binding: $hotkeyStore.translateBinding,
+                        store: hotkeyStore
+                    )
+                    HotkeyRecorderRow(
+                        title: "Screenshot OCR",
+                        systemImage: "viewfinder",
+                        action: .screenshot,
+                        binding: $hotkeyStore.screenshotBinding,
+                        store: hotkeyStore
+                    )
                 }
+            }
+
+            if let error = hotkeyStore.registrationError {
+                HStack(spacing: 6) {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundStyle(.orange)
+                    Text("Failed to register \(error.action.rawValue) hotkey: \(error.message)")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                .padding(.horizontal, 4)
+            }
+
+            HStack {
+                SettingsButton("Reset to Defaults", systemImage: "arrow.counterclockwise") {
+                    hotkeyStore.resetToDefaults()
+                }
+                Spacer()
             }
         }
     }
@@ -268,32 +300,54 @@ private struct SettingsButton: View {
     }
 }
 
-private struct HotkeyRow: View {
+private struct HotkeyRecorderRow: View {
     let title: String
-    let value: String
     let systemImage: String
+    let action: HotkeyAction
+    @Binding var binding: HotkeyBinding
+    let store: HotkeyStore
+
+    private var isDuplicate: Bool {
+        store.duplicateAction(for: binding, excluding: action) != nil
+    }
 
     var body: some View {
-        HStack(spacing: 10) {
-            Image(systemName: systemImage)
-                .font(.system(size: 13, weight: .medium))
-                .foregroundStyle(.secondary)
-                .frame(width: 22)
+        VStack(alignment: .leading, spacing: 4) {
+            HStack(spacing: 10) {
+                Image(systemName: systemImage)
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundStyle(.secondary)
+                    .frame(width: 22)
 
-            Text(title)
-                .font(.system(size: 13, weight: .medium))
+                Text(title)
+                    .font(.system(size: 13, weight: .medium))
 
-            Spacer()
+                Spacer()
 
-            Text(value)
-                .font(.system(size: 13, weight: .bold, design: .rounded))
-                .padding(.horizontal, 10)
-                .frame(height: 28)
-                .background(.background.opacity(0.55), in: Capsule(style: .continuous))
+                HotkeyRecorderView(binding: Binding(
+                    get: { binding },
+                    set: { newBinding in
+                        binding = newBinding
+                        store.save(newBinding, for: action)
+                    }
+                ))
+                .frame(width: 120, height: 28)
+            }
+            .padding(.horizontal, 12)
+            .frame(height: 42)
+            .background(.background.opacity(0.34), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+
+            if isDuplicate {
+                HStack(spacing: 4) {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .font(.system(size: 10))
+                    Text("Conflicts with another shortcut")
+                        .font(.system(size: 11))
+                }
+                .foregroundStyle(.orange)
+                .padding(.leading, 44)
+            }
         }
-        .padding(.horizontal, 12)
-        .frame(height: 42)
-        .background(.background.opacity(0.34), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
 }
 
