@@ -63,14 +63,33 @@ final class HotkeyManager {
             return
         }
 
-        registerHotkey(keyCode: Constants.HotkeyCode.translate,   id: Constants.HotkeyIDs.translate)
-        registerHotkey(keyCode: Constants.HotkeyCode.screenshot,  id: Constants.HotkeyIDs.screenshot)
+        registerFromStore()
     }
 
-    private func registerHotkey(keyCode: UInt32, id: UInt32) {
+    /// Unregister all current hotkeys and re-register from HotkeyStore.
+    func reRegister() {
+        // Unregister existing
+        for ref in hotkeyRefs {
+            if let ref { UnregisterEventHotKey(ref) }
+        }
+        hotkeyRefs.removeAll()
+
+        registerFromStore()
+    }
+
+    private func registerFromStore() {
+        let store = HotkeyStore.shared
+        registerHotkey(keyCode: store.translateBinding.keyCode,
+                       modifiers: store.translateBinding.modifiers,
+                       id: Constants.HotkeyIDs.translate)
+        registerHotkey(keyCode: store.screenshotBinding.keyCode,
+                       modifiers: store.screenshotBinding.modifiers,
+                       id: Constants.HotkeyIDs.screenshot)
+    }
+
+    private func registerHotkey(keyCode: UInt32, modifiers: UInt32, id: UInt32) {
         var ref: EventHotKeyRef?
         let hotkeyID = EventHotKeyID(signature: kHotkeySignature, id: id)
-        let modifiers = UInt32(controlKey | optionKey)
         let status = RegisterEventHotKey(
             keyCode, modifiers, hotkeyID,
             GetApplicationEventTarget(), 0, &ref
@@ -79,6 +98,9 @@ final class HotkeyManager {
             hotkeyRefs.append(ref)
         } else {
             print("HotkeyManager: RegisterEventHotKey id=\(id) failed (\(status))")
+            // Report failure to HotkeyStore for UI display
+            let action: HotkeyAction = (id == Constants.HotkeyIDs.translate) ? .translate : .screenshot
+            HotkeyStore.shared.registrationError = (action: action, message: "System rejected this shortcut (code \(status))")
         }
     }
 

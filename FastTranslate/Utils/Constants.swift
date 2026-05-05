@@ -25,6 +25,10 @@ enum Constants {
         static let defaultTargetLanguage = "default_target_language"
         static let hasLaunchedBefore = "has_launched_before"
         static let onboardingStep = "onboarding_step"
+        static let translateHotkeyKeyCode = "translate_hotkey_key_code"
+        static let translateHotkeyModifiers = "translate_hotkey_modifiers"
+        static let screenshotHotkeyKeyCode = "screenshot_hotkey_key_code"
+        static let screenshotHotkeyModifiers = "screenshot_hotkey_modifiers"
     }
 
     // MARK: - UI

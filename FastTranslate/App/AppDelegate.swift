@@ -1,4 +1,5 @@
 import AppKit
+import Combine
 import SwiftUI
 
 @MainActor
@@ -10,6 +11,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var settingsWindow: NSWindow?
     var floatingPanel = FloatingPanelController()
     private var hotkeyManager: HotkeyManager?
+    private var hotkeyCancellables = Set<AnyCancellable>()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         migrateAPIKeyToKeychain()
@@ -65,6 +67,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         )
         manager.register()
         hotkeyManager = manager
+
+        // Re-register hotkeys when user changes bindings in Settings
+        let store = HotkeyStore.shared
+        store.$translateBinding
+            .merge(with: store.$screenshotBinding)
+            .dropFirst(2) // skip initial values
+            .debounce(for: .milliseconds(100), scheduler: RunLoop.main)
+            .sink { [weak manager] _ in manager?.reRegister() }
+            .store(in: &hotkeyCancellables)
     }
 
     /// Close popover on any click outside it.
