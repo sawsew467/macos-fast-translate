@@ -9,6 +9,13 @@ import Carbon.HIToolbox
 /// Requires Accessibility permission.
 struct SelectedTextReader {
 
+    /// Lightweight read used by passive selection UI. It avoids clipboard simulation so
+    /// simply selecting text never mutates the user's pasteboard or sends Cmd+C.
+    static func readSelectedTextUsingAccessibilityOnly() -> String? {
+        guard AXIsProcessTrusted() else { return nil }
+        return readViaAccessibilityAPI()
+    }
+
     /// Returns the selected text, or `nil` if nothing is selected or Accessibility is not granted.
     static func readSelectedText() async -> String? {
         let tag = "SelectedTextReader"

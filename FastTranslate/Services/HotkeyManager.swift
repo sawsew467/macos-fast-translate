@@ -109,12 +109,16 @@ final class HotkeyManager {
     fileprivate func handleHotkeyID(_ id: UInt32) {
         switch id {
         case Constants.HotkeyIDs.translate:
-            handleTranslateSelected()
+            translateSelectedTextFromCurrentMouseLocation()
         case Constants.HotkeyIDs.screenshot:
             handleScreenshotOCR()
         default:
             break
         }
+    }
+
+    func translateSelectedTextFromCurrentMouseLocation() {
+        handleTranslateSelected()
     }
 
     // MARK: - Handlers
