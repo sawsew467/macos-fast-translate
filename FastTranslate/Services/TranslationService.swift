@@ -17,7 +17,7 @@ final class TranslationService: ObservableObject {
 
     var activeProviderType: ProviderType {
         let raw = UserDefaults.standard.string(forKey: Constants.UserDefaultsKey.defaultProvider) ?? ""
-        return ProviderType(rawValue: raw) ?? .openAI
+        return ProviderType(rawValue: raw) ?? .googleTranslate
     }
 
     var defaultTargetLanguage: Language {
@@ -27,7 +27,10 @@ final class TranslationService: ObservableObject {
     }
 
     init() {
-        providers = [.openAI: OpenAITranslationProvider()]
+        providers = [
+            .googleTranslate: GoogleTranslateProvider(),
+            .openAI: OpenAITranslationProvider()
+        ]
         loadHistory()
     }
 

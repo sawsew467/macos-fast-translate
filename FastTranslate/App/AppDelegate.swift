@@ -222,9 +222,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         window.isOpaque = false
         window.hasShadow = true
         window.isMovableByWindowBackground = true
-        window.setFrame(NSRect(origin: .zero, size: NSSize(width: 760, height: 570)), display: false)
-        window.minSize = NSSize(width: 760, height: 570)
-        window.maxSize = NSSize(width: 760, height: 570)
+        window.setFrame(NSRect(origin: .zero, size: NSSize(width: 760, height: 640)), display: false)
+        window.minSize = NSSize(width: 760, height: 640)
+        window.maxSize = NSSize(width: 760, height: 640)
         configureOnboardingWindowChrome(window)
         centerOnMainScreen(window)
         window.makeKeyAndOrderFront(nil)

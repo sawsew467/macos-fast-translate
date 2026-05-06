@@ -72,10 +72,12 @@ enum Language: String, CaseIterable, Codable, Identifiable {
 // MARK: - Provider
 
 enum ProviderType: String, CaseIterable, Codable {
+    case googleTranslate = "google_translate"
     case openAI = "openai"
 
     var displayName: String {
         switch self {
+        case .googleTranslate: return "Google Translate"
         case .openAI: return "GPT-4o mini"
         }
     }

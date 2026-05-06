@@ -1,17 +1,22 @@
 import SwiftUI
 import ApplicationServices
 
-/// First-launch setup flow: API key, permissions, and hotkey primer.
+/// First-launch setup flow: provider choice, permissions, and hotkey primer.
 struct OnboardingView: View {
     let onDismiss: () -> Void
     @AppStorage(Constants.UserDefaultsKey.onboardingStep) private var step = 0
+    @AppStorage(Constants.UserDefaultsKey.defaultProvider) private var defaultProvider = ProviderType.googleTranslate.rawValue
     @State private var apiKey = ""
     @State private var isTesting = false
     @State private var testStatus: String?
     @State private var hasAccessibility = AXIsProcessTrusted()
     @State private var hasScreenRecording = CGPreflightScreenCaptureAccess()
 
-    private let steps = ["API Key", "Permissions", "Ready"]
+    private let steps = ["Translation", "Permissions", "Ready"]
+
+    private var selectedProvider: ProviderType {
+        ProviderType(rawValue: defaultProvider) ?? .googleTranslate
+    }
 
     var body: some View {
         ZStack {
@@ -20,7 +25,7 @@ struct OnboardingView: View {
 
                 ZStack {
                     switch step {
-                    case 0: apiKeyStep
+                    case 0: providerStep
                     case 1: permissionsStep
                     default: doneStep
                     }
@@ -33,7 +38,7 @@ struct OnboardingView: View {
             }
             .padding(.top, 30)
         }
-        .frame(width: 760, height: 570)
+        .frame(width: 760, height: 640)
         .background(Color.clear)
     }
 
@@ -80,34 +85,68 @@ struct OnboardingView: View {
         }
     }
 
-    private var apiKeyStep: some View {
-        SetupCard(systemImage: "key.viewfinder", tint: .teal, title: "Connect OpenAI", subtitle: "Your key is stored securely in Keychain and never written to project files.") {
-            VStack(alignment: .leading, spacing: 12) {
-                SecureField("sk-proj-...", text: $apiKey)
-                    .font(.system(size: 13, design: .monospaced))
-                    .textFieldStyle(.plain)
-                    .padding(.horizontal, 12)
-                    .frame(height: 42)
-                    .background(.background.opacity(0.62), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-                    .overlay {
-                        RoundedRectangle(cornerRadius: 14, style: .continuous)
-                            .stroke(.primary.opacity(0.10), lineWidth: 1)
-                    }
+    private var providerStep: some View {
+        SetupCard(systemImage: "globe", tint: .blue, title: "Choose your translator", subtitle: "You can change this anytime in Settings.") {
+            VStack(spacing: 14) {
+                ProviderOptionCard(
+                    systemImage: "globe",
+                    title: "Google Translate",
+                    subtitle: "Free, no setup needed",
+                    badge: "Recommended",
+                    isSelected: selectedProvider == .googleTranslate
+                ) {
+                    defaultProvider = ProviderType.googleTranslate.rawValue
+                }
 
-                HStack(spacing: 10) {
-                    Button("Test Key") { testAPIKey() }
-                        .disabled(apiKey.isEmpty || isTesting)
-                    Button("Save to Keychain") { saveKey() }
-                        .disabled(testStatus?.hasPrefix("OK") != true)
-                        .buttonStyle(.borderedProminent)
+                ProviderOptionCard(
+                    systemImage: "sparkles",
+                    title: "OpenAI GPT",
+                    subtitle: "Better quality, requires API key",
+                    badge: nil,
+                    isSelected: selectedProvider == .openAI
+                ) {
+                    defaultProvider = ProviderType.openAI.rawValue
+                }
 
-                    if isTesting { ProgressView().scaleEffect(0.72) }
-                    if let status = testStatus {
-                        Text(status)
-                            .font(.caption.weight(.medium))
-                            .foregroundStyle(status.hasPrefix("OK") ? .green : .red)
+                if selectedProvider == .openAI {
+                    VStack(alignment: .leading, spacing: 12) {
+                        SecureField("sk-proj-...", text: $apiKey)
+                            .font(.system(size: 13, design: .monospaced))
+                            .textFieldStyle(.plain)
+                            .padding(.horizontal, 12)
+                            .frame(height: 42)
+                            .background(.background.opacity(0.62), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                            .overlay {
+                                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                    .stroke(.primary.opacity(0.10), lineWidth: 1)
+                            }
+
+                        HStack(spacing: 10) {
+                            Button("Test Key") { testAPIKey() }
+                                .disabled(apiKey.isEmpty || isTesting)
+                            Button("Save to Keychain") { saveKey() }
+                                .disabled(testStatus?.hasPrefix("OK") != true)
+                                .buttonStyle(.borderedProminent)
+
+                            if isTesting { ProgressView().scaleEffect(0.72) }
+                            if let status = testStatus {
+                                Text(status)
+                                    .font(.caption.weight(.medium))
+                                    .foregroundStyle(status.hasPrefix("OK") ? .green : .red)
+                            }
+                            Spacer()
+                        }
                     }
-                    Spacer()
+                    .padding(.top, 4)
+                } else {
+                    HStack(spacing: 8) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundStyle(.green)
+                        Text("Ready to go! No setup needed.")
+                            .font(.system(size: 13, weight: .medium))
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(.top, 4)
                 }
             }
         }
@@ -156,7 +195,6 @@ struct OnboardingView: View {
     private func saveKey() {
         try? KeychainHelper.save(account: Constants.KeychainAccount.openAIAPIKey, value: apiKey)
         testStatus = "OK Saved"
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { step += 1 }
     }
 
     private func testAPIKey() {
@@ -287,6 +325,59 @@ private struct SetupCard<Content: View>: View {
         .padding(28)
         .frame(maxWidth: .infinity)
         .modifier(LiquidGlassCardModifier(cornerRadius: 24))
+    }
+}
+
+private struct ProviderOptionCard: View {
+    let systemImage: String
+    let title: String
+    let subtitle: String
+    let badge: String?
+    let isSelected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 14) {
+                Image(systemName: systemImage)
+                    .font(.system(size: 22, weight: .semibold))
+                    .foregroundStyle(isSelected ? .blue : .secondary)
+                    .frame(width: 40, height: 40)
+                    .background(isSelected ? Color.blue.opacity(0.12) : Color.secondary.opacity(0.08),
+                                in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+
+                VStack(alignment: .leading, spacing: 2) {
+                    HStack(spacing: 6) {
+                        Text(title).font(.system(size: 14, weight: .semibold))
+                        if let badge {
+                            Text(badge)
+                                .font(.system(size: 10, weight: .bold))
+                                .foregroundStyle(.white)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(.blue, in: Capsule())
+                        }
+                    }
+                    Text(subtitle)
+                        .font(.system(size: 12))
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+
+                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                    .font(.system(size: 20))
+                    .foregroundStyle(isSelected ? .blue : .secondary.opacity(0.4))
+            }
+            .padding(14)
+            .background(.background.opacity(isSelected ? 0.70 : 0.40),
+                        in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .stroke(isSelected ? Color.blue.opacity(0.30) : Color.primary.opacity(0.08), lineWidth: 1)
+            }
+        }
+        .buttonStyle(.plain)
     }
 }
 

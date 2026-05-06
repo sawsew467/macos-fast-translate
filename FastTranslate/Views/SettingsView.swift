@@ -36,11 +36,23 @@ struct SettingsView: View {
 
 struct GeneralSettingsTab: View {
     @AppStorage(Constants.UserDefaultsKey.persistentContext) private var persistentContext = ""
+    @AppStorage(Constants.UserDefaultsKey.defaultProvider) private var defaultProvider = ProviderType.googleTranslate.rawValue
     @AppStorage(Constants.UserDefaultsKey.defaultTargetLanguage) private var defaultTargetLanguage = Language.vietnamese.rawValue
     @State private var launchAtLogin = false
 
     var body: some View {
         SettingsPage(title: "General", subtitle: "Tune how FastTranslate behaves across popover and floating panel.") {
+            SettingsCard(systemImage: "brain", title: "Translation Engine", subtitle: "Google Translate is free with no setup. OpenAI offers better quality with context support.") {
+                Picker("Provider", selection: $defaultProvider) {
+                    ForEach(ProviderType.allCases, id: \.self) { provider in
+                        Text(provider.displayName).tag(provider.rawValue)
+                    }
+                }
+                .labelsHidden()
+                .pickerStyle(.menu)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+
             SettingsCard(systemImage: "text.bubble", title: "Translation Context", subtitle: "Included in every translation for better accuracy.") {
                 TextEditor(text: $persistentContext)
                     .font(.system(size: 13))
@@ -89,12 +101,34 @@ struct GeneralSettingsTab: View {
 // MARK: - API Keys Tab
 
 struct APIKeysSettingsTab: View {
+    @AppStorage(Constants.UserDefaultsKey.defaultProvider) private var defaultProvider = ProviderType.googleTranslate.rawValue
     @State private var openAIKey = ""
     @State private var openAIStatus: String?
     @State private var isTesting = false
 
+    private var isUsingGoogle: Bool {
+        ProviderType(rawValue: defaultProvider) == .googleTranslate
+    }
+
     var body: some View {
         SettingsPage(title: "API Keys", subtitle: "Store provider credentials securely in macOS Keychain.") {
+            if isUsingGoogle {
+                HStack(spacing: 10) {
+                    Image(systemName: "info.circle.fill")
+                        .foregroundStyle(.blue)
+                    Text("You're using Google Translate (free). Switch to OpenAI in General settings for AI-powered translation with context support.")
+                        .font(.system(size: 12))
+                        .foregroundStyle(.secondary)
+                }
+                .padding(14)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(.blue.opacity(0.06), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .stroke(.blue.opacity(0.12), lineWidth: 1)
+                }
+            }
+
             SettingsCard(systemImage: "sparkles", title: "OpenAI", subtitle: "Used for translation and streaming responses.") {
                 VStack(alignment: .leading, spacing: 12) {
                     SecureField("sk-proj-...", text: $openAIKey)

@@ -1,5 +1,20 @@
 # Project Changelog
 
+## [1.5.0] - 2026-05-06
+
+### Added
+- Google Translate as free default provider — no API key or setup needed
+- Provider picker in Settings > General ("Translation Engine" card)
+- Contextual info banner in API Keys tab when Google Translate is active
+- Redesigned onboarding Step 1: provider choice (Google Translate / OpenAI) replaces mandatory API key
+- `ProviderOptionCard` component for onboarding provider selection
+- `GoogleTranslateProvider` using unofficial `translate.googleapis.com` endpoint
+
+### Changed
+- New installs default to Google Translate (existing users with saved OpenAI preference keep OpenAI)
+- Onboarding "Continue" button always enabled (no longer blocked by missing API key)
+- Onboarding window height increased (570→640px) to fit provider choice + OpenAI key entry without clipping
+
 ## [1.4.0] - 2026-05-06
 
 ### Changed
