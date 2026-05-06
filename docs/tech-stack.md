@@ -2,7 +2,7 @@
 
 ## Language & Platform
 - **Swift 5.9+** — native macOS development
-- **macOS 14+ (Sonoma)** — minimum deployment target
+- **macOS 13+ (Ventura)** — minimum deployment target
 - **Xcode 15+** — build toolchain
 - **Xcode 15+** — build toolchain
 
@@ -12,7 +12,7 @@
 
 ## Core Apple Frameworks
 - **Vision** — OCR text extraction (`VNRecognizeTextRequest`, supports Vietnamese `vi-VT`)
-- **ScreenCaptureKit** — region-based screen capture (fallback: `CGWindowListCreateImage`)
+- **CoreGraphics** — region-based screen capture (`CGWindowListCreateImage`)
 - **NSPasteboard** — clipboard read/write
 - **Carbon.HIToolbox** — global keyboard shortcuts (`RegisterEventHotKey`)
 - **ServiceManagement** — launch at login (`SMAppService`)

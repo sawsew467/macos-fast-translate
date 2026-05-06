@@ -61,7 +61,7 @@ A key advantage over Google Translate: provide **context** for more accurate, na
 - **Zero external dependencies** — 100% Apple native frameworks
 
 ## System Requirements
-- macOS 14 (Sonoma) or later
+- macOS 13 (Ventura) or later
 - OpenAI API key
 - Accessibility permission (for global hotkeys + reading selected text)
 - Screen Recording permission (for screenshot OCR)

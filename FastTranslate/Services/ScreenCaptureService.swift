@@ -1,5 +1,4 @@
 import AppKit
-import ScreenCaptureKit
 
 // MARK: - Screen Capture Service
 
@@ -45,7 +44,7 @@ private final class OverlayWindow: NSWindow {
 
 // MARK: - Region Selector
 
-/// Manages the overlay window lifecycle and the ScreenCaptureKit screenshot.
+/// Manages the overlay window lifecycle and the screenshot capture.
 private final class RegionSelector: NSObject {
     private var window: NSWindow?
     private let onComplete: (CGImage?) -> Void
@@ -117,64 +116,33 @@ private final class RegionSelector: NSObject {
             width: screenRect.width,
             height: screenRect.height
         )
-        let scaleFactor = win.screen?.backingScaleFactor ?? 2.0
-
         print("[SCCapture] viewRect=\(viewRect)")
         print("[SCCapture] screenRect(AppKit)=\(screenRect)  cgPrimaryHeight=\(cgPrimaryHeight)")
-        print("[SCCapture] cgRect(global-CG)=\(cgRect)  scaleFactor=\(scaleFactor)  cgPrimaryHeight=\(cgPrimaryHeight)")
+        print("[SCCapture] cgRect(global-CG)=\(cgRect)")
         print("[SCCapture] win.screen=\(win.screen?.localizedName ?? "nil")  frame=\(win.screen?.frame ?? .zero)")
 
         // Dismiss overlay first so it does not appear in the screenshot
         win.orderOut(nil)
         window = nil
 
-        Task {
-            let image = await Self.captureWithSCKit(cgRect: cgRect, scaleFactor: scaleFactor)
-            self.finish(image)
-        }
+        // Capture synchronously — CGWindowListCreateImage available since macOS 10.5
+        let image = Self.captureRegionImage(cgRect: cgRect)
+        finish(image)
     }
 
-    // MARK: ScreenCaptureKit
+    // MARK: Screenshot Capture
 
-    private static func captureWithSCKit(cgRect: CGRect, scaleFactor: CGFloat) async -> CGImage? {
-        do {
-            let content = try await SCShareableContent.excludingDesktopWindows(false, onScreenWindowsOnly: true)
-
-            print("[SCCapture] available displays:")
-            for d in content.displays { print("  display id=\(d.displayID) frame=\(d.frame) size=\(d.width)×\(d.height)") }
-
-            let center = CGPoint(x: cgRect.midX, y: cgRect.midY)
-            guard let display = content.displays.first(where: { $0.frame.contains(center) })
-                              ?? content.displays.first else {
-                print("[SCCapture] ERROR: no display found for center=\(center)")
-                return nil
-            }
-            print("[SCCapture] matched display id=\(display.displayID) frame=\(display.frame)")
-
-            let filter = SCContentFilter(display: display, excludingWindows: [])
-
-            // sourceRect is in display-local coordinates (origin = display top-left, y down).
-            // Subtract the display's CG global origin to convert from global → local.
-            let localRect = CGRect(
-                x: cgRect.origin.x - display.frame.origin.x,
-                y: cgRect.origin.y - display.frame.origin.y,
-                width: cgRect.width,
-                height: cgRect.height
-            )
-            print("[SCCapture] localRect=\(localRect)")
-
-            let config = SCStreamConfiguration()
-            config.sourceRect = localRect
-            config.width = max(1, Int(cgRect.width * scaleFactor))
-            config.height = max(1, Int(cgRect.height * scaleFactor))
-            print("[SCCapture] output size=\(config.width)×\(config.height)")
-            let image = try await SCScreenshotManager.captureImage(contentFilter: filter, configuration: config)
-            print("[SCCapture] captured image size=\(image.width)×\(image.height)")
-            return image
-        } catch {
-            print("[SCCapture] ERROR: \(error)")
-            return nil
-        }
+    /// Captures a region of the screen using CGWindowListCreateImage.
+    /// `.bestResolution` handles Retina (2x/3x) automatically.
+    private static func captureRegionImage(cgRect: CGRect) -> CGImage? {
+        let image = CGWindowListCreateImage(
+            cgRect,
+            .optionOnScreenOnly,
+            kCGNullWindowID,
+            .bestResolution
+        )
+        print("[SCCapture] captured image size=\(image?.width ?? 0)×\(image?.height ?? 0)")
+        return image
     }
 
     func cancel() {

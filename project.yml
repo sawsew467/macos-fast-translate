@@ -2,14 +2,14 @@ name: FastTranslate
 options:
   bundleIdPrefix: com.fasttranslate
   deploymentTarget:
-    macOS: "14.0"
+    macOS: "13.0"
   xcodeVersion: "16.0"
   createIntermediateGroups: true
 
 settings:
   base:
     SWIFT_VERSION: "5.9"
-    MACOSX_DEPLOYMENT_TARGET: "14.0"
+    MACOSX_DEPLOYMENT_TARGET: "13.0"
 
 targets:
   FastTranslate:
@@ -19,9 +19,11 @@ targets:
       - FastTranslate
     dependencies:
       - sdk: Carbon.framework
-      - sdk: ScreenCaptureKit.framework
     settings:
       base:
+        MARKETING_VERSION: "1.4.0"
+        CURRENT_PROJECT_VERSION: "1"
+        ENABLE_HARDENED_RUNTIME: true
         INFOPLIST_FILE: FastTranslate/Resources/Info.plist
         CODE_SIGN_ENTITLEMENTS: FastTranslate/Resources/FastTranslate.entitlements
         PRODUCT_BUNDLE_IDENTIFIER: com.fasttranslate.app

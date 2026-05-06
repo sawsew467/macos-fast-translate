@@ -64,7 +64,7 @@ macOS menu bar-only app (no dock icon, no main window). Luôn chạy nền, truy
 | **HotkeyRecorderView** | `Views/HotkeyRecorderView.swift` | NSView-based key recorder for Settings |
 | **SelectedTextReader** | `Services/SelectedTextReader.swift` | Read selected text via AX API + clipboard fallback |
 | **OCRService** | `Services/OCRService.swift` | Vision framework text recognition |
-| **ScreenCaptureService** | `Services/ScreenCaptureService.swift` | Region selection overlay + capture |
+| **ScreenCaptureService** | `Services/ScreenCaptureService.swift` | Region selection overlay + CGWindowListCreateImage capture |
 | **ClipboardService** | `Services/ClipboardService.swift` | NSPasteboard read/write |
 | **TranslationPopoverView** | `Views/TranslationPopoverView.swift` | Main popover UI |
 | **StreamingTranslationState** | `Models/StreamingTranslationState.swift` | Observable state for streaming panel (loading → tokens → done) |

@@ -1,5 +1,15 @@
 # Project Changelog
 
+## [1.4.0] - 2026-05-06
+
+### Changed
+- Lowered minimum macOS requirement from 14.0 (Sonoma) to 13.0 (Ventura)
+- Replaced `SCScreenshotManager` with `CGWindowListCreateImage` for broader compatibility
+- Removed `ScreenCaptureKit` framework dependency
+
+### Note
+- Vietnamese OCR accuracy may be reduced on macOS 13 (full `vi-VN` support from macOS 14.4+)
+
 ## [1.3.0] - 2026-05-06
 
 ### Added

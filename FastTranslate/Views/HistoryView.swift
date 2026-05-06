@@ -38,7 +38,7 @@ struct HistoryView: View {
         .frame(width: 780, height: 520)
         .background(HistoryBackground())
         .onAppear(perform: loadFromDisk)
-        .onChange(of: filtered.map(\.id)) { _, ids in
+        .onChange(of: filtered.map(\.id)) { ids in
             if let selectedID, ids.contains(selectedID) { return }
             selectedID = ids.first
         }

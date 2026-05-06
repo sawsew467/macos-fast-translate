@@ -68,7 +68,7 @@ struct GeneralSettingsTab: View {
             SettingsCard(systemImage: "power", title: "Startup", subtitle: "Open FastTranslate automatically when you sign in.") {
                 Toggle("Launch at Login", isOn: $launchAtLogin)
                     .toggleStyle(.switch)
-                    .onChange(of: launchAtLogin) { _, newValue in
+                    .onChange(of: launchAtLogin) { newValue in
                         setLaunchAtLogin(newValue)
                     }
             }

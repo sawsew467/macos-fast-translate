@@ -2,7 +2,7 @@
 
 A lightweight native macOS menu bar app for instant Vietnamese ↔ English translation, powered by GPT-4o-mini.
 
-![macOS 14+](https://img.shields.io/badge/macOS-14%2B-blue)
+![macOS 13+](https://img.shields.io/badge/macOS-13%2B-blue)
 ![Swift 5.9+](https://img.shields.io/badge/Swift-5.9%2B-orange)
 ![Zero Dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-green)
@@ -62,7 +62,7 @@ Download the latest `.dmg` from [Releases](https://github.com/sawsew467/macos-fa
 
 ### Build from Source
 
-**Prerequisites:** macOS 14+ and Xcode 15+
+**Prerequisites:** macOS 13+ and Xcode 15+
 
 ```bash
 git clone https://github.com/sawsew467/macos-fast-translate.git
