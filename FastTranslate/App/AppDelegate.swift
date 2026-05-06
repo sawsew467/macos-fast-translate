@@ -5,12 +5,13 @@ import SwiftUI
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private var statusItem: NSStatusItem!
-    private var popover: NSPopover!
+    private var popoverWindow: NSPanel?
     private var eventMonitor: Any?
     private var onboardingWindow: NSWindow?
     private var settingsWindow: NSWindow?
     var floatingPanel = FloatingPanelController()
     private var hotkeyManager: HotkeyManager?
+    private var selectionTranslateButton: SelectionTranslateButtonController?
     private var hotkeyCancellables = Set<AnyCancellable>()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -19,8 +20,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         setupPopover()
         setupEventMonitor()
         setupHotkeys()
+        setupSelectionTranslateButton()
         checkFirstLaunch()
-        showSettingsIfManualLaunch()
+        showPopoverOnLaunchIfNeeded()
         UpdateService.shared.checkOnLaunch()
         #if DEBUG
         runTranslationSmokeTest()
@@ -31,6 +33,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if let monitor = eventMonitor {
             NSEvent.removeMonitor(monitor)
         }
+        selectionTranslateButton?.stop()
     }
 
     /// Show Settings → About when user reopens the app (e.g. clicks icon in Spotlight/Finder while running).
@@ -53,11 +56,26 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func setupPopover() {
-        popover = NSPopover()
-        popover.contentSize = NSSize(width: 380, height: 340)
-        popover.behavior = .transient
-        let popoverView = TranslationPopoverView()
-        popover.contentViewController = NSHostingController(rootView: popoverView)
+        let controller = NSHostingController(rootView: TranslationPopoverView())
+        let window = QuickTranslatePanel(
+            contentRect: NSRect(x: 0, y: 0, width: 380, height: 340),
+            styleMask: [.borderless, .fullSizeContentView],
+            backing: .buffered,
+            defer: false
+        )
+        window.contentViewController = controller
+        window.backgroundColor = .clear
+        window.isOpaque = false
+        window.hasShadow = true
+        window.isMovableByWindowBackground = true
+        window.contentView?.wantsLayer = true
+        window.contentView?.layer?.cornerRadius = 26
+        window.contentView?.layer?.cornerCurve = .continuous
+        window.contentView?.layer?.masksToBounds = true
+        window.level = .floating
+        window.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .transient]
+        window.hidesOnDeactivate = false
+        popoverWindow = window
     }
 
     private func setupHotkeys() {
@@ -88,12 +106,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             .store(in: &hotkeyCancellables)
     }
 
-    /// Close popover on any click outside it.
+    /// Close the centered quick-translate window on any click outside it.
     private func setupEventMonitor() {
         eventMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown]) { [weak self] _ in
-            guard let self, self.popover.isShown else { return }
+            guard let self, self.popoverWindow?.isVisible == true else { return }
             self.closePopover()
         }
+    }
+
+    private func setupSelectionTranslateButton() {
+        let controller = SelectionTranslateButtonController { [weak self] in
+            self?.hotkeyManager?.translateSelectedTextFromCurrentMouseLocation()
+        }
+        controller.start()
+        selectionTranslateButton = controller
     }
 
     // MARK: - Status item click handling
@@ -111,6 +137,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let menu = NSMenu()
         let updatesItem = NSMenuItem(title: "Check for Updates…", action: #selector(checkForUpdates), keyEquivalent: "")
         updatesItem.target = self
+        updatesItem.image = NSImage(systemSymbolName: "arrow.clockwise.circle", accessibilityDescription: "Check for Updates")
         menu.addItem(updatesItem)
         menu.addItem(.separator())
         let settingsItem = NSMenuItem(title: "Settings…", action: #selector(openSettings), keyEquivalent: ",")
@@ -138,7 +165,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             let window = NSWindow(contentViewController: controller)
             window.title = "FastTranslate Settings"
             window.styleMask = [.titled, .closable]
-            window.center()
+            window.setFrame(NSRect(x: 0, y: 0, width: 560, height: 430), display: false)
+            centerWindowOnMainScreen(window)
             // Clear reference when window closes
             NotificationCenter.default.addObserver(
                 forName: NSWindow.willCloseNotification,
@@ -146,24 +174,68 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             ) { [weak self] _ in self?.settingsWindow = nil }
             settingsWindow = window
         }
-        settingsWindow?.makeKeyAndOrderFront(nil)
+        if let settingsWindow {
+            centerWindowOnMainScreen(settingsWindow)
+            settingsWindow.makeKeyAndOrderFront(nil)
+        }
         NSApp.activate(ignoringOtherApps: true)
+    }
+
+    private func centerWindowOnMainScreen(_ window: NSWindow) {
+        let screenFrame = NSScreen.main?.visibleFrame ?? NSScreen.screens.first?.visibleFrame
+        guard let screenFrame else {
+            window.center()
+            return
+        }
+
+        let frame = window.frame
+        let origin = NSPoint(
+            x: screenFrame.midX - frame.width / 2,
+            y: screenFrame.midY - frame.height / 2
+        )
+        window.setFrameOrigin(origin)
     }
 
     // MARK: - Popover control
 
     private func togglePopover() {
-        if popover.isShown { closePopover() } else { openPopover() }
+        if popoverWindow?.isVisible == true { closePopover() } else { openPopover() }
     }
 
     private func openPopover() {
-        guard let button = statusItem.button else { return }
-        popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
-        popover.contentViewController?.view.window?.makeKey()
+        guard let window = popoverWindow else { return }
+        centerWindowOnMainScreen(window)
+
+        let finalFrame = window.frame
+        let startFrame = finalFrame.insetBy(dx: 10, dy: 8)
+        window.alphaValue = 0
+        window.setFrame(startFrame, display: true)
+        window.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
+
+        NSAnimationContext.runAnimationGroup { context in
+            context.duration = 0.22
+            context.timingFunction = CAMediaTimingFunction(controlPoints: 0.16, 1.0, 0.3, 1.0)
+            window.animator().alphaValue = 1
+            window.animator().setFrame(finalFrame, display: true)
+        }
     }
 
     private func closePopover() {
-        popover.performClose(nil)
+        guard let window = popoverWindow, window.isVisible else { return }
+
+        let finalFrame = window.frame
+        let endFrame = finalFrame.insetBy(dx: 8, dy: 6)
+        NSAnimationContext.runAnimationGroup { context in
+            context.duration = 0.14
+            context.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+            window.animator().alphaValue = 0
+            window.animator().setFrame(endFrame, display: true)
+        } completionHandler: {
+            window.orderOut(nil)
+            window.alphaValue = 1
+            window.setFrame(finalFrame, display: false)
+        }
     }
 
     // MARK: - UserDefaults → Keychain migration (one-time)
@@ -179,6 +251,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     // MARK: - Launch behavior
+
+    private func showPopoverOnLaunchIfNeeded() {
+        guard UserDefaults.standard.bool(forKey: Constants.UserDefaultsKey.hasLaunchedBefore),
+              !isLaunchedAsLoginItem
+        else { return }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) { [weak self] in
+            Task { @MainActor in
+                guard let self, self.onboardingWindow == nil else { return }
+                self.openPopover()
+            }
+        }
+    }
 
     /// Show Settings → About on manual launch (Spotlight/Finder) when onboarding is already done.
     /// Skipped for login-item launches to avoid intrusive windows on system startup.
@@ -303,4 +388,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
     #endif
+}
+
+
+private final class QuickTranslatePanel: NSPanel {
+    override var canBecomeKey: Bool { true }
+    override var canBecomeMain: Bool { true }
 }

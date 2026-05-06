@@ -28,6 +28,8 @@ struct TranslationPopoverView: View {
             .padding(outerPadding)
         }
         .frame(width: popoverWidth, height: showContext ? expandedHeight : compactHeight)
+        .clipShape(popoverShape)
+        .contentShape(popoverShape)
     }
 
     // MARK: - Header
@@ -225,7 +227,12 @@ struct TranslationPopoverView: View {
         if #available(macOS 26.0, *) {
             GlassEffectContainer(spacing: 0) {
                 content()
+                    .background(.clear)
                     .glassEffect(.regular, in: popoverShape)
+                    .clipShape(popoverShape)
+                    .overlay {
+                        popoverShape.stroke(.primary.opacity(0.08), lineWidth: 1)
+                    }
             }
         } else {
             content()
