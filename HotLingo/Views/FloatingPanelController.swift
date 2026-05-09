@@ -304,8 +304,16 @@ struct StreamingPanelContent: View {
     }
 
     private var showLowCreditWarning: Bool {
-        guard !state.isStreaming && SupabaseAuthService.shared.authState.isLoggedIn else { return false }
-        return creditService.balance < 10 || isCreditError
+        guard !state.isStreaming else { return false }
+        if isCreditError { return true }
+        return SupabaseAuthService.shared.authState.isLoggedIn && creditService.balance < 10
+    }
+
+    /// Show neutral credit balance when using AI provider with healthy balance (≥ 10).
+    private var showCreditBalance: Bool {
+        state.provider == .aiTranslation
+            && SupabaseAuthService.shared.authState.isLoggedIn
+            && creditService.balance >= 10
     }
 
     var body: some View {
@@ -355,6 +363,12 @@ struct StreamingPanelContent: View {
                 }
             }
 
+            if !state.isStreaming && AINudgeHelper.shouldShowNudge {
+                AINudgeRow {
+                    NotificationCenter.default.post(name: .openAccountTab, object: nil)
+                }
+            }
+
             // Footer
             HStack(alignment: .center, spacing: 8) {
                 copyButton(action: onCopy)
@@ -371,6 +385,16 @@ struct StreamingPanelContent: View {
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
 
+                if showCreditBalance {
+                    HStack(spacing: 3) {
+                        Image(systemName: "sparkle")
+                            .font(.system(size: 9, weight: .medium))
+                        Text("\(creditService.balance)")
+                            .font(.caption2.monospacedDigit())
+                    }
+                    .foregroundStyle(.secondary.opacity(0.6))
+                }
+
                 Spacer()
 
                 Button(action: onClose) {
@@ -379,12 +403,6 @@ struct StreamingPanelContent: View {
                         .foregroundStyle(.secondary)
                 }
                 .buttonStyle(.plain)
-            }
-
-            if !state.isStreaming && AINudgeHelper.shouldShowNudge {
-                AINudgeRow {
-                    NotificationCenter.default.post(name: .openAccountTab, object: nil)
-                }
             }
         }
     }

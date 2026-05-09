@@ -4,7 +4,13 @@ import Foundation
 final class SupabaseAuthService: ObservableObject {
     static let shared = SupabaseAuthService()
 
-    @Published var authState: AuthState = .loggedOut
+    @Published var authState: AuthState = .loggedOut {
+        didSet {
+            if case .loggedIn = authState {
+                UserDefaults.standard.set(true, forKey: Constants.UserDefaultsKey.hasEverLoggedIn)
+            }
+        }
+    }
     @Published var authError: String?
 
     private init() {

@@ -108,8 +108,8 @@ enum AINudgeHelper {
         let provider = UserDefaults.standard.string(forKey: Constants.UserDefaultsKey.defaultProvider) ?? ""
         let isGoogle = ProviderType(rawValue: provider) == .googleTranslate
         let hasSeen = UserDefaults.standard.bool(forKey: Constants.UserDefaultsKey.hasSeenAINudgeBanner)
-        let isLoggedIn = SupabaseAuthService.shared.authState.isLoggedIn
-        return isGoogle && !hasSeen && !isLoggedIn
+        let hasEverLoggedIn = UserDefaults.standard.bool(forKey: Constants.UserDefaultsKey.hasEverLoggedIn)
+        return isGoogle && !hasSeen && !hasEverLoggedIn
     }
 
     static var shouldShowBanner: Bool {

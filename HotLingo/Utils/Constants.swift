@@ -42,6 +42,8 @@ enum Constants {
         static let googleTranslateCount = "google_translate_count"
         static let hasSeenAINudgeBanner = "has_seen_ai_nudge_banner"
         static let hasClaimedTrial = "has_claimed_trial"
+        static let hasEverLoggedIn = "has_ever_logged_in"
+        static let lastKnownCreditBalance = "last_known_credit_balance"
     }
 
     // MARK: - UI

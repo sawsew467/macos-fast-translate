@@ -4,7 +4,7 @@ import Foundation
 final class CreditService: ObservableObject {
     static let shared = CreditService()
 
-    @Published var balance: Int = 0
+    @Published var balance: Int = UserDefaults.standard.integer(forKey: Constants.UserDefaultsKey.lastKnownCreditBalance)
     @Published var trialClaimed: Bool = false
     @Published var isLoading = false
 
@@ -20,6 +20,7 @@ final class CreditService: ObservableObject {
             )
             balance = response.balance
             trialClaimed = response.trial_claimed
+            UserDefaults.standard.set(response.balance, forKey: Constants.UserDefaultsKey.lastKnownCreditBalance)
         } catch {
             print("[CreditService] fetchBalance failed: \(error)")
         }
@@ -46,5 +47,6 @@ final class CreditService: ObservableObject {
     /// Called after each AI translation with remaining_credits from the response.
     func updateBalance(_ newBalance: Int) {
         balance = newBalance
+        UserDefaults.standard.set(newBalance, forKey: Constants.UserDefaultsKey.lastKnownCreditBalance)
     }
 }

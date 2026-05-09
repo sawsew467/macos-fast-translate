@@ -230,27 +230,7 @@ final class HotkeyManager {
                 trackGoogleTranslateIfNeeded(state: state)
             } catch let error as TranslationError {
                 state.isStreaming = false
-                if case .noCredits = error {
-                    let anchorPoint = NSEvent.mouseLocation
-                    let sourceText = state.sourceText
-                    floatingPanel.showOutOfCredit(
-                        near: anchorPoint,
-                        onTopUp: {
-                            NotificationCenter.default.post(name: .openAccountTab, object: nil)
-                        },
-                        onUseGoogle: { [weak self] in
-                            // Translate this one request with Google — does NOT change the saved provider
-                            guard let self else { return }
-                            try? self.streamTranslation(
-                                sourceText,
-                                near: NSEvent.mouseLocation,
-                                providerOverride: .googleTranslate
-                            )
-                        }
-                    )
-                } else {
-                    state.error = error.localizedDescription
-                }
+                state.error = error.localizedDescription
             } catch {
                 state.isStreaming = false
                 state.error = error.localizedDescription

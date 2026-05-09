@@ -39,6 +39,7 @@ struct TranslationPopoverView: View {
         .frame(width: popoverWidth, height: showContext ? expandedHeight : compactHeight)
         .clipShape(popoverShape)
         .contentShape(popoverShape)
+        .task { await CreditService.shared.fetchBalance() }
     }
 
     // MARK: - Credit Warning
@@ -81,10 +82,26 @@ struct TranslationPopoverView: View {
                 .foregroundStyle(.secondary)
                 .lineLimit(1)
 
+            if showCreditBalance {
+                HStack(spacing: 3) {
+                    Image(systemName: "sparkle")
+                        .font(.system(size: 9, weight: .medium))
+                    Text("\(creditService.balance)")
+                        .font(.caption2.monospacedDigit())
+                }
+                .foregroundStyle(.secondary.opacity(0.6))
+            }
+
             Spacer()
 
             targetLanguageMenu
         }
+    }
+
+    private var showCreditBalance: Bool {
+        service.activeProviderType == .aiTranslation
+            && SupabaseAuthService.shared.authState.isLoggedIn
+            && creditService.balance >= 10
     }
 
     private var languageLabel: String {
