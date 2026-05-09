@@ -69,11 +69,15 @@ actor SupabaseClient {
             req = buildURLRequest(endpoint: endpoint, method: method, body: body, authenticated: true)
             let (retryData, retryResp) = try await URLSession.shared.data(for: req)
             guard let retryHttp = retryResp as? HTTPURLResponse else { throw SupabaseError.invalidResponse }
-            guard retryHttp.statusCode < 400 else { throw SupabaseError.httpError(retryHttp.statusCode) }
+            guard retryHttp.statusCode < 400 else {
+            throw SupabaseError.parse(data: retryData, statusCode: retryHttp.statusCode)
+        }
             return retryData
         }
 
-        guard http.statusCode < 400 else { throw SupabaseError.httpError(http.statusCode) }
+        guard http.statusCode < 400 else {
+            throw SupabaseError.parse(data: data, statusCode: http.statusCode)
+        }
         return data
     }
 
@@ -135,10 +139,31 @@ enum SupabaseError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .notAuthenticated:   return "Please log in to use AI Translation."
-        case .invalidResponse:    return "Invalid server response."
-        case .httpError(let code): return "Server error (HTTP \(code))."
+        case .notAuthenticated:     return "Please log in to use AI Translation."
+        case .invalidResponse:      return "Invalid server response."
+        case .httpError(let code):  return "Server error (HTTP \(code))."
         case .serverError(let msg): return msg
         }
+    }
+
+    /// Parse Supabase error body to extract a human-readable message.
+    /// Supabase returns: { "msg": "..." } or { "error_description": "..." } or { "message": "..." }
+    static func parse(data: Data, statusCode: Int) -> SupabaseError {
+        struct SupabaseErrorBody: Decodable {
+            let msg: String?
+            let message: String?
+            let error_description: String?
+            let error: String?
+        }
+        if let body = try? JSONDecoder().decode(SupabaseErrorBody.self, from: data) {
+            let detail = body.msg ?? body.message ?? body.error_description ?? body.error
+            if let detail, !detail.isEmpty {
+                return .serverError("[\(statusCode)] \(detail)")
+            }
+        }
+        if let raw = String(data: data, encoding: .utf8), !raw.isEmpty {
+            return .serverError("[\(statusCode)] \(raw)")
+        }
+        return .httpError(statusCode)
     }
 }

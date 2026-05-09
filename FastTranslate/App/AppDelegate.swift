@@ -26,9 +26,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         checkFirstLaunch()
         showPopoverOnLaunchIfNeeded()
         UpdateService.shared.checkOnLaunch()
-        #if DEBUG
-        runTranslationSmokeTest()
-        #endif
     }
 
     func applicationWillTerminate(_ notification: Notification) {

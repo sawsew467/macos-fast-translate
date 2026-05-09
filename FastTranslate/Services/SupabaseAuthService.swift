@@ -56,6 +56,32 @@ final class SupabaseAuthService: ObservableObject {
         }
     }
 
+    /// Verify 6-digit OTP sent to email after signup. On success, saves tokens and logs in.
+    func verifySignupOTP(email: String, token: String) async {
+        authState = .loading
+        authError = nil
+        do {
+            let response: AuthTokenResponse = try await SupabaseClient.shared.request(
+                endpoint: "/auth/v1/verify",
+                method: "POST",
+                body: OTPVerifyBody(type: "signup", email: email, token: token),
+                authenticated: false
+            )
+            await SupabaseClient.shared.saveTokens(
+                access: response.access_token,
+                refresh: response.refresh_token
+            )
+            try? KeychainHelper.save(
+                account: Constants.KeychainAccount.supabaseUserEmail,
+                value: email
+            )
+            authState = .loggedIn(email: email)
+        } catch {
+            authState = .loggedOut
+            authError = parseAuthError(error)
+        }
+    }
+
     func logout() {
         Task { await SupabaseClient.shared.clearTokens() }
         authState = .loggedOut
@@ -86,6 +112,12 @@ final class SupabaseAuthService: ObservableObject {
 private struct LoginBody: Encodable {
     let email: String
     let password: String
+}
+
+private struct OTPVerifyBody: Encodable {
+    let type: String
+    let email: String
+    let token: String
 }
 
 private struct AuthTokenResponse: Decodable {

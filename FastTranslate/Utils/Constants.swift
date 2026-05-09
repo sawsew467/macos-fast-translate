@@ -15,8 +15,8 @@ enum Constants {
 
     // MARK: - Supabase configuration
     enum Supabase {
-        static let url = "http://127.0.0.1:54321"   // TODO: replace with production URL
-        static let anonKey = "YOUR_ANON_KEY"         // TODO: replace with production anon key
+        static let url = "https://mlsqckwozkbbloviohfl.supabase.co"
+        static let anonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1sc3Fja3dvemtiYmxvdmlvaGZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzMTY3NzQsImV4cCI6MjA5Mzg5Mjc3NH0.tpnF4K4lXgCeqywuQALfvsoUiYNj9XYXDh3AXNhTHPg"
     }
 
     // MARK: - Keychain account names (not UserDefaults)

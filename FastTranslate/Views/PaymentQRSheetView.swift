@@ -35,7 +35,7 @@ struct PaymentQRSheetView: View {
 
     private var qrView: some View {
         VStack(spacing: 16) {
-            Text("Nap tien").font(.title2.bold())
+            Text("Nạp tiền").font(.title2.bold())
 
             AsyncImage(url: URL(string: qrInfo.qr_data)) { image in
                 image.resizable().scaledToFit()
@@ -46,13 +46,13 @@ struct PaymentQRSheetView: View {
             .clipShape(RoundedRectangle(cornerRadius: 12))
 
             VStack(alignment: .leading, spacing: 8) {
-                detailRow("Ngan hang", qrInfo.bank_name)
-                detailRow("STK", qrInfo.bank_account)
-                detailRow("So tien", formatVND(qrInfo.amount))
+                detailRow("Ngân hàng", qrInfo.bank_name)
+                detailRow("Số TK", qrInfo.bank_account)
+                detailRow("Số tiền", formatVND(qrInfo.amount))
                 HStack {
-                    detailRow("Noi dung CK", qrInfo.transfer_content)
+                    detailRow("Nội dung CK", qrInfo.transfer_content)
                     Spacer()
-                    Button(copied ? "Da copy" : "Copy") {
+                    Button(copied ? "Đã sao chép" : "Sao chép") {
                         NSPasteboard.general.clearContents()
                         NSPasteboard.general.setString(qrInfo.transfer_content, forType: .string)
                         copied = true
@@ -64,11 +64,11 @@ struct PaymentQRSheetView: View {
 
             HStack(spacing: 6) {
                 ProgressView().scaleEffect(0.7)
-                Text("Dang cho thanh toan... (\(secondsRemaining)s)")
+                Text("Đang chờ thanh toán... (\(secondsRemaining)s)")
                     .font(.caption).foregroundStyle(.secondary)
             }
 
-            Button("Dong") { onDismiss() }
+            Button("Đóng") { onDismiss() }
                 .buttonStyle(.bordered)
         }
     }
@@ -79,10 +79,10 @@ struct PaymentQRSheetView: View {
         VStack(spacing: 16) {
             Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 48)).foregroundStyle(.green)
-            Text("Nap tien thanh cong!").font(.title2.bold())
-            Text("So du: \(creditService.balance) credits")
+            Text("Nạp tiền thành công!").font(.title2.bold())
+            Text("Số dư: \(creditService.balance) credits")
                 .font(.headline).foregroundStyle(.secondary)
-            Button("Dong") { onDismiss() }
+            Button("Đóng") { onDismiss() }
                 .buttonStyle(.borderedProminent)
         }
     }
@@ -123,6 +123,6 @@ struct PaymentQRSheetView: View {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
         formatter.groupingSeparator = "."
-        return (formatter.string(from: NSNumber(value: amount)) ?? "\(amount)") + "d"
+        return (formatter.string(from: NSNumber(value: amount)) ?? "\(amount)") + "đ"
     }
 }

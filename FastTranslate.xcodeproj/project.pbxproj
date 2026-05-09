@@ -31,6 +31,7 @@
 		814AEB012BA7B770267CDF42 /* SupabaseClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5636B8B816376E580F9ECCA3 /* SupabaseClient.swift */; };
 		8ABAEDED638E21112B18B89B /* TranslationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC96BA25B86F82EB77EF7204 /* TranslationProvider.swift */; };
 		907CCC1EE4478BE83D2B182F /* SettingsSharedViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 962084E8F0D8B7CC45909FE5 /* SettingsSharedViews.swift */; };
+		9988456B0EC55C6D0828D588 /* OnboardingShortcutStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0937076663B00A3C9A289D0C /* OnboardingShortcutStep.swift */; };
 		A1446A3F79FDB5DB6BDE9EDA /* FastTranslateApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24D55CE698491D500D02B0E0 /* FastTranslateApp.swift */; };
 		ADBCFED6BE0F3E5A2C318692 /* OnboardingSharedViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E4F5103846838B727536A85 /* OnboardingSharedViews.swift */; };
 		B314057005DB96628DCCB9DD /* CreditService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2336BBEA6D61E8E1660AC758 /* CreditService.swift */; };
@@ -57,6 +58,7 @@
 /* Begin PBXFileReference section */
 		00E6DC9D78142C0B9D887CFE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		092A678724B1253411AC4AAE /* StreamingTranslationState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamingTranslationState.swift; sourceTree = "<group>"; };
+		0937076663B00A3C9A289D0C /* OnboardingShortcutStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingShortcutStep.swift; sourceTree = "<group>"; };
 		0B82F1A185658243C2287B09 /* TranslationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationService.swift; sourceTree = "<group>"; };
 		1AC78F8B6C6E5259E4608B58 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		1F7E4FC96301E5F7695C8904 /* FloatingPanelAIViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingPanelAIViews.swift; sourceTree = "<group>"; };
@@ -141,6 +143,7 @@
 				E0A9AD99D2E3380C27C673DB /* OnboardingPermissionsStep.swift */,
 				F3E3CFD18AE450E459E8DABD /* OnboardingProviderStep.swift */,
 				9E4F5103846838B727536A85 /* OnboardingSharedViews.swift */,
+				0937076663B00A3C9A289D0C /* OnboardingShortcutStep.swift */,
 				C34028B515E4865C8A3860AB /* OnboardingView.swift */,
 				AA2EB32FC14D25D30C1AC8B9 /* PaymentQRSheetView.swift */,
 				A118941161556474A7B3F2D1 /* SelectionTranslateButtonController.swift */,
@@ -334,6 +337,7 @@
 				CFC6BDEABD9272D21035AF07 /* OnboardingPermissionsStep.swift in Sources */,
 				5FB901FA2CBFDDEF8808BC99 /* OnboardingProviderStep.swift in Sources */,
 				ADBCFED6BE0F3E5A2C318692 /* OnboardingSharedViews.swift in Sources */,
+				9988456B0EC55C6D0828D588 /* OnboardingShortcutStep.swift in Sources */,
 				DFB0A895D91EF4C39AF0ED64 /* OnboardingView.swift in Sources */,
 				203B0BF756B5E665270596E1 /* OpenAITranslationProvider.swift in Sources */,
 				F5C55B166B7FB26DE4C80E21 /* PaymentModels.swift in Sources */,

@@ -3,6 +3,7 @@ import AppKit
 
 struct TranslationPopoverView: View {
     @StateObject private var service = TranslationService()
+    @ObservedObject private var creditService = CreditService.shared
     @AppStorage(Constants.UserDefaultsKey.defaultTargetLanguage) private var defaultTargetLanguage = Language.vietnamese.rawValue
     @State private var inputText = ""
     @State private var showContext = false
@@ -22,6 +23,9 @@ struct TranslationPopoverView: View {
                 if showContext { contextEditor }
                 inputEditor
                 outputDisplay
+                if SupabaseAuthService.shared.authState.isLoggedIn && creditService.balance < 10 {
+                    creditWarningBar
+                }
                 Spacer(minLength: 0)
                 footerBar
             }
@@ -30,6 +34,35 @@ struct TranslationPopoverView: View {
         .frame(width: popoverWidth, height: showContext ? expandedHeight : compactHeight)
         .clipShape(popoverShape)
         .contentShape(popoverShape)
+    }
+
+    // MARK: - Credit Warning
+
+    private var creditWarningBar: some View {
+        let isOut = creditService.balance == 0
+        return Button {
+            NotificationCenter.default.post(name: .openAccountTab, object: nil)
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: isOut ? "creditcard.trianglebadge.exclamationmark" : "exclamationmark.triangle.fill")
+                    .font(.system(size: 11))
+                    .foregroundStyle(isOut ? Color.red : Color.orange)
+                Text(isOut ? "Out of credits" : "Only \(creditService.balance) credits left")
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundStyle(isOut ? AnyShapeStyle(Color.red) : AnyShapeStyle(Color.primary.opacity(0.7)))
+                Spacer()
+                Text("Top Up →")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(.blue)
+            }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+            .background(
+                isOut ? Color.red.opacity(0.08) : Color.orange.opacity(0.08),
+                in: RoundedRectangle(cornerRadius: 10, style: .continuous)
+            )
+        }
+        .buttonStyle(.plain)
     }
 
     // MARK: - Header

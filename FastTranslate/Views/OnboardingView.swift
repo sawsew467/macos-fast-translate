@@ -1,11 +1,12 @@
 import SwiftUI
 
-/// First-launch setup flow: permissions, language, provider choice.
+/// First-launch setup flow: permissions, language, provider choice, shortcuts.
 struct OnboardingView: View {
     let onDismiss: () -> Void
     @AppStorage(Constants.UserDefaultsKey.onboardingStep) private var step = 0
 
-    private let steps = ["Permissions", "Language", "Setup"]
+    private let steps = ["Permissions", "Language", "Setup", "Shortcuts"]
+    private let lastStep = 3
 
     var body: some View {
         ZStack {
@@ -16,7 +17,8 @@ struct OnboardingView: View {
                     switch step {
                     case 0: OnboardingPermissionsStep()
                     case 1: OnboardingLanguageStep()
-                    default: OnboardingProviderStep()
+                    case 2: OnboardingProviderStep()
+                    default: OnboardingShortcutStep()
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -31,19 +33,17 @@ struct OnboardingView: View {
     }
 
     private var header: some View {
-        HStack(spacing: 16) {
-            VStack(alignment: .leading, spacing: 4) {
+        VStack(spacing: 12) {
+            VStack(spacing: 5) {
                 Text("FastTranslate")
-                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                    .font(.system(size: 28, weight: .bold, design: .rounded))
                 Text("Quick setup for menu bar translation")
-                    .font(.system(size: 13))
+                    .font(.system(size: 14))
                     .foregroundStyle(.secondary)
             }
-            .frame(width: 310, alignment: .leading)
+            .frame(maxWidth: .infinity, alignment: .center)
 
-            Spacer()
-
-            HStack(spacing: 8) {
+            HStack(spacing: 6) {
                 ForEach(steps.indices, id: \.self) { index in
                     StepPill(
                         title: steps[index],
@@ -53,11 +53,10 @@ struct OnboardingView: View {
                     )
                 }
             }
-            .fixedSize(horizontal: true, vertical: false)
         }
         .padding(.horizontal, 28)
         .padding(.top, 18)
-        .padding(.bottom, 10)
+        .padding(.bottom, 6)
     }
 
     private var navigationButtons: some View {
@@ -70,8 +69,8 @@ struct OnboardingView: View {
 
             Spacer()
 
-            Button(step < 2 ? "Continue" : "Start Using FastTranslate") {
-                if step < 2 { step += 1 } else { onDismiss() }
+            Button(step < lastStep ? "Continue" : "Start Using FastTranslate") {
+                if step < lastStep { step += 1 } else { onDismiss() }
             }
             .buttonStyle(.borderedProminent)
             .controlSize(.large)

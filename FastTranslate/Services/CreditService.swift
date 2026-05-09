@@ -16,7 +16,7 @@ final class CreditService: ObservableObject {
         defer { isLoading = false }
         do {
             let response: BalanceResponse = try await SupabaseClient.shared.request(
-                endpoint: "/functions/v1/account/balance"
+                endpoint: "/functions/v1/account-balance"
             )
             balance = response.balance
             trialClaimed = response.trial_claimed
@@ -29,7 +29,7 @@ final class CreditService: ObservableObject {
         struct ClaimBody: Encodable { let device_id: String }
         do {
             let response: ClaimTrialResponse = try await SupabaseClient.shared.request(
-                endpoint: "/functions/v1/account/claim-trial",
+                endpoint: "/functions/v1/account-claim-trial",
                 method: "POST",
                 body: ClaimBody(device_id: DeviceIdentifier.platformUUID)
             )

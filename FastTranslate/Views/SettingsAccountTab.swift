@@ -7,8 +7,9 @@ struct SettingsAccountTab: View {
     @State private var email = ""
     @State private var password = ""
     @State private var isSignup = false
+    @State private var otp = ""
+    @State private var pendingOTPEmail: String?
     @State private var packages: [TopupPackage] = []
-    @State private var showingQRSheet = false
     @State private var qrInfo: QRPaymentInfo?
 
     var body: some View {
@@ -25,10 +26,8 @@ struct SettingsAccountTab: View {
                 await loadPackages()
             }
         }
-        .sheet(isPresented: $showingQRSheet) {
-            if let qr = qrInfo {
-                PaymentQRSheetView(qrInfo: qr) { showingQRSheet = false }
-            }
+        .sheet(item: $qrInfo) { qr in
+            PaymentQRSheetView(qrInfo: qr) { qrInfo = nil }
         }
     }
 
@@ -76,6 +75,14 @@ struct SettingsAccountTab: View {
 
     @ViewBuilder
     private var loggedOutContent: some View {
+        if let otpEmail = pendingOTPEmail {
+            otpCard(email: otpEmail)
+        } else {
+            authCard
+        }
+    }
+
+    private var authCard: some View {
         SettingsCard(
             systemImage: "person.crop.circle",
             title: isSignup ? "Sign Up" : "Log In",
@@ -90,11 +97,15 @@ struct SettingsAccountTab: View {
                         Task {
                             if isSignup {
                                 await authService.signup(email: email, password: password)
+                                if authService.authError == nil { pendingOTPEmail = email }
                             } else {
                                 await authService.login(email: email, password: password)
                                 if authService.authState.isLoggedIn {
                                     await creditService.fetchBalance()
                                     await loadPackages()
+                                    if !creditService.trialClaimed {
+                                        await creditService.claimTrial()
+                                    }
                                 }
                             }
                         }
@@ -103,6 +114,52 @@ struct SettingsAccountTab: View {
 
                     Button(isSignup ? "Have account? Log in" : "New? Sign up") {
                         isSignup.toggle()
+                    }
+                    .font(.caption)
+
+                    if authService.authState == .loading { ProgressView().scaleEffect(0.7) }
+                }
+
+                if let error = authService.authError {
+                    Text(error).font(.caption).foregroundStyle(.red)
+                }
+            }
+        }
+    }
+
+    private func otpCard(email: String) -> some View {
+        SettingsCard(
+            systemImage: "envelope.badge",
+            title: "Verify your email",
+            subtitle: "Enter the 6-digit code sent to \(email)"
+        ) {
+            VStack(alignment: .leading, spacing: 12) {
+                TextField("000000", text: $otp)
+                    .textFieldStyle(.roundedBorder)
+                    .font(.system(size: 20, weight: .bold, design: .monospaced))
+                    .multilineTextAlignment(.center)
+                    .onChange(of: otp) { newValue in
+                        otp = String(newValue.filter(\.isNumber).prefix(6))
+                    }
+
+                HStack(spacing: 10) {
+                    SettingsButton("Verify", systemImage: "checkmark", isPrimary: true) {
+                        Task {
+                            await authService.verifySignupOTP(email: email, token: otp)
+                            if authService.authState.isLoggedIn {
+                                pendingOTPEmail = nil
+                                await creditService.fetchBalance()
+                                await loadPackages()
+                                await creditService.claimTrial()
+                            }
+                        }
+                    }
+                    .disabled(otp.count < 6)
+
+                    Button("Back") {
+                        pendingOTPEmail = nil
+                        otp = ""
+                        authService.authError = nil
                     }
                     .font(.caption)
 
@@ -129,7 +186,6 @@ struct SettingsAccountTab: View {
     private func purchasePackage(_ pkg: TopupPackage) async {
         do {
             qrInfo = try await PaymentService().createQR(packageId: pkg.id)
-            showingQRSheet = true
         } catch {
             print("[SettingsAccountTab] createQR failed: \(error)")
         }
@@ -151,6 +207,12 @@ private struct PackageCard: View {
                 Text(package.formattedPrice)
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundStyle(.blue)
+                Text("Get Now")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 4)
+                    .background(.blue, in: Capsule())
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 12)

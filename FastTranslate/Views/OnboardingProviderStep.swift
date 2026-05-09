@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 
 struct OnboardingProviderStep: View {
@@ -5,15 +6,6 @@ struct OnboardingProviderStep: View {
     private var defaultProvider = ProviderType.googleTranslate.rawValue
 
     @ObservedObject private var authService = SupabaseAuthService.shared
-
-    @State private var email = ""
-    @State private var password = ""
-    @State private var isSignup = false
-    @State private var authMessage: String?
-    @State private var trialMessage: String?
-    @State private var apiKey = ""
-    @State private var isTesting = false
-    @State private var testStatus: String?
 
     private var selectedProvider: ProviderType {
         ProviderType(rawValue: defaultProvider) ?? .googleTranslate
@@ -26,17 +18,18 @@ struct OnboardingProviderStep: View {
             title: "Choose your translator",
             subtitle: "You can change this anytime in Settings."
         ) {
-            VStack(spacing: 14) {
+            VStack(spacing: 10) {
                 ProviderOptionCard(
                     systemImage: "wand.and.stars",
                     title: "AI Translation",
-                    subtitle: "High quality, 50 free translations",
+                    subtitle: aiSubtitle,
                     badge: "Recommended",
                     isSelected: selectedProvider == .aiTranslation
-                ) { defaultProvider = ProviderType.aiTranslation.rawValue }
-
-                if selectedProvider == .aiTranslation {
-                    aiAuthForm
+                ) {
+                    defaultProvider = ProviderType.aiTranslation.rawValue
+                    if !authService.authState.isLoggedIn {
+                        ProviderFormPanel.shared.openAI()
+                    }
                 }
 
                 ProviderOptionCard(
@@ -45,10 +38,9 @@ struct OnboardingProviderStep: View {
                     subtitle: "Bring your own API key",
                     badge: nil,
                     isSelected: selectedProvider == .openAI
-                ) { defaultProvider = ProviderType.openAI.rawValue }
-
-                if selectedProvider == .openAI {
-                    openAIKeyForm
+                ) {
+                    defaultProvider = ProviderType.openAI.rawValue
+                    ProviderFormPanel.shared.openOpenAIKey()
                 }
 
                 ProviderOptionCard(
@@ -57,78 +49,252 @@ struct OnboardingProviderStep: View {
                     subtitle: "Free, no setup needed",
                     badge: nil,
                     isSelected: selectedProvider == .googleTranslate
-                ) { defaultProvider = ProviderType.googleTranslate.rawValue }
-
-                if selectedProvider == .googleTranslate {
-                    HStack(spacing: 8) {
-                        Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
-                        Text("Ready to go! No setup needed.")
-                            .font(.system(size: 13, weight: .medium)).foregroundStyle(.secondary)
-                    }
-                    .padding(.top, 4)
+                ) {
+                    defaultProvider = ProviderType.googleTranslate.rawValue
+                    ProviderFormPanel.shared.close()
                 }
             }
         }
     }
 
-    // MARK: - AI Auth Form
+    private var aiSubtitle: String {
+        authService.authState.isLoggedIn
+            ? "Logged in as \(authService.authState.email ?? "")"
+            : "50 free translations to get started"
+    }
+}
 
-    @ViewBuilder
-    private var aiAuthForm: some View {
-        VStack(alignment: .leading, spacing: 10) {
+// MARK: - Keyable Panel
+
+private final class KeyablePanel: NSPanel {
+    override var canBecomeKey: Bool { true }
+    override var canBecomeMain: Bool { true }
+}
+
+// MARK: - Floating Panel Manager
+
+@MainActor
+final class ProviderFormPanel {
+    static let shared = ProviderFormPanel()
+    private var panel: NSPanel?
+
+    func openAI() {
+        open(width: 300, height: 240) {
+            AIAuthPanelView(onDismiss: { ProviderFormPanel.shared.close() })
+        }
+    }
+
+    func openOpenAIKey() {
+        open(width: 300, height: 200) {
+            OpenAIKeyPanelView(onDismiss: { ProviderFormPanel.shared.close() })
+        }
+    }
+
+    func close() {
+        panel?.orderOut(nil)
+        panel = nil
+    }
+
+    private func open<Content: View>(width: CGFloat, height: CGFloat, @ViewBuilder content: () -> Content) {
+        close()
+
+        let newPanel = KeyablePanel(
+            contentRect: NSRect(x: 0, y: 0, width: width, height: height),
+            styleMask: [.borderless, .fullSizeContentView],
+            backing: .buffered,
+            defer: false
+        )
+        newPanel.backgroundColor = .clear
+        newPanel.isOpaque = false
+        newPanel.hasShadow = true
+        newPanel.isFloatingPanel = true
+        newPanel.level = .floating
+        newPanel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
+        newPanel.isMovableByWindowBackground = true
+
+        let hostingView = NSHostingView(rootView: content())
+        newPanel.contentView = hostingView
+        newPanel.contentView?.wantsLayer = true
+        newPanel.contentView?.layer?.cornerRadius = 20
+        newPanel.contentView?.layer?.cornerCurve = .continuous
+        newPanel.contentView?.layer?.masksToBounds = true
+
+        center(newPanel)
+        newPanel.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
+        panel = newPanel
+    }
+
+    private func center(_ panel: NSPanel) {
+        guard let screen = NSScreen.main else { panel.center(); return }
+        let sf = screen.visibleFrame
+        let pw = panel.frame
+        panel.setFrameOrigin(NSPoint(
+            x: sf.midX - pw.width / 2,
+            y: sf.midY - pw.height / 2
+        ))
+    }
+}
+
+// MARK: - AI Auth Panel View
+
+struct AIAuthPanelView: View {
+    let onDismiss: () -> Void
+
+    @ObservedObject private var authService = SupabaseAuthService.shared
+    @State private var email = ""
+    @State private var password = ""
+    @State private var isSignup = false
+    @State private var otp = ""
+    @State private var pendingOTPEmail: String?
+    @State private var trialMessage: String?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack {
+                Image(systemName: "wand.and.stars")
+                Text(panelTitle)
+                    .font(.system(size: 14, weight: .semibold))
+                Spacer()
+                Button(action: onDismiss) {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: 16))
+                        .foregroundStyle(.secondary)
+                }
+                .buttonStyle(.plain)
+            }
+
+            Divider()
+
             if authService.authState.isLoggedIn {
-                HStack(spacing: 8) {
-                    Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
-                    Text("Logged in as \(authService.authState.email ?? "")")
-                        .font(.system(size: 13, weight: .medium))
-                }
-                if let msg = trialMessage {
-                    Text(msg).font(.caption).foregroundStyle(.green)
-                }
+                loggedInView
+            } else if let otpEmail = pendingOTPEmail {
+                otpView(email: otpEmail)
             } else {
-                TextField("Email", text: $email)
-                    .textFieldStyle(.plain)
-                    .padding(10)
-                    .background(.background.opacity(0.5), in: RoundedRectangle(cornerRadius: 12))
-                    .overlay { RoundedRectangle(cornerRadius: 12).stroke(.primary.opacity(0.1)) }
-
-                SecureField("Password", text: $password)
-                    .textFieldStyle(.plain)
-                    .padding(10)
-                    .background(.background.opacity(0.5), in: RoundedRectangle(cornerRadius: 12))
-                    .overlay { RoundedRectangle(cornerRadius: 12).stroke(.primary.opacity(0.1)) }
-
-                HStack(spacing: 10) {
-                    Button(isSignup ? "Sign Up" : "Log In") {
-                        Task { await handleAuth() }
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .disabled(email.isEmpty || password.isEmpty)
-
-                    Button(isSignup ? "Have account? Log in" : "New? Sign up") {
-                        isSignup.toggle()
-                    }
-                    .font(.caption)
-
-                    if authService.authState == .loading { ProgressView().scaleEffect(0.7) }
-                }
-
-                if let error = authService.authError {
-                    Text(error).font(.caption).foregroundStyle(.red)
-                }
-                if let msg = authMessage {
-                    Text(msg).font(.caption).foregroundStyle(.blue)
-                }
+                authForm
             }
         }
-        .padding(.top, 4)
+        .padding(18)
+        .glassPanel()
     }
+
+    private var panelTitle: String {
+        if authService.authState.isLoggedIn { return "Signed in" }
+        if pendingOTPEmail != nil { return "Enter verification code" }
+        return isSignup ? "Create account" : "Sign in to AI Translation"
+    }
+
+    // MARK: - Logged in
+
+    private var loggedInView: some View {
+        VStack(spacing: 10) {
+            Label("Logged in as \(authService.authState.email ?? "")", systemImage: "checkmark.circle.fill")
+                .font(.system(size: 13, weight: .medium))
+                .foregroundStyle(.green)
+            if let msg = trialMessage {
+                Text(msg).font(.caption).foregroundStyle(.green)
+            }
+            Button("Done", action: onDismiss)
+                .buttonStyle(.borderedProminent)
+                .controlSize(.small)
+        }
+        .frame(maxWidth: .infinity, alignment: .center)
+        .padding(.vertical, 4)
+    }
+
+    // MARK: - OTP step
+
+    private func otpView(email: String) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("We sent a 6-digit code to")
+                    .font(.system(size: 12))
+                    .foregroundStyle(.secondary)
+                Text(email)
+                    .font(.system(size: 12, weight: .semibold))
+            }
+
+            TextField("000000", text: $otp)
+                .textFieldStyle(.plain)
+                .font(.system(size: 22, weight: .bold, design: .monospaced))
+                .multilineTextAlignment(.center)
+                .padding(10)
+                .background(.background.opacity(0.5), in: RoundedRectangle(cornerRadius: 10))
+                .overlay { RoundedRectangle(cornerRadius: 10).stroke(.primary.opacity(0.12)) }
+                .onChange(of: otp) { newValue in
+                    otp = String(newValue.filter(\.isNumber).prefix(6))
+                }
+
+            HStack(spacing: 8) {
+                Button("Verify") {
+                    Task { await handleOTP(email: email) }
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.small)
+                .disabled(otp.count < 6)
+
+                Button("Back") {
+                    pendingOTPEmail = nil
+                    otp = ""
+                    authService.authError = nil
+                }
+                .controlSize(.small)
+                .buttonStyle(.plain)
+
+                if authService.authState == .loading { ProgressView().scaleEffect(0.7) }
+            }
+
+            if let error = authService.authError {
+                Text(error).font(.caption).foregroundStyle(.red)
+            }
+        }
+    }
+
+    // MARK: - Auth form
+
+    private var authForm: some View {
+        VStack(spacing: 8) {
+            TextField("Email", text: $email)
+                .textFieldStyle(.plain)
+                .padding(9)
+                .background(.background.opacity(0.5), in: RoundedRectangle(cornerRadius: 10))
+                .overlay { RoundedRectangle(cornerRadius: 10).stroke(.primary.opacity(0.12)) }
+
+            SecureField("Password", text: $password)
+                .textFieldStyle(.plain)
+                .padding(9)
+                .background(.background.opacity(0.5), in: RoundedRectangle(cornerRadius: 10))
+                .overlay { RoundedRectangle(cornerRadius: 10).stroke(.primary.opacity(0.12)) }
+
+            HStack(spacing: 8) {
+                Button(isSignup ? "Sign Up" : "Log In") {
+                    Task { await handleAuth() }
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.small)
+                .disabled(email.isEmpty || password.isEmpty)
+
+                Button(isSignup ? "Have account?" : "New? Sign up") { isSignup.toggle() }
+                    .font(.caption)
+                    .buttonStyle(.plain)
+
+                if authService.authState == .loading { ProgressView().scaleEffect(0.7) }
+            }
+
+            if let error = authService.authError {
+                Text(error).font(.caption).foregroundStyle(.red)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
+    }
+
+    // MARK: - Actions
 
     private func handleAuth() async {
         if isSignup {
             await authService.signup(email: email, password: password)
             if authService.authError == nil {
-                authMessage = "Check your email to confirm, then log in."
+                pendingOTPEmail = email
             }
         } else {
             await authService.login(email: email, password: password)
@@ -139,66 +305,99 @@ struct OnboardingProviderStep: View {
         }
     }
 
-    // MARK: - OpenAI Key Form
+    private func handleOTP(email: String) async {
+        await authService.verifySignupOTP(email: email, token: otp)
+        if authService.authState.isLoggedIn {
+            let claimed = await CreditService.shared.claimTrial()
+            trialMessage = claimed ? "50 free credits granted!" : nil
+        }
+    }
+}
 
-    @ViewBuilder
-    private var openAIKeyForm: some View {
-        VStack(alignment: .leading, spacing: 12) {
+// MARK: - OpenAI Key Panel View
+
+struct OpenAIKeyPanelView: View {
+    let onDismiss: () -> Void
+
+    @State private var apiKey = ""
+    @State private var isTesting = false
+    @State private var testStatus: String?
+
+    private var isValid: Bool { testStatus?.hasPrefix("OK") == true }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            // Header
+            HStack {
+                Image(systemName: "key")
+                Text("OpenAI API Key")
+                    .font(.system(size: 14, weight: .semibold))
+                Spacer()
+                Button(action: onDismiss) {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: 16))
+                        .foregroundStyle(.secondary)
+                }
+                .buttonStyle(.plain)
+            }
+
+            Divider()
+
             SecureField("sk-proj-...", text: $apiKey)
                 .font(.system(size: 13, design: .monospaced))
                 .textFieldStyle(.plain)
                 .padding(.horizontal, 12)
-                .frame(height: 42)
-                .background(.background.opacity(0.62), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-                .overlay {
-                    RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        .stroke(.primary.opacity(0.10), lineWidth: 1)
-                }
+                .frame(height: 38)
+                .background(.background.opacity(0.62), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                .overlay { RoundedRectangle(cornerRadius: 10, style: .continuous).stroke(.primary.opacity(0.10)) }
 
-            HStack(spacing: 10) {
-                Button("Test Key") { testAPIKey() }
+            HStack(spacing: 8) {
+                Button("Test") { testAPIKey() }
+                    .controlSize(.small)
                     .disabled(apiKey.isEmpty || isTesting)
-                Button("Save to Keychain") { saveAPIKey() }
-                    .disabled(testStatus?.hasPrefix("OK") != true)
-                    .buttonStyle(.borderedProminent)
 
-                if isTesting { ProgressView().scaleEffect(0.72) }
+                Button("Save") { saveAPIKey() }
+                    .controlSize(.small)
+                    .buttonStyle(.borderedProminent)
+                    .disabled(!isValid)
+
+                if isTesting { ProgressView().scaleEffect(0.7) }
+
                 if let status = testStatus {
                     Text(status)
                         .font(.caption.weight(.medium))
-                        .foregroundStyle(status.hasPrefix("OK") ? .green : .red)
+                        .foregroundStyle(isValid ? .green : .red)
                 }
-                Spacer()
             }
         }
-        .padding(.top, 4)
+        .padding(18)
+        .glassPanel()
     }
 
     private func saveAPIKey() {
         try? KeychainHelper.save(account: Constants.KeychainAccount.openAIAPIKey, value: apiKey)
         testStatus = "OK Saved"
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { onDismiss() }
     }
 
     private func testAPIKey() {
-        isTesting = true
-        testStatus = nil
+        isTesting = true; testStatus = nil
         Task {
             let url = URL(string: "https://api.openai.com/v1/chat/completions")!
             var req = URLRequest(url: url)
             req.httpMethod = "POST"
             req.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
             req.setValue("application/json", forHTTPHeaderField: "Content-Type")
-            let body: [String: Any] = [
+            req.httpBody = try? JSONSerialization.data(withJSONObject: [
                 "model": "gpt-4o-mini",
                 "messages": [["role": "user", "content": "Hi"]],
                 "max_tokens": 5
-            ]
-            req.httpBody = try? JSONSerialization.data(withJSONObject: body)
+            ])
             do {
                 let (_, resp) = try await URLSession.shared.data(for: req)
                 let code = (resp as? HTTPURLResponse)?.statusCode ?? 0
                 await MainActor.run {
-                    testStatus = code == 200 ? "OK Valid key" : "Invalid HTTP \(code)"
+                    testStatus = code == 200 ? "OK Valid key" : "HTTP \(code)"
                     isTesting = false
                 }
             } catch {

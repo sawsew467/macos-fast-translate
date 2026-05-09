@@ -70,6 +70,35 @@ struct OutOfCreditPanelContent: View {
     }
 }
 
+// MARK: - Low Credit Warning Row
+
+/// Small row shown at the bottom of translation results when credits are running low.
+struct LowCreditRow: View {
+    let balance: Int
+    let onTopUp: () -> Void
+
+    private var isOut: Bool { balance == 0 }
+
+    var body: some View {
+        Button(action: onTopUp) {
+            HStack(spacing: 6) {
+                Image(systemName: isOut ? "creditcard.trianglebadge.exclamationmark" : "exclamationmark.triangle.fill")
+                    .font(.system(size: 11))
+                    .foregroundStyle(isOut ? Color.red : Color.orange)
+                Text(isOut ? "Out of credits — top up to keep translating" : "Only \(balance) credits left")
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundStyle(isOut ? AnyShapeStyle(Color.red) : AnyShapeStyle(Color.primary.opacity(0.7)))
+                Spacer()
+                Text("Top Up →")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(.blue)
+            }
+            .padding(.vertical, 4)
+        }
+        .buttonStyle(.plain)
+    }
+}
+
 // MARK: - AI Nudge Helper
 
 /// Stateless helpers for nudge/banner visibility logic. Must be called on the main actor.

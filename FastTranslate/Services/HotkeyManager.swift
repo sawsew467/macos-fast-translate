@@ -224,9 +224,50 @@ final class HotkeyManager {
                 }
                 state.isStreaming = false
                 translationService.addToHistory(state.completedResult)
+                trackGoogleTranslateIfNeeded(state: state)
+            } catch let error as TranslationError {
+                state.isStreaming = false
+                if case .noCredits = error {
+                    let anchorPoint = NSEvent.mouseLocation
+                    floatingPanel.showOutOfCredit(
+                        near: anchorPoint,
+                        onTopUp: {
+                            NotificationCenter.default.post(name: .openAccountTab, object: nil)
+                        },
+                        onUseGoogle: { [weak self] in
+                            UserDefaults.standard.set(
+                                ProviderType.googleTranslate.rawValue,
+                                forKey: Constants.UserDefaultsKey.defaultProvider
+                            )
+                            self?.translateSelectedTextFromCurrentMouseLocation()
+                        }
+                    )
+                } else {
+                    state.error = error.localizedDescription
+                }
             } catch {
                 state.isStreaming = false
                 state.error = error.localizedDescription
+            }
+        }
+    }
+
+    @MainActor
+    private func trackGoogleTranslateIfNeeded(state: StreamingTranslationState) {
+        guard state.provider == .googleTranslate else { return }
+        let key = Constants.UserDefaultsKey.googleTranslateCount
+        let count = UserDefaults.standard.integer(forKey: key) + 1
+        UserDefaults.standard.set(count, forKey: key)
+
+        if AINudgeHelper.shouldShowBanner {
+            AINudgeHelper.markBannerSeen()
+            let anchorPoint = NSEvent.mouseLocation
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
+                self?.floatingPanel.showMessage(
+                    "You've translated \(count) times! Try AI free — 50 credits",
+                    systemImage: "wand.and.stars",
+                    near: anchorPoint
+                )
             }
         }
     }

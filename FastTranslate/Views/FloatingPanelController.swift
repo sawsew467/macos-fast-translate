@@ -245,6 +245,8 @@ private struct FloatingPanelContent: View {
     let onCopy: () -> Void
     let onClose: () -> Void
 
+    @ObservedObject private var creditService = CreditService.shared
+
     var body: some View {
         panelContainer {
             Text(result.translatedText)
@@ -271,6 +273,12 @@ private struct FloatingPanelContent: View {
                 .buttonStyle(.plain)
             }
 
+            if SupabaseAuthService.shared.authState.isLoggedIn && creditService.balance < 10 {
+                LowCreditRow(balance: creditService.balance) {
+                    NotificationCenter.default.post(name: .openAccountTab, object: nil)
+                }
+            }
+
             if AINudgeHelper.shouldShowNudge {
                 AINudgeRow {
                     NotificationCenter.default.post(name: .openAccountTab, object: nil)
@@ -288,13 +296,25 @@ struct StreamingPanelContent: View {
     let onClose: () -> Void
     let onTargetLanguageChange: ((Language) -> Void)?
 
+    @ObservedObject private var creditService = CreditService.shared
+
+    private var isCreditError: Bool {
+        guard let err = state.error else { return false }
+        return err.localizedLowercase.contains("credit") || err.contains("402")
+    }
+
+    private var showLowCreditWarning: Bool {
+        guard !state.isStreaming && SupabaseAuthService.shared.authState.isLoggedIn else { return false }
+        return isCreditError || creditService.balance < 10
+    }
+
     var body: some View {
         panelContainer {
             // Content area — ScrollView prevents overflow, auto-scrolls during streaming
             ScrollViewReader { proxy in
                 ScrollView(.vertical, showsIndicators: true) {
                     VStack(alignment: .leading, spacing: 0) {
-                        if let error = state.error {
+                        if let error = state.error, !isCreditError {
                             Text(error)
                                 .font(.system(size: 13))
                                 .foregroundStyle(.red)
@@ -326,6 +346,12 @@ struct StreamingPanelContent: View {
                 }
                 .onChange(of: state.streamedText) { _ in
                     proxy.scrollTo("bottom", anchor: .bottom)
+                }
+            }
+
+            if showLowCreditWarning {
+                LowCreditRow(balance: isCreditError ? 0 : creditService.balance) {
+                    NotificationCenter.default.post(name: .openAccountTab, object: nil)
                 }
             }
 

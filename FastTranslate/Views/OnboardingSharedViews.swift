@@ -1,5 +1,29 @@
 import SwiftUI
 
+// MARK: - Glass Panel modifier (used by floating NSPanel SwiftUI content)
+
+extension View {
+    func glassPanel(cornerRadius: CGFloat = 20) -> some View {
+        let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+        if #available(macOS 26.0, *) {
+            return AnyView(
+                self
+                    .background(.clear)
+                    .glassEffect(.regular, in: shape)
+                    .clipShape(shape)
+                    .overlay { shape.stroke(.primary.opacity(0.08), lineWidth: 1) }
+            )
+        } else {
+            return AnyView(
+                self
+                    .background(.regularMaterial, in: shape)
+                    .clipShape(shape)
+                    .overlay { shape.stroke(.primary.opacity(0.10), lineWidth: 1) }
+            )
+        }
+    }
+}
+
 // MARK: - LiquidGlass modifiers
 
 struct LiquidGlassCardModifier: ViewModifier {
@@ -64,7 +88,7 @@ struct StepPill: View {
                 .fixedSize(horizontal: true, vertical: false)
         }
         .padding(.horizontal, 10)
-        .frame(minWidth: 94)
+        .frame(minWidth: 80)
         .frame(height: 30)
         .modifier(LiquidGlassCapsuleModifier(isActive: isActive))
     }

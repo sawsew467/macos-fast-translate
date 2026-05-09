@@ -20,7 +20,8 @@ struct TopupPackage: Decodable, Identifiable {
     }
 }
 
-struct QRPaymentInfo: Decodable {
+struct QRPaymentInfo: Decodable, Identifiable {
+    var id: String { transfer_content }
     let qr_data: String
     let bank_account: String
     let bank_name: String

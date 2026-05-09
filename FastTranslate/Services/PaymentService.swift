@@ -13,7 +13,7 @@ struct PaymentService {
     func createQR(packageId: String) async throws -> QRPaymentInfo {
         struct QRBody: Encodable { let package_id: String }
         return try await SupabaseClient.shared.request(
-            endpoint: "/functions/v1/payment/create-qr",
+            endpoint: "/functions/v1/payment-create-qr",
             method: "POST",
             body: QRBody(package_id: packageId)
         )
