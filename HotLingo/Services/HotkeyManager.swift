@@ -164,16 +164,19 @@ final class HotkeyManager {
     }
 
     /// Show panel immediately, then pipe streamed tokens into it.
+    /// Pass `providerOverride` to use a specific provider for this call only — does not change settings.
     @MainActor
     private func streamTranslation(
         _ text: String,
         near point: NSPoint,
         perMessageContext: String? = nil,
-        presentation: TranslationPresentation = .plain
+        presentation: TranslationPresentation = .plain,
+        providerOverride: ProviderType? = nil
     ) throws {
         let (source, target, stream) = try translationService.translateStreaming(
             text,
-            perMessageContext: perMessageContext
+            perMessageContext: perMessageContext,
+            providerOverride: providerOverride
         )
 
         let state = StreamingTranslationState(
@@ -229,17 +232,20 @@ final class HotkeyManager {
                 state.isStreaming = false
                 if case .noCredits = error {
                     let anchorPoint = NSEvent.mouseLocation
+                    let sourceText = state.sourceText
                     floatingPanel.showOutOfCredit(
                         near: anchorPoint,
                         onTopUp: {
                             NotificationCenter.default.post(name: .openAccountTab, object: nil)
                         },
                         onUseGoogle: { [weak self] in
-                            UserDefaults.standard.set(
-                                ProviderType.googleTranslate.rawValue,
-                                forKey: Constants.UserDefaultsKey.defaultProvider
+                            // Translate this one request with Google — does NOT change the saved provider
+                            guard let self else { return }
+                            try? self.streamTranslation(
+                                sourceText,
+                                near: NSEvent.mouseLocation,
+                                providerOverride: .googleTranslate
                             )
-                            self?.translateSelectedTextFromCurrentMouseLocation()
                         }
                     )
                 } else {
