@@ -67,43 +67,6 @@ struct TranslationPopoverView: View {
 
     // MARK: - Error Display
 
-    private func errorView(_ raw: String) -> some View {
-        HStack(alignment: .top, spacing: 8) {
-            Image(systemName: "exclamationmark.triangle.fill")
-                .font(.system(size: 12))
-                .foregroundStyle(.orange)
-                .padding(.top, 1)
-            Text(friendlyErrorMessage(raw))
-                .font(.system(size: 13))
-                .foregroundStyle(.primary.opacity(0.75))
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .padding(10)
-        .frame(maxWidth: .infinity, alignment: .topLeading)
-        .background(Color.orange.opacity(0.08), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
-    }
-
-    private func friendlyErrorMessage(_ raw: String) -> String {
-        let lower = raw.localizedLowercase
-        if lower.contains("timeout") || lower.contains("timed out") {
-            return "Request timed out. Check your connection and try again."
-        }
-        if lower.contains("401") || lower.contains("unauthorized") {
-            return "Session expired. Please sign in again."
-        }
-        if lower.contains("500") || lower.contains("503") {
-            return "Server error. Please try again in a moment."
-        }
-        if lower.contains("network") || lower.contains("offline") || lower.contains("internet") {
-            return "Connection error. Check your internet and try again."
-        }
-        // Strip "Network error: [NNN]" prefix if present
-        let stripped = raw.replacingOccurrences(
-            of: #"^Network error:\s*\[\d+\]\s*"#, with: "", options: .regularExpression
-        )
-        return stripped.isEmpty ? "Something went wrong. Please try again." : stripped
-    }
-
     // MARK: - Header
 
     private var headerBar: some View {
@@ -181,7 +144,10 @@ struct TranslationPopoverView: View {
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
             } else if let error = errorMessage {
-                errorView(error)
+                Text(error)
+                    .foregroundStyle(.red)
+                    .font(.system(size: 13))
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             } else if let result = service.lastResult {
                 ScrollView {
                     Text(result.translatedText)

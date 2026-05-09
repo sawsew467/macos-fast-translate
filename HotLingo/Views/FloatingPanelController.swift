@@ -298,43 +298,6 @@ struct StreamingPanelContent: View {
 
     @ObservedObject private var creditService = CreditService.shared
 
-    @ViewBuilder
-    private func streamingErrorView(_ raw: String) -> some View {
-        HStack(alignment: .top, spacing: 8) {
-            Image(systemName: "exclamationmark.triangle.fill")
-                .font(.system(size: 12))
-                .foregroundStyle(.orange)
-                .padding(.top, 1)
-            Text(friendlyStreamingError(raw))
-                .font(.system(size: 13))
-                .foregroundStyle(.primary.opacity(0.75))
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .padding(10)
-        .frame(maxWidth: .infinity, alignment: .topLeading)
-        .background(Color.orange.opacity(0.08), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
-    }
-
-    private func friendlyStreamingError(_ raw: String) -> String {
-        let lower = raw.localizedLowercase
-        if lower.contains("timeout") || lower.contains("timed out") {
-            return "Request timed out. Check your connection and try again."
-        }
-        if lower.contains("401") || lower.contains("unauthorized") {
-            return "Session expired. Please sign in again."
-        }
-        if lower.contains("500") || lower.contains("503") {
-            return "Server error. Please try again in a moment."
-        }
-        if lower.contains("network") || lower.contains("offline") || lower.contains("internet") {
-            return "Connection error. Check your internet and try again."
-        }
-        let stripped = raw.replacingOccurrences(
-            of: #"^Network error:\s*\[\d+\]\s*"#, with: "", options: .regularExpression
-        )
-        return stripped.isEmpty ? "Something went wrong. Please try again." : stripped
-    }
-
     private var showLowCreditWarning: Bool {
         guard !state.isStreaming && SupabaseAuthService.shared.authState.isLoggedIn else { return false }
         return creditService.balance < 10
@@ -347,7 +310,10 @@ struct StreamingPanelContent: View {
                 ScrollView(.vertical, showsIndicators: true) {
                     VStack(alignment: .leading, spacing: 0) {
                         if let error = state.error {
-                            streamingErrorView(error)
+                            Text(error)
+                                .font(.system(size: 13))
+                                .foregroundStyle(.red)
+                                .frame(maxWidth: .infinity, alignment: .leading)
                         } else if state.streamedText.isEmpty && state.isStreaming {
                             HStack(spacing: 6) {
                                 ProgressView().scaleEffect(0.7)
