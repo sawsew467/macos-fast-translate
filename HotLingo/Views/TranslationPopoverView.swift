@@ -16,6 +16,11 @@ struct TranslationPopoverView: View {
     private let outerPadding: CGFloat = 18
     private let popoverShape = RoundedRectangle(cornerRadius: 26, style: .continuous)
 
+    private var isCreditError: Bool {
+        guard let msg = errorMessage else { return false }
+        return msg.localizedLowercase.contains("credit") || msg.contains("402")
+    }
+
     var body: some View {
         popoverContainer {
             VStack(alignment: .leading, spacing: 12) {
@@ -23,7 +28,7 @@ struct TranslationPopoverView: View {
                 if showContext { contextEditor }
                 inputEditor
                 outputDisplay
-                if SupabaseAuthService.shared.authState.isLoggedIn && creditService.balance < 10 {
+                if SupabaseAuthService.shared.authState.isLoggedIn && (creditService.balance < 10 || isCreditError) {
                     creditWarningBar
                 }
                 Spacer(minLength: 0)
@@ -63,6 +68,45 @@ struct TranslationPopoverView: View {
             )
         }
         .buttonStyle(.plain)
+    }
+
+    // MARK: - Error Display
+
+    private func errorView(_ raw: String) -> some View {
+        HStack(alignment: .top, spacing: 8) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .font(.system(size: 12))
+                .foregroundStyle(.orange)
+                .padding(.top, 1)
+            Text(friendlyErrorMessage(raw))
+                .font(.system(size: 13))
+                .foregroundStyle(.primary.opacity(0.75))
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(10)
+        .frame(maxWidth: .infinity, alignment: .topLeading)
+        .background(Color.orange.opacity(0.08), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+    }
+
+    private func friendlyErrorMessage(_ raw: String) -> String {
+        let lower = raw.localizedLowercase
+        if lower.contains("timeout") || lower.contains("timed out") {
+            return "Request timed out. Check your connection and try again."
+        }
+        if lower.contains("401") || lower.contains("unauthorized") {
+            return "Session expired. Please sign in again."
+        }
+        if lower.contains("500") || lower.contains("503") {
+            return "Server error. Please try again in a moment."
+        }
+        if lower.contains("network") || lower.contains("offline") || lower.contains("internet") {
+            return "Connection error. Check your internet and try again."
+        }
+        // Strip "Network error: [NNN]" prefix if present
+        let stripped = raw.replacingOccurrences(
+            of: #"^Network error:\s*\[\d+\]\s*"#, with: "", options: .regularExpression
+        )
+        return stripped.isEmpty ? "Something went wrong. Please try again." : stripped
     }
 
     // MARK: - Header
@@ -141,11 +185,8 @@ struct TranslationPopoverView: View {
                         .font(.system(size: 13, weight: .medium))
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-            } else if let error = errorMessage {
-                Text(error)
-                    .foregroundStyle(.red)
-                    .font(.system(size: 13))
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            } else if let error = errorMessage, !isCreditError {
+                errorView(error)
             } else if let result = service.lastResult {
                 ScrollView {
                     Text(result.translatedText)
