@@ -4,7 +4,7 @@ import Security
 /// Secure storage for API keys using macOS Keychain.
 /// Service identifier: "com.fasttranslate.app"
 enum KeychainHelper {
-    private static let service = "com.fasttranslate.app"
+    private static let service = "com.hotlingo.app"
 
     /// Save or update a value in the Keychain.
     static func save(account: String, value: String) throws {

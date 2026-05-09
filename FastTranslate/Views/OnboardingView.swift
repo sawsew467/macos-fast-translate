@@ -35,7 +35,7 @@ struct OnboardingView: View {
     private var header: some View {
         VStack(spacing: 12) {
             VStack(spacing: 5) {
-                Text("FastTranslate")
+                Text("HotLingo")
                     .font(.system(size: 28, weight: .bold, design: .rounded))
                 Text("Quick setup for menu bar translation")
                     .font(.system(size: 14))
@@ -69,7 +69,7 @@ struct OnboardingView: View {
 
             Spacer()
 
-            Button(step < lastStep ? "Continue" : "Start Using FastTranslate") {
+            Button(step < lastStep ? "Continue" : "Start Using HotLingo") {
                 if step < lastStep { step += 1 } else { onDismiss() }
             }
             .buttonStyle(.borderedProminent)

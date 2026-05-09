@@ -494,8 +494,8 @@
 				INFOPLIST_FILE = FastTranslate/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MARKETING_VERSION = 1.6.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.fasttranslate.app;
-				PRODUCT_NAME = FastTranslate;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hotlingo.app;
+				PRODUCT_NAME = HotLingo;
 				SDKROOT = macosx;
 			};
 			name = Debug;
@@ -511,8 +511,8 @@
 				INFOPLIST_FILE = FastTranslate/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MARKETING_VERSION = 1.6.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.fasttranslate.app;
-				PRODUCT_NAME = FastTranslate;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hotlingo.app;
+				PRODUCT_NAME = HotLingo;
 				SDKROOT = macosx;
 			};
 			name = Release;

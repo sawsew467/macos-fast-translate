@@ -10,7 +10,7 @@ struct OnboardingPermissionsStep: View {
             systemImage: "lock.shield",
             tint: .orange,
             title: "Grant permissions",
-            subtitle: "macOS needs approval before FastTranslate can read selected text or capture OCR screenshots."
+            subtitle: "macOS needs approval before HotLingo can read selected text or capture OCR screenshots."
         ) {
             VStack(spacing: 12) {
                 PermissionRow(

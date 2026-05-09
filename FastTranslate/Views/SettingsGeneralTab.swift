@@ -16,7 +16,7 @@ struct GeneralSettingsTab: View {
     }
 
     var body: some View {
-        SettingsPage(title: "General", subtitle: "Tune how FastTranslate behaves across popover and floating panel.") {
+        SettingsPage(title: "General", subtitle: "Tune how HotLingo behaves across popover and floating panel.") {
             SettingsCard(systemImage: "brain", title: "Translation Engine", subtitle: "Google Translate is free with no setup. AI Translation offers high quality with 50 free credits.") {
                 Picker("Provider", selection: $defaultProvider) {
                     Text("Google Translate").tag(ProviderType.googleTranslate.rawValue)
@@ -73,7 +73,7 @@ struct GeneralSettingsTab: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
 
-            SettingsCard(systemImage: "power", title: "Startup", subtitle: "Open FastTranslate automatically when you sign in.") {
+            SettingsCard(systemImage: "power", title: "Startup", subtitle: "Open HotLingo automatically when you sign in.") {
                 Toggle("Launch at Login", isOn: $launchAtLogin)
                     .toggleStyle(.switch)
                     .onChange(of: launchAtLogin) { newValue in

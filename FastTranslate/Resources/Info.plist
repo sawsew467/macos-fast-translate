@@ -29,8 +29,8 @@
     <string>Copyright © 2026. All rights reserved.</string>
     <!-- Permission descriptions -->
     <key>NSAccessibilityUsageDescription</key>
-    <string>FastTranslate needs Accessibility access to read selected text and register global hotkeys.</string>
+    <string>HotLingo needs Accessibility access to read selected text and register global hotkeys.</string>
     <key>NSScreenCaptureUsageDescription</key>
-    <string>FastTranslate needs Screen Recording access to capture regions for OCR translation.</string>
+    <string>HotLingo needs Screen Recording access to capture regions for OCR translation.</string>
 </dict>
 </plist>

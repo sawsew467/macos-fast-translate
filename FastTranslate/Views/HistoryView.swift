@@ -288,7 +288,7 @@ struct HistoryView: View {
     private func historyFileURL() -> URL? {
         FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
             .first?
-            .appendingPathComponent("FastTranslate/history.json")
+            .appendingPathComponent("HotLingo/history.json")
     }
 
     private func saveHistoryToDisk() {

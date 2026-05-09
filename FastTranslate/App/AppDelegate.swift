@@ -68,7 +68,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func setupStatusItem() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         guard let button = statusItem.button else { return }
-        button.image = NSImage(systemSymbolName: "character.bubble", accessibilityDescription: "FastTranslate")
+        button.image = NSImage(systemSymbolName: "character.bubble", accessibilityDescription: "HotLingo")
         button.action = #selector(statusItemClicked)
         button.target = self
         button.sendAction(on: [.leftMouseUp, .rightMouseUp])
@@ -163,7 +163,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         settingsItem.target = self
         menu.addItem(settingsItem)
         menu.addItem(.separator())
-        menu.addItem(withTitle: "Quit FastTranslate", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        menu.addItem(withTitle: "Quit HotLingo", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         menu.popUp(positioning: nil, at: NSPoint(x: 0, y: sender.bounds.height + 4), in: sender)
     }
 
@@ -182,7 +182,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if settingsWindow == nil {
             let controller = NSHostingController(rootView: SettingsView())
             let window = NSWindow(contentViewController: controller)
-            window.title = "FastTranslate Settings"
+            window.title = "HotLingo Settings"
             window.styleMask = [.titled, .closable]
             window.setFrame(NSRect(x: 0, y: 0, width: 560, height: 500), display: false)
             centerWindowOnMainScreen(window)
@@ -318,7 +318,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         let controller = NSHostingController(rootView: view)
         let window = NSWindow(contentViewController: controller)
-        window.title = "Welcome to FastTranslate"
+        window.title = "Welcome to HotLingo"
         window.styleMask = [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView]
         window.titleVisibility = .hidden
         window.titlebarAppearsTransparent = true

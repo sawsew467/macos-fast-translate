@@ -44,7 +44,7 @@ struct SelectedTextReader {
         }
 
         // During debug the app can briefly become frontmost after the hotkey.
-        // Prefer the real user-facing app instead of querying FastTranslate itself.
+        // Prefer the real user-facing app instead of querying HotLingo itself.
         let candidates = NSWorkspace.shared.runningApplications.filter { app in
             app.isActive && app.bundleIdentifier != Bundle.main.bundleIdentifier
         } + NSWorkspace.shared.runningApplications.filter { app in

@@ -109,7 +109,7 @@ final class UpdateService: ObservableObject {
         let url = URL(string: "https://api.github.com/repos/\(owner)/\(repo)/releases/latest")!
         var req = URLRequest(url: url)
         req.setValue("application/vnd.github+json", forHTTPHeaderField: "Accept")
-        req.setValue("FastTranslate/\(currentVersion)", forHTTPHeaderField: "User-Agent")
+        req.setValue("HotLingo/\(currentVersion)", forHTTPHeaderField: "User-Agent")
         let (data, _) = try await URLSession.shared.data(for: req)
         return try JSONDecoder().decode(GitHubRelease.self, from: data)
     }
@@ -134,7 +134,7 @@ final class UpdateService: ObservableObject {
         let (tempURL, _) = try await URLSession.shared.download(from: url)
         // Move to a stable temp path with .zip extension
         let dest = FileManager.default.temporaryDirectory.appendingPathComponent(
-            "FastTranslate-update.zip"
+            "HotLingo-update.zip"
         )
         try? FileManager.default.removeItem(at: dest)
         try FileManager.default.moveItem(at: tempURL, to: dest)
@@ -144,9 +144,9 @@ final class UpdateService: ObservableObject {
     private func replaceAndRelaunch(zipURL: URL) throws {
         let appURL = Bundle.main.bundleURL
         let appDir = appURL.deletingLastPathComponent()
-        let appName = appURL.lastPathComponent // "FastTranslate.app"
+        let appName = appURL.lastPathComponent // "HotLingo.app"
         let tmpExtractDir = FileManager.default.temporaryDirectory
-            .appendingPathComponent("FastTranslate-update-extracted")
+            .appendingPathComponent("HotLingo-update-extracted")
 
         // Extract zip to tmp directory
         try? FileManager.default.removeItem(at: tmpExtractDir)
@@ -180,7 +180,7 @@ final class UpdateService: ObservableObject {
         open \(shellEscape(destAppPath))
         """
         let scriptURL = FileManager.default.temporaryDirectory
-            .appendingPathComponent("FastTranslate-updater.sh")
+            .appendingPathComponent("HotLingo-updater.sh")
         try script.write(to: scriptURL, atomically: true, encoding: .utf8)
         try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: scriptURL.path)
 
@@ -226,7 +226,7 @@ private enum UpdateError: LocalizedError {
         switch self {
         case .noZipAsset: return "No .zip asset found in the latest release."
         case .extractionFailed: return "Failed to extract the update archive."
-        case .appNotFoundInZip: return "FastTranslate.app not found in the downloaded archive."
+        case .appNotFoundInZip: return "HotLingo.app not found in the downloaded archive."
         }
     }
 }

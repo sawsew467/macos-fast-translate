@@ -2,8 +2,8 @@ import SwiftUI
 import ServiceManagement
 
 extension Notification.Name {
-    static let openAboutTab = Notification.Name("FastTranslate.openAboutTab")
-    static let openAccountTab = Notification.Name("FastTranslate.openAccountTab")
+    static let openAboutTab = Notification.Name("HotLingo.openAboutTab")
+    static let openAccountTab = Notification.Name("HotLingo.openAccountTab")
 }
 
 struct SettingsView: View {
@@ -191,7 +191,7 @@ struct AboutSettingsTab: View {
 
     var body: some View {
         SettingsPage(title: "About", subtitle: "Version info and software updates.") {
-            SettingsCard(systemImage: "app.badge", title: "FastTranslate", subtitle: "Fast Vi↔En translation for macOS.") {
+            SettingsCard(systemImage: "app.badge", title: "HotLingo", subtitle: "Fast Vi↔En translation for macOS.") {
                 HStack(spacing: 16) {
                     if let icon = NSImage(named: "AppIcon") {
                         Image(nsImage: icon)
@@ -200,7 +200,7 @@ struct AboutSettingsTab: View {
                             .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                     }
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("FastTranslate").font(.system(size: 15, weight: .semibold))
+                        Text("HotLingo").font(.system(size: 15, weight: .semibold))
                         Text("Version \(updateService.currentVersion)")
                             .font(.system(size: 13)).foregroundStyle(.secondary)
                     }
