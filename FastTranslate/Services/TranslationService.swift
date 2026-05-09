@@ -29,7 +29,8 @@ final class TranslationService: ObservableObject {
     init() {
         providers = [
             .googleTranslate: GoogleTranslateProvider(),
-            .openAI: OpenAITranslationProvider()
+            .openAI: OpenAITranslationProvider(),
+            .aiTranslation: AITranslationProvider()
         ]
         loadHistory()
     }

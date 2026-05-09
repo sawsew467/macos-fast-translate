@@ -16,11 +16,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         migrateAPIKeyToKeychain()
+        _ = SupabaseAuthService.shared  // triggers restoreSession() in init
         setupStatusItem()
         setupPopover()
         setupEventMonitor()
         setupHotkeys()
         setupSelectionTranslateButton()
+        setupAccountTabNotificationHandler()
         checkFirstLaunch()
         showPopoverOnLaunchIfNeeded()
         UpdateService.shared.checkOnLaunch()
@@ -45,6 +47,26 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     // MARK: - Setup
+
+    /// Opens the Settings window when an external request to show the Account tab arrives.
+    /// If the window is not yet visible, posts `.openAccountTab` again after a short delay
+    /// so SettingsView's `onReceive` fires after it has loaded.
+    private func setupAccountTabNotificationHandler() {
+        NotificationCenter.default.addObserver(
+            forName: .openAccountTab,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            guard let self else { return }
+            let isAlreadyOpen = self.settingsWindow?.isVisible == true
+            self.openSettings()
+            if !isAlreadyOpen {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                    NotificationCenter.default.post(name: .openAccountTab, object: nil)
+                }
+            }
+        }
+    }
 
     private func setupStatusItem() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
@@ -165,7 +187,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             let window = NSWindow(contentViewController: controller)
             window.title = "FastTranslate Settings"
             window.styleMask = [.titled, .closable]
-            window.setFrame(NSRect(x: 0, y: 0, width: 560, height: 430), display: false)
+            window.setFrame(NSRect(x: 0, y: 0, width: 560, height: 500), display: false)
             centerWindowOnMainScreen(window)
             // Clear reference when window closes
             NotificationCenter.default.addObserver(

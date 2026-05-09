@@ -74,12 +74,19 @@ enum Language: String, CaseIterable, Codable, Identifiable {
 enum ProviderType: String, CaseIterable, Codable {
     case googleTranslate = "google_translate"
     case openAI = "openai"
+    case aiTranslation = "ai_translation"
 
     var displayName: String {
         switch self {
         case .googleTranslate: return "Google Translate"
         case .openAI: return "GPT-4o mini"
+        case .aiTranslation: return "AI Translation"
         }
+    }
+
+    init(from decoder: Decoder) throws {
+        let raw = try decoder.singleValueContainer().decode(String.self)
+        self = ProviderType(rawValue: raw) ?? .googleTranslate
     }
 }
 
@@ -99,6 +106,8 @@ enum TranslationError: LocalizedError {
     case rateLimited
     case invalidResponse
     case emptyInput
+    case noCredits
+    case notAuthenticated
 
     var errorDescription: String? {
         switch self {
@@ -112,6 +121,10 @@ enum TranslationError: LocalizedError {
             return "Invalid response from translation service."
         case .emptyInput:
             return "Please enter text to translate."
+        case .noCredits:
+            return "Out of credits. Top up in Settings to continue."
+        case .notAuthenticated:
+            return "Please log in to use AI Translation."
         }
     }
 }

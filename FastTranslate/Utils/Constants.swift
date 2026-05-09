@@ -13,9 +13,18 @@ enum Constants {
         static let screenshot: UInt32 = 2
     }
 
+    // MARK: - Supabase configuration
+    enum Supabase {
+        static let url = "http://127.0.0.1:54321"   // TODO: replace with production URL
+        static let anonKey = "YOUR_ANON_KEY"         // TODO: replace with production anon key
+    }
+
     // MARK: - Keychain account names (not UserDefaults)
     enum KeychainAccount {
         static let openAIAPIKey = "openai_api_key"
+        static let supabaseAccessToken = "supabase_access_token"
+        static let supabaseRefreshToken = "supabase_refresh_token"
+        static let supabaseUserEmail = "supabase_user_email"
     }
 
     // MARK: - UserDefaults keys
@@ -30,6 +39,9 @@ enum Constants {
         static let screenshotHotkeyKeyCode = "screenshot_hotkey_key_code"
         static let screenshotHotkeyModifiers = "screenshot_hotkey_modifiers"
         static let showSelectionTranslateButton = "show_selection_translate_button"
+        static let googleTranslateCount = "google_translate_count"
+        static let hasSeenAINudgeBanner = "has_seen_ai_nudge_banner"
+        static let hasClaimedTrial = "has_claimed_trial"
     }
 
     // MARK: - UI

@@ -11,6 +11,18 @@ settings:
     SWIFT_VERSION: "5.9"
     MACOSX_DEPLOYMENT_TARGET: "13.0"
 
+schemes:
+  FastTranslate:
+    build:
+      targets:
+        FastTranslate: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+    archive:
+      config: Release
+
 targets:
   FastTranslate:
     type: application

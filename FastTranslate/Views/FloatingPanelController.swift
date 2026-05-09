@@ -65,6 +65,16 @@ final class FloatingPanelController {
         animationDelegate = nil
     }
 
+    func showOutOfCredit(near point: NSPoint, onTopUp: @escaping () -> Void, onUseGoogle: @escaping () -> Void) {
+        dismiss()
+        let contentView = OutOfCreditPanelContent(
+            onTopUp:     { [weak self] in self?.dismiss(); onTopUp() },
+            onUseGoogle: { [weak self] in self?.dismiss(); onUseGoogle() },
+            onClose:     { [weak self] in self?.dismiss() }
+        )
+        presentWindow(rootView: contentView, near: point, fixedHeight: 120, isResizable: false)
+    }
+
     // MARK: - Private
 
     private func presentWindow<V: View>(
@@ -260,6 +270,12 @@ private struct FloatingPanelContent: View {
                 }
                 .buttonStyle(.plain)
             }
+
+            if AINudgeHelper.shouldShowNudge {
+                AINudgeRow {
+                    NotificationCenter.default.post(name: .openAccountTab, object: nil)
+                }
+            }
         }
     }
 }
@@ -338,6 +354,12 @@ struct StreamingPanelContent: View {
                 }
                 .buttonStyle(.plain)
             }
+
+            if !state.isStreaming && AINudgeHelper.shouldShowNudge {
+                AINudgeRow {
+                    NotificationCenter.default.post(name: .openAccountTab, object: nil)
+                }
+            }
         }
     }
 }
@@ -414,7 +436,7 @@ private let floatingPanelCornerRadius: CGFloat = 18
 private let floatingPanelShape = RoundedRectangle(cornerRadius: floatingPanelCornerRadius, style: .continuous)
 
 @ViewBuilder
-private func panelContainer<Content: View>(@ViewBuilder content: () -> Content) -> some View {
+func panelContainer<Content: View>(@ViewBuilder content: () -> Content) -> some View {
     if #available(macOS 26.0, *) {
         GlassEffectContainer(spacing: 8) {
             panelContent(content)
@@ -431,7 +453,7 @@ private func panelContainer<Content: View>(@ViewBuilder content: () -> Content) 
     }
 }
 
-private func panelContent<Content: View>(_ content: () -> Content) -> some View {
+func panelContent<Content: View>(_ content: () -> Content) -> some View {
     VStack(alignment: .leading, spacing: 8, content: content)
         .padding(12)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
