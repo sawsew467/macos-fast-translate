@@ -335,14 +335,9 @@ struct StreamingPanelContent: View {
         return stripped.isEmpty ? "Something went wrong. Please try again." : stripped
     }
 
-    private var isCreditError: Bool {
-        guard let err = state.error else { return false }
-        return err.localizedLowercase.contains("credit") || err.contains("402")
-    }
-
     private var showLowCreditWarning: Bool {
         guard !state.isStreaming && SupabaseAuthService.shared.authState.isLoggedIn else { return false }
-        return isCreditError || creditService.balance < 10
+        return creditService.balance < 10
     }
 
     var body: some View {
@@ -351,7 +346,7 @@ struct StreamingPanelContent: View {
             ScrollViewReader { proxy in
                 ScrollView(.vertical, showsIndicators: true) {
                     VStack(alignment: .leading, spacing: 0) {
-                        if let error = state.error, !isCreditError {
+                        if let error = state.error {
                             streamingErrorView(error)
                         } else if state.streamedText.isEmpty && state.isStreaming {
                             HStack(spacing: 6) {
@@ -384,7 +379,7 @@ struct StreamingPanelContent: View {
             }
 
             if showLowCreditWarning {
-                LowCreditRow(balance: isCreditError ? 0 : creditService.balance) {
+                LowCreditRow(balance: creditService.balance) {
                     NotificationCenter.default.post(name: .openAccountTab, object: nil)
                 }
             }

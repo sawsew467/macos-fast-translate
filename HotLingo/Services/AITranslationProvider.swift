@@ -36,10 +36,16 @@ final class AITranslationProvider: TranslationProvider {
             }
             return response.translated_text
         } catch let error as SupabaseError {
+            // Match both httpError(402) and serverError("[402] ...") since SupabaseError.parse
+            // returns serverError when the response body contains a message.
             switch error {
             case .httpError(402):
                 throw TranslationError.noCredits
-            case .notAuthenticated:
+            case .serverError(let msg) where msg.hasPrefix("[402]"):
+                throw TranslationError.noCredits
+            case .httpError(401), .notAuthenticated:
+                throw TranslationError.notAuthenticated
+            case .serverError(let msg) where msg.hasPrefix("[401]"):
                 throw TranslationError.notAuthenticated
             default:
                 throw TranslationError.networkError(error)
