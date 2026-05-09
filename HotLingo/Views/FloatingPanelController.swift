@@ -298,9 +298,14 @@ struct StreamingPanelContent: View {
 
     @ObservedObject private var creditService = CreditService.shared
 
+    private var isCreditError: Bool {
+        guard let err = state.error else { return false }
+        return err.localizedLowercase.contains("credit") || err.contains("402")
+    }
+
     private var showLowCreditWarning: Bool {
         guard !state.isStreaming && SupabaseAuthService.shared.authState.isLoggedIn else { return false }
-        return creditService.balance < 10
+        return creditService.balance < 10 || isCreditError
     }
 
     var body: some View {

@@ -16,6 +16,11 @@ struct TranslationPopoverView: View {
     private let outerPadding: CGFloat = 18
     private let popoverShape = RoundedRectangle(cornerRadius: 26, style: .continuous)
 
+    private var isCreditError: Bool {
+        guard let msg = errorMessage else { return false }
+        return msg.localizedLowercase.contains("credit") || msg.contains("402")
+    }
+
     var body: some View {
         popoverContainer {
             VStack(alignment: .leading, spacing: 12) {
@@ -23,7 +28,7 @@ struct TranslationPopoverView: View {
                 if showContext { contextEditor }
                 inputEditor
                 outputDisplay
-                if SupabaseAuthService.shared.authState.isLoggedIn && creditService.balance < 10 && errorMessage == nil {
+                if SupabaseAuthService.shared.authState.isLoggedIn && (creditService.balance < 10 || isCreditError) {
                     creditWarningBar
                 }
                 Spacer(minLength: 0)
