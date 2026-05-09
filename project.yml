@@ -21,7 +21,7 @@ targets:
       - sdk: Carbon.framework
     settings:
       base:
-        MARKETING_VERSION: "1.4.0"
+        MARKETING_VERSION: "1.6.0"
         CURRENT_PROJECT_VERSION: "1"
         ENABLE_HARDENED_RUNTIME: true
         INFOPLIST_FILE: FastTranslate/Resources/Info.plist

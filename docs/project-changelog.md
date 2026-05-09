@@ -1,5 +1,14 @@
 # Project Changelog
 
+## [1.6.0] - 2026-05-09
+
+### Added
+- Optional selection translate button for quick translate from text selection
+- Quick translate displayed as centered window for better visibility
+
+### Fixed
+- Prevent screenshot overlay spam and ensure ESC properly cancels capture
+
 ## [1.5.0] - 2026-05-06
 
 ### Added
