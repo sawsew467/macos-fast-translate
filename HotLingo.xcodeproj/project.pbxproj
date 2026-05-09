@@ -32,7 +32,7 @@
 		8ABAEDED638E21112B18B89B /* TranslationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC96BA25B86F82EB77EF7204 /* TranslationProvider.swift */; };
 		907CCC1EE4478BE83D2B182F /* SettingsSharedViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 962084E8F0D8B7CC45909FE5 /* SettingsSharedViews.swift */; };
 		9988456B0EC55C6D0828D588 /* OnboardingShortcutStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0937076663B00A3C9A289D0C /* OnboardingShortcutStep.swift */; };
-		A1446A3F79FDB5DB6BDE9EDA /* FastTranslateApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24D55CE698491D500D02B0E0 /* FastTranslateApp.swift */; };
+		A1446A3F79FDB5DB6BDE9EDA /* HotLingoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24D55CE698491D500D02B0E0 /* HotLingoApp.swift */; };
 		ADBCFED6BE0F3E5A2C318692 /* OnboardingSharedViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E4F5103846838B727536A85 /* OnboardingSharedViews.swift */; };
 		B314057005DB96628DCCB9DD /* CreditService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2336BBEA6D61E8E1660AC758 /* CreditService.swift */; };
 		B43CF8EA36062E12626A6993 /* GoogleTranslateProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9179A1FB20714DADDB8B2EA2 /* GoogleTranslateProvider.swift */; };
@@ -65,7 +65,7 @@
 		2336BBEA6D61E8E1660AC758 /* CreditService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreditService.swift; sourceTree = "<group>"; };
 		2410F309D1E5B5BBAEF3EC72 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2444090F1786F69BF8DDEA20 /* AITranslationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AITranslationProvider.swift; sourceTree = "<group>"; };
-		24D55CE698491D500D02B0E0 /* FastTranslateApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FastTranslateApp.swift; sourceTree = "<group>"; };
+		24D55CE698491D500D02B0E0 /* HotLingoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotLingoApp.swift; sourceTree = "<group>"; };
 		24DE519F89360EC4A9341686 /* SettingsGeneralTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsGeneralTab.swift; sourceTree = "<group>"; };
 		3B1E25598B115393F26D6778 /* FloatingPanelController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingPanelController.swift; sourceTree = "<group>"; };
 		4072669AA8FFBD14BC04D55F /* KeychainHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainHelper.swift; sourceTree = "<group>"; };
@@ -79,7 +79,7 @@
 		695A619BC0DF8716CA2CA76A /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
 		6B07786CDE45759002514308 /* HotkeyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyStore.swift; sourceTree = "<group>"; };
 		6D18080995BE85309E41F211 /* PaymentModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentModels.swift; sourceTree = "<group>"; };
-		74DDCFADDC84A16CB1355D44 /* FastTranslate.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FastTranslate.entitlements; sourceTree = "<group>"; };
+		74DDCFADDC84A16CB1355D44 /* HotLingo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = HotLingo.entitlements; sourceTree = "<group>"; };
 		74F4504C573C5D1A083C4D13 /* AuthState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthState.swift; sourceTree = "<group>"; };
 		77AB337EE4A3E5AEFB184785 /* MultilineTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultilineTextField.swift; sourceTree = "<group>"; };
 		84AD5B460ABBE74DDED7D1F3 /* OnboardingLanguageStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingLanguageStep.swift; sourceTree = "<group>"; };
@@ -99,7 +99,7 @@
 		D8CF4D8E92B29C1407B01B64 /* ScreenCaptureService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenCaptureService.swift; sourceTree = "<group>"; };
 		DE08135A73BB5FB0FBD9B8BD /* HotkeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyManager.swift; sourceTree = "<group>"; };
 		E0A9AD99D2E3380C27C673DB /* OnboardingPermissionsStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPermissionsStep.swift; sourceTree = "<group>"; };
-		E0CD2AFC50E2FAE900C16D2B /* FastTranslate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FastTranslate.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E0CD2AFC50E2FAE900C16D2B /* HotLingo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HotLingo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E3F0A1758224F2109004BB59 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		EDC78416F4661032E9BCF75E /* HotkeyBinding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyBinding.swift; sourceTree = "<group>"; };
 		F2DE42A656661C5719C20F74 /* SelectedTextReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedTextReader.swift; sourceTree = "<group>"; };
@@ -166,7 +166,7 @@
 			path = Utils;
 			sourceTree = "<group>";
 		};
-		26AB9A79395C32C3C4E2ED7F /* FastTranslate */ = {
+		26AB9A79395C32C3C4E2ED7F /* HotLingo */ = {
 			isa = PBXGroup;
 			children = (
 				80F0BCAEFCC43611D5FDBC21 /* App */,
@@ -176,14 +176,14 @@
 				1C596DB2DE510477316AAC26 /* Utils */,
 				128A3D1291496E3B886C17D1 /* Views */,
 			);
-			path = FastTranslate;
+			path = HotLingo;
 			sourceTree = "<group>";
 		};
 		80F0BCAEFCC43611D5FDBC21 /* App */ = {
 			isa = PBXGroup;
 			children = (
 				C0DBB76FCFF017B4AE03585D /* AppDelegate.swift */,
-				24D55CE698491D500D02B0E0 /* FastTranslateApp.swift */,
+				24D55CE698491D500D02B0E0 /* HotLingoApp.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -192,7 +192,7 @@
 			isa = PBXGroup;
 			children = (
 				2410F309D1E5B5BBAEF3EC72 /* Assets.xcassets */,
-				74DDCFADDC84A16CB1355D44 /* FastTranslate.entitlements */,
+				74DDCFADDC84A16CB1355D44 /* HotLingo.entitlements */,
 				00E6DC9D78142C0B9D887CFE /* Info.plist */,
 			);
 			path = Resources;
@@ -232,7 +232,7 @@
 		E1BE24A374E24812103F8FAE /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				E0CD2AFC50E2FAE900C16D2B /* FastTranslate.app */,
+				E0CD2AFC50E2FAE900C16D2B /* HotLingo.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -240,7 +240,7 @@
 		EF3844F18B3BED97316351EE = {
 			isa = PBXGroup;
 			children = (
-				26AB9A79395C32C3C4E2ED7F /* FastTranslate */,
+				26AB9A79395C32C3C4E2ED7F /* HotLingo */,
 				AB0231E5FA0CE54795ECEB6B /* Frameworks */,
 				E1BE24A374E24812103F8FAE /* Products */,
 			);
@@ -249,9 +249,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		F9CC2048A1B2F2F6192FFF94 /* FastTranslate */ = {
+		F9CC2048A1B2F2F6192FFF94 /* HotLingo */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 265350033C4C0E1564E69208 /* Build configuration list for PBXNativeTarget "FastTranslate" */;
+			buildConfigurationList = 265350033C4C0E1564E69208 /* Build configuration list for PBXNativeTarget "HotLingo" */;
 			buildPhases = (
 				64ACDF42F909B9E581BD7CFE /* Sources */,
 				774454582E30EACA34E2ACCD /* Resources */,
@@ -261,11 +261,11 @@
 			);
 			dependencies = (
 			);
-			name = FastTranslate;
+			name = HotLingo;
 			packageProductDependencies = (
 			);
-			productName = FastTranslate;
-			productReference = E0CD2AFC50E2FAE900C16D2B /* FastTranslate.app */;
+			productName = HotLingo;
+			productReference = E0CD2AFC50E2FAE900C16D2B /* HotLingo.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -279,7 +279,7 @@
 				TargetAttributes = {
 				};
 			};
-			buildConfigurationList = 30D719892646085CE0EDE947 /* Build configuration list for PBXProject "FastTranslate" */;
+			buildConfigurationList = 30D719892646085CE0EDE947 /* Build configuration list for PBXProject "HotLingo" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -293,7 +293,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				F9CC2048A1B2F2F6192FFF94 /* FastTranslate */,
+				F9CC2048A1B2F2F6192FFF94 /* HotLingo */,
 			);
 		};
 /* End PBXProject section */
@@ -320,7 +320,7 @@
 				B9CD93460571D1DA2007C1E7 /* Constants.swift in Sources */,
 				B314057005DB96628DCCB9DD /* CreditService.swift in Sources */,
 				1B7E7548463970FDC794E054 /* DeviceIdentifier.swift in Sources */,
-				A1446A3F79FDB5DB6BDE9EDA /* FastTranslateApp.swift in Sources */,
+				A1446A3F79FDB5DB6BDE9EDA /* HotLingoApp.swift in Sources */,
 				17353AB4F51FCA7514D8F6FA /* FloatingPanelAIViews.swift in Sources */,
 				B485BCE33A57AA49904103F6 /* FloatingPanelController.swift in Sources */,
 				B43CF8EA36062E12626A6993 /* GoogleTranslateProvider.swift in Sources */,
@@ -487,11 +487,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = FastTranslate/Resources/FastTranslate.entitlements;
+				CODE_SIGN_ENTITLEMENTS = HotLingo/Resources/HotLingo.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_HARDENED_RUNTIME = YES;
-				INFOPLIST_FILE = FastTranslate/Resources/Info.plist;
+				INFOPLIST_FILE = HotLingo/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MARKETING_VERSION = 1.6.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.hotlingo.app;
@@ -504,11 +504,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = FastTranslate/Resources/FastTranslate.entitlements;
+				CODE_SIGN_ENTITLEMENTS = HotLingo/Resources/HotLingo.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_HARDENED_RUNTIME = YES;
-				INFOPLIST_FILE = FastTranslate/Resources/Info.plist;
+				INFOPLIST_FILE = HotLingo/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MARKETING_VERSION = 1.6.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.hotlingo.app;
@@ -520,7 +520,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		265350033C4C0E1564E69208 /* Build configuration list for PBXNativeTarget "FastTranslate" */ = {
+		265350033C4C0E1564E69208 /* Build configuration list for PBXNativeTarget "HotLingo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				7B88EE698E2728FAC73D86A6 /* Debug */,
@@ -529,7 +529,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		30D719892646085CE0EDE947 /* Build configuration list for PBXProject "FastTranslate" */ = {
+		30D719892646085CE0EDE947 /* Build configuration list for PBXProject "HotLingo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				05F21FBB6CD51A2CEF7C7E3F /* Debug */,
