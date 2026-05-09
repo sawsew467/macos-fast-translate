@@ -17,7 +17,9 @@ final class ScreenCaptureService {
 
     /// Shows a crosshair selection overlay on the screen containing the cursor.
     /// Returns the captured CGImage, or nil if the user cancels (Escape or tiny selection).
+    /// Only one capture session is allowed at a time — additional calls return nil immediately.
     func captureRegion() async -> CGImage? {
+        guard activeSelector == nil else { return nil }
         guard Self.hasPermission() else {
             Self.requestPermission()
             return nil
@@ -51,6 +53,7 @@ private final class RegionSelector: NSObject {
     private var isDone = false
     private var timeoutTask: Task<Void, Never>?
     private var resignObserver: Any?
+    private var escKeyMonitor: Any?
 
     init(onComplete: @escaping (CGImage?) -> Void) {
         self.onComplete = onComplete
@@ -80,6 +83,15 @@ private final class RegionSelector: NSObject {
         win.makeKeyAndOrderFront(nil)
         window = win
         print("[SCCapture] overlay presented  screen='\(screen.localizedName)'  frame=\(screen.frame)  isKey=\(win.isKeyWindow)")
+
+        // ESC key monitor — catches Escape even if the overlay view doesn't have keyboard focus
+        escKeyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
+            if event.keyCode == 53 { // Escape
+                self?.cancel()
+                return nil
+            }
+            return event
+        }
 
         // Safety: auto-cancel if user doesn't interact within 30s
         timeoutTask = Task { @MainActor [weak self] in
@@ -157,6 +169,8 @@ private final class RegionSelector: NSObject {
         timeoutTask = nil
         if let obs = resignObserver { NotificationCenter.default.removeObserver(obs) }
         resignObserver = nil
+        if let monitor = escKeyMonitor { NSEvent.removeMonitor(monitor) }
+        escKeyMonitor = nil
         print("[SCCapture] finish  image=\(image != nil ? "ok" : "nil")")
         window?.orderOut(nil)
         window = nil
