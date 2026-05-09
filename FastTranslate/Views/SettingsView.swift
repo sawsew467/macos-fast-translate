@@ -38,6 +38,7 @@ struct GeneralSettingsTab: View {
     @AppStorage(Constants.UserDefaultsKey.persistentContext) private var persistentContext = ""
     @AppStorage(Constants.UserDefaultsKey.defaultProvider) private var defaultProvider = ProviderType.googleTranslate.rawValue
     @AppStorage(Constants.UserDefaultsKey.defaultTargetLanguage) private var defaultTargetLanguage = Language.vietnamese.rawValue
+    @AppStorage(Constants.UserDefaultsKey.showSelectionTranslateButton) private var showSelectionTranslateButton = false
     @State private var launchAtLogin = false
 
     var body: some View {
@@ -51,6 +52,11 @@ struct GeneralSettingsTab: View {
                 .labelsHidden()
                 .pickerStyle(.menu)
                 .frame(maxWidth: .infinity, alignment: .leading)
+            }
+
+            SettingsCard(systemImage: "text.cursor", title: "Selection Button", subtitle: "Show a small translate button after selecting text in other apps.") {
+                Toggle("Show translate button when text is selected", isOn: $showSelectionTranslateButton)
+                    .toggleStyle(.switch)
             }
 
             SettingsCard(systemImage: "text.bubble", title: "Translation Context", subtitle: "Included in every translation for better accuracy.") {

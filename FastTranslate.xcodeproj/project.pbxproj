@@ -12,6 +12,7 @@
 		086D9EFB5EBCCB4EA94BF6FC /* UpdateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CDFEC2CEC6B73FBF453FBB /* UpdateService.swift */; };
 		05A1B2C3D4E5F60718293A4B /* GoogleTranslateProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B05 /* GoogleTranslateProvider.swift */; };
 		09C89BAD8C5E25E5DDEDF575 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DBB76FCFF017B4AE03585D /* AppDelegate.swift */; };
+		0A7D9154E0C14A728F42A11B /* SelectionTranslateButtonController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7D9154E0C14A728F42A11A /* SelectionTranslateButtonController.swift */; };
 		1FDC627224F68A379F4BCE49 /* SelectedTextReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2DE42A656661C5719C20F74 /* SelectedTextReader.swift */; };
 		203B0BF756B5E665270596E1 /* OpenAITranslationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C77F685E48C2858ED8F88C8 /* OpenAITranslationProvider.swift */; };
 		3B1AA885624EE6EA0229EA43 /* HotkeyBinding.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC78416F4661032E9BCF75E /* HotkeyBinding.swift */; };
@@ -39,6 +40,7 @@
 /* Begin PBXFileReference section */
 		00E6DC9D78142C0B9D887CFE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		092A678724B1253411AC4AAE /* StreamingTranslationState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamingTranslationState.swift; sourceTree = "<group>"; };
+		0A7D9154E0C14A728F42A11A /* SelectionTranslateButtonController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionTranslateButtonController.swift; sourceTree = "<group>"; };
 		0B82F1A185658243C2287B09 /* TranslationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationService.swift; sourceTree = "<group>"; };
 		1AC78F8B6C6E5259E4608B58 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		2410F309D1E5B5BBAEF3EC72 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -99,6 +101,7 @@
 				8DA65D5483E30537184047C3 /* HotkeyRecorderView.swift */,
 				77AB337EE4A3E5AEFB184785 /* MultilineTextField.swift */,
 				C34028B515E4865C8A3860AB /* OnboardingView.swift */,
+				0A7D9154E0C14A728F42A11A /* SelectionTranslateButtonController.swift */,
 				E3F0A1758224F2109004BB59 /* SettingsView.swift */,
 				F34E49E3BED91BC5DA80EBBF /* TranslationPopoverView.swift */,
 			);
@@ -256,6 +259,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				09C89BAD8C5E25E5DDEDF575 /* AppDelegate.swift in Sources */,
+				0A7D9154E0C14A728F42A11B /* SelectionTranslateButtonController.swift in Sources */,
 				B9CD93460571D1DA2007C1E7 /* Constants.swift in Sources */,
 				05A1B2C3D4E5F60718293A4B /* GoogleTranslateProvider.swift in Sources */,
 				A1446A3F79FDB5DB6BDE9EDA /* FastTranslateApp.swift in Sources */,

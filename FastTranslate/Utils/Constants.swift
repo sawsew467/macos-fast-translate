@@ -29,6 +29,7 @@ enum Constants {
         static let translateHotkeyModifiers = "translate_hotkey_modifiers"
         static let screenshotHotkeyKeyCode = "screenshot_hotkey_key_code"
         static let screenshotHotkeyModifiers = "screenshot_hotkey_modifiers"
+        static let showSelectionTranslateButton = "show_selection_translate_button"
     }
 
     // MARK: - UI
