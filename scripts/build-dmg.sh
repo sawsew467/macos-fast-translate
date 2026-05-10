@@ -101,14 +101,20 @@ PY
 echo "==> Creating writable DMG"
 hdiutil create -volname "$VOLNAME" -srcfolder "$STAGE" -ov -format UDRW "$RW_DMG" >/dev/null
 
-MOUNT_DIR="/Volumes/$VOLNAME"
 cleanup() {
-  hdiutil detach "$MOUNT_DIR" -quiet 2>/dev/null || true
+  [ -n "${MOUNT_DIR:-}" ] && hdiutil detach "$MOUNT_DIR" -quiet 2>/dev/null || true
 }
 trap cleanup EXIT
 
 echo "==> Mounting and applying Finder layout"
-hdiutil attach "$RW_DMG" -mountpoint "$MOUNT_DIR" -readwrite -noverify -noautoopen -quiet
+# Let hdiutil pick the mountpoint to avoid /Volumes permission issues
+MOUNT_DIR=$(hdiutil attach "$RW_DMG" -readwrite -noverify -noautoopen | awk 'END{$1=$2=""; print substr($0,3)}')
+# Trim leading/trailing whitespace
+MOUNT_DIR="${MOUNT_DIR#"${MOUNT_DIR%%[![:space:]]*}"}"
+MOUNT_DIR="${MOUNT_DIR%"${MOUNT_DIR##*[![:space:]]}"}"
+# Derive actual disk name from mount path (e.g. /Volumes/HotLingo 1 → HotLingo 1)
+DISK_NAME="${MOUNT_DIR#/Volumes/}"
+echo "    Mounted at: $MOUNT_DIR (disk: $DISK_NAME)"
 
 # Custom mounted-volume icon shown on the Desktop/Finder sidebar while the DMG is mounted.
 if command -v SetFile >/dev/null 2>&1; then
@@ -119,7 +125,7 @@ fi
 # Finder layout requires Finder/AppleScript. If it fails, the DMG still builds.
 osascript <<OSA || true
 tell application "Finder"
-  tell disk "$VOLNAME"
+  tell disk "$DISK_NAME"
     open
     set current view of container window to icon view
     set toolbar visible of container window to false
