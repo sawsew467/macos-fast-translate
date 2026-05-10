@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A1B2C3D4E5F60718293A4B5C /* DeviceTrackingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1C2D3E4F5061728394A5B6C /* DeviceTrackingService.swift */; };
 		0341E2B59EBA8BC30D92C206 /* HotkeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE08135A73BB5FB0FBD9B8BD /* HotkeyManager.swift */; };
 		072283992023C72AE9FCC188 /* HotkeyRecorderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA65D5483E30537184047C3 /* HotkeyRecorderView.swift */; };
 		086D9EFB5EBCCB4EA94BF6FC /* UpdateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CDFEC2CEC6B73FBF453FBB /* UpdateService.swift */; };
@@ -57,6 +58,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B1C2D3E4F5061728394A5B6C /* DeviceTrackingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceTrackingService.swift; sourceTree = "<group>"; };
 		00E6DC9D78142C0B9D887CFE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		092A678724B1253411AC4AAE /* StreamingTranslationState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamingTranslationState.swift; sourceTree = "<group>"; };
 		0937076663B00A3C9A289D0C /* OnboardingShortcutStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingShortcutStep.swift; sourceTree = "<group>"; };
@@ -217,6 +219,7 @@
 			children = (
 				2444090F1786F69BF8DDEA20 /* AITranslationProvider.swift */,
 				2336BBEA6D61E8E1660AC758 /* CreditService.swift */,
+				B1C2D3E4F5061728394A5B6C /* DeviceTrackingService.swift */,
 				9179A1FB20714DADDB8B2EA2 /* GoogleTranslateProvider.swift */,
 				DE08135A73BB5FB0FBD9B8BD /* HotkeyManager.swift */,
 				6B07786CDE45759002514308 /* HotkeyStore.swift */,
@@ -326,6 +329,7 @@
 				B9CD93460571D1DA2007C1E7 /* Constants.swift in Sources */,
 				B314057005DB96628DCCB9DD /* CreditService.swift in Sources */,
 				1B7E7548463970FDC794E054 /* DeviceIdentifier.swift in Sources */,
+				A1B2C3D4E5F60718293A4B5C /* DeviceTrackingService.swift in Sources */,
 				A1446A3F79FDB5DB6BDE9EDA /* HotLingoApp.swift in Sources */,
 				17353AB4F51FCA7514D8F6FA /* FloatingPanelAIViews.swift in Sources */,
 				B485BCE33A57AA49904103F6 /* FloatingPanelController.swift in Sources */,
