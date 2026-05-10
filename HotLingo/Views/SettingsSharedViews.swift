@@ -92,6 +92,89 @@ struct SettingsButton: View {
     }
 }
 
+// MARK: - SettingsTabBar
+
+struct SettingsTabBar: View {
+    @Binding var selection: Int
+
+    private struct TabDef {
+        let label: LocalizedStringKey
+        let icon: String
+    }
+
+    private let tabs: [TabDef] = [
+        TabDef(label: "General",  icon: "gearshape"),
+        TabDef(label: "Account",  icon: "person.crop.circle"),
+        TabDef(label: "API Keys", icon: "key"),
+        TabDef(label: "Hotkeys",  icon: "keyboard"),
+        TabDef(label: "About",    icon: "info.circle"),
+    ]
+
+    var body: some View {
+        VStack(spacing: 0) {
+            HStack(spacing: 4) {
+                ForEach(tabs.indices, id: \.self) { idx in
+                    TabItem(
+                        label: tabs[idx].label,
+                        icon: tabs[idx].icon,
+                        isSelected: selection == idx
+                    ) {
+                        selection = idx
+                    }
+                }
+            }
+            .padding(.horizontal, 12)
+            .padding(.top, 10)
+            .padding(.bottom, 8)
+
+            Divider().opacity(0.5)
+        }
+    }
+}
+
+private struct TabItem: View {
+    let label: LocalizedStringKey
+    let icon: String
+    let isSelected: Bool
+    let action: () -> Void
+
+    @State private var isHovered = false
+
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 5) {
+                Image(systemName: icon)
+                    .font(.system(size: 18, weight: isSelected ? .semibold : .regular))
+                    .frame(height: 22)
+                Text(label)
+                    .font(.system(size: 10, weight: .medium))
+                    .lineLimit(1)
+            }
+            .foregroundStyle(isSelected ? Color.accentColor : (isHovered ? .primary : .secondary))
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 8)
+            .padding(.horizontal, 4)
+            .background(
+                isSelected
+                    ? Color.accentColor.opacity(0.10)
+                    : (isHovered ? Color.primary.opacity(0.05) : Color.clear),
+                in: RoundedRectangle(cornerRadius: 10, style: .continuous)
+            )
+            .overlay {
+                if isSelected {
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .stroke(Color.accentColor.opacity(0.18), lineWidth: 1)
+                }
+            }
+        }
+        .buttonStyle(.plain)
+        .contentShape(Rectangle())
+        .onHover { isHovered = $0 }
+        .animation(.easeOut(duration: 0.12), value: isSelected)
+        .animation(.easeOut(duration: 0.12), value: isHovered)
+    }
+}
+
 // MARK: - SettingsBackground
 
 struct SettingsBackground: View {

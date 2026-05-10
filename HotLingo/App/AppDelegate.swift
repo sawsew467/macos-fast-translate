@@ -198,6 +198,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func showStatusItemMenu(_ sender: NSStatusBarButton) {
         let menu = NSMenu()
+        menu.delegate = self
+
         let updatesItem = NSMenuItem(title: localizedString("Check for Updates\u{2026}"), action: #selector(checkForUpdates), keyEquivalent: "")
         updatesItem.target = self
         updatesItem.image = NSImage(systemSymbolName: "arrow.clockwise.circle", accessibilityDescription: "Check for Updates")
@@ -208,9 +210,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         menu.addItem(settingsItem)
         menu.addItem(.separator())
         menu.addItem(withTitle: localizedString("Quit HotLingo"), action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
-        if let event = NSApp.currentEvent {
-            NSMenu.popUpContextMenu(menu, with: event, for: sender)
-        }
+
+        // Assign to statusItem so macOS positions the menu below the menu bar automatically.
+        // performClick triggers the menu display at the correct location.
+        statusItem.menu = menu
+        sender.performClick(nil)
     }
 
     @objc private func checkForUpdates() {
@@ -230,7 +234,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             let window = NSWindow(contentViewController: controller)
             window.title = localizedString("HotLingo Settings")
             window.styleMask = [.titled, .closable]
-            window.setFrame(NSRect(x: 0, y: 0, width: 560, height: 500), display: false)
+            window.setFrame(NSRect(x: 0, y: 0, width: 560, height: 520), display: false)
             centerWindowOnMainScreen(window)
             // Clear reference when window closes
             NotificationCenter.default.addObserver(
@@ -468,5 +472,13 @@ extension AppDelegate: NSWindowDelegate {
             width: max(420, min(760, frameSize.width)),
             height: max(320, min(680, frameSize.height))
         )
+    }
+}
+
+extension AppDelegate: NSMenuDelegate {
+    // Reset statusItem.menu after the context menu closes so that subsequent
+    // left-clicks still route through statusItemClicked (not menu display).
+    func menuDidClose(_ menu: NSMenu) {
+        statusItem.menu = nil
     }
 }

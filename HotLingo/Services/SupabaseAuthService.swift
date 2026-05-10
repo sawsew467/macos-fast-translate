@@ -130,9 +130,51 @@ final class SupabaseAuthService: ObservableObject {
 
     private func parseAuthError(_ error: Error) -> String {
         if let supaErr = error as? SupabaseError {
-            return supaErr.localizedDescription
+            switch supaErr {
+            case .serverError(let raw):
+                return friendlyAuthMessage(from: raw)
+            case .notAuthenticated:
+                return "Please log in to continue."
+            case .invalidResponse:
+                return "Something went wrong. Please try again."
+            case .httpError(let code):
+                return code >= 500
+                    ? "Server is temporarily unavailable. Please try again later."
+                    : "Something went wrong. Please try again."
+            }
         }
-        return "Login failed. Check your credentials."
+        let nsErr = error as NSError
+        if nsErr.domain == NSURLErrorDomain && nsErr.code == NSURLErrorNotConnectedToInternet {
+            return "No internet connection. Please check your network."
+        }
+        return "Something went wrong. Please try again."
+    }
+
+    /// Maps raw Supabase server error strings to human-readable messages.
+    private func friendlyAuthMessage(from raw: String) -> String {
+        let msg = raw.lowercased()
+        switch true {
+        case msg.contains("invalid login credentials"), msg.contains("invalid email or password"):
+            return "Incorrect email or password. Please try again."
+        case msg.contains("email not confirmed"):
+            return "Please verify your email before logging in. Check your inbox."
+        case msg.contains("user not found"):
+            return "No account found with this email."
+        case msg.contains("user already registered"), msg.contains("already registered"):
+            return "This email is already registered. Try logging in instead."
+        case msg.contains("password should be"), msg.contains("password must be"):
+            return "Password must be at least 6 characters."
+        case msg.contains("token has expired"), msg.contains("otp has expired"):
+            return "Verification code has expired. Please request a new one."
+        case msg.contains("invalid otp"), msg.contains("token is invalid"):
+            return "Invalid verification code. Please check and try again."
+        case msg.contains("rate limit"), msg.contains("too many requests"):
+            return "Too many attempts. Please wait a moment and try again."
+        default:
+            // Strip the [400] HTTP prefix if present, fall back to cleaned message
+            let stripped = raw.replacingOccurrences(of: #"^\[\d+\]\s*"#, with: "", options: .regularExpression)
+            return stripped.isEmpty ? "Something went wrong. Please try again." : stripped
+        }
     }
 }
 

@@ -11,31 +11,29 @@ struct SettingsView: View {
     @State private var selectedTab = 0
 
     var body: some View {
-        TabView(selection: $selectedTab) {
-            GeneralSettingsTab(onSwitchToAccount: { selectedTab = 1 })
-                .tabItem { Label("General", systemImage: "gearshape") }
-                .tag(0)
-            SettingsAccountTab()
-                .tabItem { Label("Account", systemImage: "person.crop.circle") }
-                .tag(1)
-            APIKeysSettingsTab()
-                .tabItem { Label("API Keys", systemImage: "key") }
-                .tag(2)
-            HotkeysSettingsTab()
-                .tabItem { Label("Hotkeys", systemImage: "keyboard") }
-                .tag(3)
-            AboutSettingsTab()
-                .tabItem { Label("About", systemImage: "info.circle") }
-                .tag(4)
+        VStack(spacing: 0) {
+            SettingsTabBar(selection: $selectedTab)
+            tabContent
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .padding(.top, 6)
-        .frame(width: 560, height: 500)
+        .frame(width: 560, height: 520)
         .background(SettingsBackground())
         .onReceive(NotificationCenter.default.publisher(for: .openAboutTab)) { _ in
             selectedTab = 4
         }
         .onReceive(NotificationCenter.default.publisher(for: .openAccountTab)) { _ in
             selectedTab = 1
+        }
+    }
+
+    @ViewBuilder
+    private var tabContent: some View {
+        switch selectedTab {
+        case 0: GeneralSettingsTab(onSwitchToAccount: { selectedTab = 1 })
+        case 1: SettingsAccountTab()
+        case 2: APIKeysSettingsTab()
+        case 3: HotkeysSettingsTab()
+        default: AboutSettingsTab()
         }
     }
 }
