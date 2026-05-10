@@ -45,6 +45,7 @@ enum Constants {
         static let hasEverLoggedIn = "has_ever_logged_in"
         static let lastKnownCreditBalance = "last_known_credit_balance"
         static let appLanguage = "app_language"
+        static let deviceInstallTracked = "device_install_tracked"
     }
 
     // MARK: - App Language

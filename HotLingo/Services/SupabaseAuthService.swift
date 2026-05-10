@@ -47,6 +47,7 @@ final class SupabaseAuthService: ObservableObject {
                 value: email
             )
             authState = .loggedIn(email: email)
+            Task { await DeviceTrackingService.shared.linkToUser() }
         } catch {
             authState = .loggedOut
             authError = parseAuthError(error)
@@ -91,6 +92,7 @@ final class SupabaseAuthService: ObservableObject {
                 value: email
             )
             authState = .loggedIn(email: email)
+            Task { await DeviceTrackingService.shared.linkToUser() }
         } catch {
             authState = .loggedOut
             authError = parseAuthError(error)
