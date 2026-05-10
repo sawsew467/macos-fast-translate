@@ -30,6 +30,11 @@ do
   rm -rf "$target" 2>/dev/null || echo "  skipped (protected): $target"
 done
 
+# Reset TCC permission grants so the freshly-built binary can request them again.
+# Without this, macOS links the grant to the old binary hash and the new build is blocked.
+tccutil reset Accessibility "$BUNDLE_ID" 2>/dev/null || true
+tccutil reset ScreenCapture "$BUNDLE_ID" 2>/dev/null || true
+
 # Clear cached preferences and LaunchServices registration.
 defaults delete "$BUNDLE_ID" >/dev/null 2>&1 || true
 killall cfprefsd >/dev/null 2>&1 || true

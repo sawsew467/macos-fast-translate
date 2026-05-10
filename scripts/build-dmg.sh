@@ -33,6 +33,9 @@ xcodebuild \
   CODE_SIGN_IDENTITY= \
   build
 
+echo "==> Ad-hoc signing app (required for TCC permission grants to work)"
+codesign --force --deep --sign - "$APP"
+
 echo "==> Preparing DMG staging"
 rm -rf "$STAGE" "$RW_DMG" "$DMG"
 mkdir -p "$BG_DIR"
@@ -40,6 +43,9 @@ cp -R "$APP" "$STAGE/"
 ln -s /Applications "$STAGE/Applications"
 find "$STAGE" -name "._*" -delete
 cp "$APP_ICON" "$STAGE/.VolumeIcon.icns"
+
+# Strip quarantine so macOS does not block TCC grants after install from DMG
+xattr -cr "$STAGE/HotLingo.app" 2>/dev/null || true
 
 python3 - <<'PY' "$BG_PNG"
 from pathlib import Path
