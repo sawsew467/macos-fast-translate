@@ -17,8 +17,8 @@ struct GeneralSettingsTab: View {
     }
 
     var body: some View {
-        SettingsPage(title: String(localized: "General"), subtitle: String(localized: "Tune how HotLingo behaves across popover and floating panel.")) {
-            SettingsCard(systemImage: "brain", title: String(localized: "Translation Engine"), subtitle: String(localized: "Google Translate is free with no setup. AI Translation offers high quality with 50 free credits.")) {
+        SettingsPage(title: "General", subtitle: "Tune how HotLingo behaves across popover and floating panel.") {
+            SettingsCard(systemImage: "brain", title: "Translation Engine", subtitle: "Google Translate is free with no setup. AI Translation offers high quality with 50 free credits.") {
                 Picker("Provider", selection: $defaultProvider) {
                     Text("Google Translate").tag(ProviderType.googleTranslate.rawValue)
                     Text("AI Translation ✨").tag(ProviderType.aiTranslation.rawValue)
@@ -45,12 +45,12 @@ struct GeneralSettingsTab: View {
                 }
             }
 
-            SettingsCard(systemImage: "text.cursor", title: String(localized: "Selection Button"), subtitle: String(localized: "Show a small translate button after selecting text in other apps.")) {
+            SettingsCard(systemImage: "text.cursor", title: "Selection Button", subtitle: "Show a small translate button after selecting text in other apps.") {
                 Toggle("Show translate button when text is selected", isOn: $showSelectionTranslateButton)
                     .toggleStyle(.switch)
             }
 
-            SettingsCard(systemImage: "text.bubble", title: String(localized: "Translation Context"), subtitle: String(localized: "Included in every translation for better accuracy.")) {
+            SettingsCard(systemImage: "text.bubble", title: "Translation Context", subtitle: "Included in every translation for better accuracy.") {
                 TextEditor(text: $persistentContext)
                     .font(.system(size: 13))
                     .scrollContentBackground(.hidden)
@@ -63,10 +63,11 @@ struct GeneralSettingsTab: View {
                     }
             }
 
-            SettingsCard(systemImage: "globe.asia.australia", title: String(localized: "Language"), subtitle: String(localized: "Default target used by popover and screenshot translation.")) {
+            SettingsCard(systemImage: "globe.asia.australia", title: "Language", subtitle: "Default target used by popover and screenshot translation.") {
                 Picker("Default Target", selection: $defaultTargetLanguage) {
                     ForEach(Language.targetOptions) { language in
-                        Text("\(language.shortName) - \(language.displayName)").tag(language.rawValue)
+                        (Text(verbatim: "\(language.shortName) - ") + Text(language.localizationKey))
+                            .tag(language.rawValue)
                     }
                 }
                 .labelsHidden()
@@ -74,7 +75,7 @@ struct GeneralSettingsTab: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
 
-            SettingsCard(systemImage: "power", title: String(localized: "Startup"), subtitle: String(localized: "Open HotLingo automatically when you sign in.")) {
+            SettingsCard(systemImage: "power", title: "Startup", subtitle: "Open HotLingo automatically when you sign in.") {
                 Toggle("Launch at Login", isOn: $launchAtLogin)
                     .toggleStyle(.switch)
                     .onChange(of: launchAtLogin) { newValue in
@@ -84,10 +85,10 @@ struct GeneralSettingsTab: View {
 
             SettingsCard(
                 systemImage: "globe",
-                title: String(localized: "App Language"),
-                subtitle: String(localized: "Choose the language for the app interface.")
+                title: "App Language",
+                subtitle: "Choose the language for the app interface."
             ) {
-                Picker(String(localized: "App Language"), selection: $appLanguage) {
+                Picker("App Language", selection: $appLanguage) {
                     ForEach(Constants.AppLanguage.allCases) { lang in
                         Text(lang.displayName).tag(lang.rawValue)
                     }

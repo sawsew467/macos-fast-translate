@@ -54,7 +54,7 @@ struct APIKeysSettingsTab: View {
     }
 
     var body: some View {
-        SettingsPage(title: String(localized: "API Keys"), subtitle: String(localized: "Store provider credentials securely in macOS Keychain.")) {
+        SettingsPage(title: "API Keys", subtitle: "Store provider credentials securely in macOS Keychain.") {
             if isUsingGoogle {
                 HStack(spacing: 10) {
                     Image(systemName: "info.circle.fill").foregroundStyle(.blue)
@@ -69,7 +69,7 @@ struct APIKeysSettingsTab: View {
                 }
             }
 
-            SettingsCard(systemImage: "sparkles", title: String(localized: "OpenAI"), subtitle: String(localized: "Used for translation and streaming responses.")) {
+            SettingsCard(systemImage: "sparkles", title: "OpenAI", subtitle: "Used for translation and streaming responses.") {
                 VStack(alignment: .leading, spacing: 12) {
                     SecureField("sk-proj-...", text: $openAIKey)
                         .font(.system(size: 13, design: .monospaced))
@@ -82,9 +82,9 @@ struct APIKeysSettingsTab: View {
                         }
 
                     HStack(spacing: 10) {
-                        SettingsButton(String(localized: "Save"), systemImage: "lock.doc", isPrimary: true) { saveOpenAIKey() }
+                        SettingsButton("Save", systemImage: "lock.doc", isPrimary: true) { saveOpenAIKey() }
                             .disabled(openAIKey.isEmpty)
-                        SettingsButton(String(localized: "Test"), systemImage: "checkmark.seal") { testOpenAIKey() }
+                        SettingsButton("Test", systemImage: "checkmark.seal") { testOpenAIKey() }
                             .disabled(openAIKey.isEmpty || isTesting)
 
                         if isTesting { ProgressView().scaleEffect(0.75) }
@@ -154,18 +154,18 @@ struct HotkeysSettingsTab: View {
     @StateObject private var hotkeyStore = HotkeyStore.shared
 
     var body: some View {
-        SettingsPage(title: String(localized: "Hotkeys"), subtitle: String(localized: "Quick actions available globally while the app is running.")) {
-            SettingsCard(systemImage: "keyboard", title: String(localized: "Shortcuts"), subtitle: String(localized: "Click a shortcut field, then press your desired key combo.")) {
+        SettingsPage(title: "Hotkeys", subtitle: "Quick actions available globally while the app is running.") {
+            SettingsCard(systemImage: "keyboard", title: "Shortcuts", subtitle: "Click a shortcut field, then press your desired key combo.") {
                 VStack(spacing: 10) {
                     HotkeyRecorderRow(
-                        title: String(localized: "Translate Selected Text"),
+                        title: "Translate Selected Text",
                         systemImage: "character.cursor.ibeam",
                         action: .translate,
                         binding: $hotkeyStore.translateBinding,
                         store: hotkeyStore
                     )
                     HotkeyRecorderRow(
-                        title: String(localized: "Screenshot OCR"),
+                        title: "Screenshot OCR",
                         systemImage: "viewfinder",
                         action: .screenshot,
                         binding: $hotkeyStore.screenshotBinding,
@@ -177,14 +177,14 @@ struct HotkeysSettingsTab: View {
             if let error = hotkeyStore.registrationError {
                 HStack(spacing: 6) {
                     Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.orange)
-                    Text(String(localized: "Failed to register \(error.action.rawValue) hotkey: \(error.message)"))
+                    Text("Failed to register \(error.action.rawValue) hotkey: \(error.message)")
                         .font(.caption).foregroundStyle(.secondary)
                 }
                 .padding(.horizontal, 4)
             }
 
             HStack {
-                SettingsButton(String(localized: "Reset to Defaults"), systemImage: "arrow.counterclockwise") {
+                SettingsButton("Reset to Defaults", systemImage: "arrow.counterclockwise") {
                     hotkeyStore.resetToDefaults()
                 }
                 Spacer()
@@ -199,8 +199,8 @@ struct AboutSettingsTab: View {
     @ObservedObject private var updateService = UpdateService.shared
 
     var body: some View {
-        SettingsPage(title: String(localized: "About"), subtitle: String(localized: "Version info and software updates.")) {
-            SettingsCard(systemImage: "app.badge", title: String(localized: "HotLingo"), subtitle: String(localized: "Fast Vi↔En translation for macOS.")) {
+        SettingsPage(title: "About", subtitle: "Version info and software updates.") {
+            SettingsCard(systemImage: "app.badge", title: "HotLingo", subtitle: "Fast Vi↔En translation for macOS.") {
                 HStack(spacing: 16) {
                     if let icon = NSImage(named: "AppIcon") {
                         Image(nsImage: icon)
@@ -217,7 +217,7 @@ struct AboutSettingsTab: View {
                 }
             }
 
-            SettingsCard(systemImage: "arrow.down.circle", title: String(localized: "Software Update"), subtitle: String(localized: "Check GitHub Releases for a newer version.")) {
+            SettingsCard(systemImage: "arrow.down.circle", title: "Software Update", subtitle: "Check GitHub Releases for a newer version.") {
                 VStack(alignment: .leading, spacing: 12) {
                     updateStatusView
                     HStack(spacing: 10) {
@@ -257,14 +257,14 @@ struct AboutSettingsTab: View {
 
     private var checkButton: some View {
         let isBusy = updateService.state == .checking || updateService.state == .installing
-        return SettingsButton(String(localized: "Check for Updates"), systemImage: "arrow.clockwise", isPrimary: true) {
+        return SettingsButton("Check for Updates", systemImage: "arrow.clockwise", isPrimary: true) {
             updateService.checkForUpdates()
         }
         .disabled(isBusy)
     }
 
     private var installButton: some View {
-        SettingsButton(String(localized: "Install Update"), systemImage: "arrow.down.circle") {
+        SettingsButton("Install Update", systemImage: "arrow.down.circle") {
             updateService.installUpdate()
         }
     }

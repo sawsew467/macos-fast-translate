@@ -13,7 +13,7 @@ struct SettingsAccountTab: View {
     @State private var qrInfo: QRPaymentInfo?
 
     var body: some View {
-        SettingsPage(title: String(localized: "Account"), subtitle: String(localized: "Manage your AI Translation account and credits.")) {
+        SettingsPage(title: "Account", subtitle: "Manage your AI Translation account and credits.") {
             if authService.authState.isLoggedIn {
                 loggedInContent
             } else {
@@ -35,8 +35,8 @@ struct SettingsAccountTab: View {
 
     @ViewBuilder
     private var loggedInContent: some View {
-        SettingsCard(systemImage: "creditcard", title: String(localized: "Balance"),
-                     subtitle: authService.authState.email ?? "") {
+        SettingsCard(systemImage: "creditcard", title: "Balance",
+                     subtitle: LocalizedStringKey(authService.authState.email ?? "")) {
             HStack {
                 Text("\(creditService.balance)")
                     .font(.system(size: 36, weight: .bold, design: .rounded))
@@ -48,8 +48,8 @@ struct SettingsAccountTab: View {
         }
 
         if !packages.isEmpty {
-            SettingsCard(systemImage: "bag", title: String(localized: "Top Up"),
-                         subtitle: String(localized: "Purchase more credits.")) {
+            SettingsCard(systemImage: "bag", title: "Top Up",
+                         subtitle: "Purchase more credits.") {
                 LazyVGrid(
                     columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())],
                     spacing: 10
@@ -64,7 +64,7 @@ struct SettingsAccountTab: View {
         }
 
         HStack {
-            SettingsButton(String(localized: "Log Out"), systemImage: "rectangle.portrait.and.arrow.right") {
+            SettingsButton("Log Out", systemImage: "rectangle.portrait.and.arrow.right") {
                 authService.logout()
             }
             Spacer()
@@ -85,15 +85,15 @@ struct SettingsAccountTab: View {
     private var authCard: some View {
         SettingsCard(
             systemImage: "person.crop.circle",
-            title: isSignup ? String(localized: "Sign Up") : String(localized: "Log In"),
-            subtitle: String(localized: "Create an account to use AI Translation.")
+            title: isSignup ? "Sign Up" : "Log In",
+            subtitle: "Create an account to use AI Translation."
         ) {
             VStack(alignment: .leading, spacing: 12) {
                 TextField("Email", text: $email).textFieldStyle(.roundedBorder)
                 SecureField("Password", text: $password).textFieldStyle(.roundedBorder)
 
                 HStack(spacing: 10) {
-                    SettingsButton(isSignup ? String(localized: "Sign Up") : String(localized: "Log In"), systemImage: "arrow.right", isPrimary: true) {
+                    SettingsButton(isSignup ? "Sign Up" : "Log In", systemImage: "arrow.right", isPrimary: true) {
                         Task {
                             if isSignup {
                                 await authService.signup(email: email, password: password)
@@ -112,7 +112,7 @@ struct SettingsAccountTab: View {
                     }
                     .disabled(email.isEmpty || password.isEmpty)
 
-                    SettingsButton(isSignup ? String(localized: "Have account? Log in") : String(localized: "New? Sign up"), systemImage: isSignup ? "person.fill" : "person.badge.plus") {
+                    SettingsButton(isSignup ? "Have account? Log in" : "New? Sign up", systemImage: isSignup ? "person.fill" : "person.badge.plus") {
                         isSignup.toggle()
                     }
 
@@ -129,8 +129,8 @@ struct SettingsAccountTab: View {
     private func otpCard(email: String) -> some View {
         SettingsCard(
             systemImage: "envelope.badge",
-            title: String(localized: "Verify your email"),
-            subtitle: String(localized: "Enter the 6-digit code sent to \(email)")
+            title: "Verify your email",
+            subtitle: "Enter the 6-digit code sent to \(email)"
         ) {
             VStack(alignment: .leading, spacing: 12) {
                 TextField("000000", text: $otp)

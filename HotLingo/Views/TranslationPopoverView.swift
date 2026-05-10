@@ -52,11 +52,15 @@ struct TranslationPopoverView: View {
                 Image(systemName: isOut ? "creditcard.trianglebadge.exclamationmark" : "exclamationmark.triangle.fill")
                     .font(.system(size: 11))
                     .foregroundStyle(isOut ? Color.red : Color.orange)
-                Text(isOut
-                    ? String(localized: "Out of credits")
-                    : String(localized: "credits.low \(creditService.balance)"))
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundStyle(isOut ? AnyShapeStyle(Color.red) : AnyShapeStyle(Color.primary.opacity(0.7)))
+                Group {
+                    if isOut {
+                        Text("Out of credits")
+                    } else {
+                        Text("credits.low \(creditService.balance)")
+                    }
+                }
+                .font(.system(size: 11, weight: .medium))
+                .foregroundStyle(isOut ? AnyShapeStyle(Color.red) : AnyShapeStyle(Color.primary.opacity(0.7)))
                 Spacer()
                 Text("Top Up →")
                     .font(.system(size: 11, weight: .semibold))
@@ -200,7 +204,7 @@ struct TranslationPopoverView: View {
                 copyTranslation()
             }
 
-            popoverActionButton(showContext ? String(localized: "Hide") : String(localized: "Context"), systemImage: "text.bubble") {
+            popoverActionButton(showContext ? "Hide" : "Context", systemImage: "text.bubble") {
                 toggleContext()
             }
 
@@ -220,7 +224,9 @@ struct TranslationPopoverView: View {
     private var targetLanguageMenu: some View {
         Menu {
             ForEach(Language.targetOptions) { language in
-                Button(language.displayName) { defaultTargetLanguage = language.rawValue }
+                Button(action: { defaultTargetLanguage = language.rawValue }) {
+                    Text(language.localizationKey)
+                }
             }
         } label: {
             Text(selectedTargetLanguage.shortName)
@@ -236,7 +242,7 @@ struct TranslationPopoverView: View {
 
     @ViewBuilder
     private func popoverActionButton(
-        _ title: String,
+        _ title: LocalizedStringKey,
         systemImage: String,
         isProminent: Bool = false,
         isDisabled: Bool = false,
@@ -265,7 +271,7 @@ struct TranslationPopoverView: View {
         .disabled(isDisabled)
     }
 
-    private func popoverIconButton(systemImage: String, label: String, action: @escaping () -> Void) -> some View {
+    private func popoverIconButton(systemImage: String, label: LocalizedStringKey, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             HStack(spacing: 7) {
                 Image(systemName: systemImage)

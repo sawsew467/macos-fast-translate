@@ -3,8 +3,8 @@ import SwiftUI
 // MARK: - SettingsPage
 
 struct SettingsPage<Content: View>: View {
-    let title: String
-    let subtitle: String
+    let title: LocalizedStringKey
+    let subtitle: LocalizedStringKey
     @ViewBuilder var content: () -> Content
 
     var body: some View {
@@ -26,8 +26,8 @@ struct SettingsPage<Content: View>: View {
 
 struct SettingsCard<Content: View>: View {
     let systemImage: String
-    let title: String
-    let subtitle: String
+    let title: LocalizedStringKey
+    let subtitle: LocalizedStringKey
     @ViewBuilder var content: () -> Content
 
     var body: some View {
@@ -63,12 +63,12 @@ struct SettingsCard<Content: View>: View {
 // MARK: - SettingsButton
 
 struct SettingsButton: View {
-    let title: String
+    let title: LocalizedStringKey
     let systemImage: String
     var isPrimary = false
     let action: () -> Void
 
-    init(_ title: String, systemImage: String, isPrimary: Bool = false, action: @escaping () -> Void) {
+    init(_ title: LocalizedStringKey, systemImage: String, isPrimary: Bool = false, action: @escaping () -> Void) {
         self.title = title
         self.systemImage = systemImage
         self.isPrimary = isPrimary
@@ -110,7 +110,7 @@ struct SettingsBackground: View {
 // MARK: - HotkeyRecorderRow
 
 struct HotkeyRecorderRow: View {
-    let title: String
+    let title: LocalizedStringKey
     let systemImage: String
     let action: HotkeyAction
     @Binding var binding: HotkeyBinding

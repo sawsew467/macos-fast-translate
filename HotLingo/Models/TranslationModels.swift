@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 // MARK: - Language
 
@@ -23,6 +24,8 @@ enum Language: String, CaseIterable, Codable, Identifiable {
 
     static var targetOptions: [Language] { allCases.filter { $0 != .autoDetect } }
 
+    /// Use in non-SwiftUI contexts (e.g., accessibility labels, log messages).
+    /// In SwiftUI views, prefer `localizationKey` so the environment locale is respected.
     var displayName: String {
         switch self {
         case .autoDetect: return String(localized: "language.autoDetect")
@@ -40,6 +43,27 @@ enum Language: String, CaseIterable, Codable, Identifiable {
         case .russian: return String(localized: "language.russian")
         case .thai: return String(localized: "language.thai")
         case .indonesian: return String(localized: "language.indonesian")
+        }
+    }
+
+    /// Use in SwiftUI `Text(language.localizationKey)` so the view's environment locale is respected.
+    var localizationKey: LocalizedStringKey {
+        switch self {
+        case .autoDetect: return "language.autoDetect"
+        case .vietnamese: return "language.vietnamese"
+        case .english: return "language.english"
+        case .japanese: return "language.japanese"
+        case .korean: return "language.korean"
+        case .simplifiedChinese: return "language.simplifiedChinese"
+        case .traditionalChinese: return "language.traditionalChinese"
+        case .french: return "language.french"
+        case .german: return "language.german"
+        case .spanish: return "language.spanish"
+        case .portuguese: return "language.portuguese"
+        case .italian: return "language.italian"
+        case .russian: return "language.russian"
+        case .thai: return "language.thai"
+        case .indonesian: return "language.indonesian"
         }
     }
 
