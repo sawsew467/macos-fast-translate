@@ -51,17 +51,17 @@
 		EC7B12164D21FA56210446A0 /* ScreenCaptureService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8CF4D8E92B29C1407B01B64 /* ScreenCaptureService.swift */; };
 		F455241EBAB4DF07152D4D04 /* OnboardingLanguageStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AD5B460ABBE74DDED7D1F3 /* OnboardingLanguageStep.swift */; };
 		F5C55B166B7FB26DE4C80E21 /* PaymentModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D18080995BE85309E41F211 /* PaymentModels.swift */; };
-		E664DAE695D744B3A8B28E5D /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = BC637F6915EA41B391338B1E /* Localizable.xcstrings */; };
+		489AB248459540AB954E675A /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8CFE88951A714C7CAB7DCF52 /* Localizable.strings */; };
 		FDF1D29066C016D2C34F64A6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2410F309D1E5B5BBAEF3EC72 /* Assets.xcassets */; };
 		FF82ADF95A09E21F1160E287 /* SelectionTranslateButtonController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A118941161556474A7B3F2D1 /* SelectionTranslateButtonController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		00E6DC9D78142C0B9D887CFE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		BC637F6915EA41B391338B1E /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		092A678724B1253411AC4AAE /* StreamingTranslationState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamingTranslationState.swift; sourceTree = "<group>"; };
 		0937076663B00A3C9A289D0C /* OnboardingShortcutStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingShortcutStep.swift; sourceTree = "<group>"; };
 		0B82F1A185658243C2287B09 /* TranslationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationService.swift; sourceTree = "<group>"; };
+		19BB044C434F45408B576B3A /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = vi.lproj/Localizable.strings; sourceTree = "<group>"; };
 		1AC78F8B6C6E5259E4608B58 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		1F7E4FC96301E5F7695C8904 /* FloatingPanelAIViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingPanelAIViews.swift; sourceTree = "<group>"; };
 		2336BBEA6D61E8E1660AC758 /* CreditService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreditService.swift; sourceTree = "<group>"; };
@@ -78,6 +78,7 @@
 		5636B8B816376E580F9ECCA3 /* SupabaseClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseClient.swift; sourceTree = "<group>"; };
 		5B0B61BB39F7B81D8125813A /* TranslationModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationModels.swift; sourceTree = "<group>"; };
 		5EE82C3E6FAD1420D26AF239 /* SettingsAccountTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsAccountTab.swift; sourceTree = "<group>"; };
+		61ECCEB93A374138A34773B9 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		695A619BC0DF8716CA2CA76A /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
 		6B07786CDE45759002514308 /* HotkeyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyStore.swift; sourceTree = "<group>"; };
 		6D18080995BE85309E41F211 /* PaymentModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentModels.swift; sourceTree = "<group>"; };
@@ -95,6 +96,7 @@
 		A9CDFEC2CEC6B73FBF453FBB /* UpdateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateService.swift; sourceTree = "<group>"; };
 		AA2EB32FC14D25D30C1AC8B9 /* PaymentQRSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentQRSheetView.swift; sourceTree = "<group>"; };
 		AC96BA25B86F82EB77EF7204 /* TranslationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationProvider.swift; sourceTree = "<group>"; };
+		BC637F6915EA41B391338B1E /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		C0DBB76FCFF017B4AE03585D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C34028B515E4865C8A3860AB /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		D0396A28C564EE1EF73F2C70 /* OCRService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OCRService.swift; sourceTree = "<group>"; };
@@ -197,6 +199,7 @@
 				74DDCFADDC84A16CB1355D44 /* HotLingo.entitlements */,
 				00E6DC9D78142C0B9D887CFE /* Info.plist */,
 				BC637F6915EA41B391338B1E /* Localizable.xcstrings */,
+				8CFE88951A714C7CAB7DCF52 /* Localizable.strings */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -279,8 +282,6 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1600;
-				TargetAttributes = {
-				};
 			};
 			buildConfigurationList = 30D719892646085CE0EDE947 /* Build configuration list for PBXProject "HotLingo" */;
 			developmentRegion = en;
@@ -288,6 +289,7 @@
 			knownRegions = (
 				Base,
 				en,
+				vi,
 			);
 			mainGroup = EF3844F18B3BED97316351EE;
 			minimizedProjectReferenceProxies = 1;
@@ -306,7 +308,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E664DAE695D744B3A8B28E5D /* Localizable.xcstrings in Resources */,
+				489AB248459540AB954E675A /* Localizable.strings in Resources */,
 				FDF1D29066C016D2C34F64A6 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -366,6 +368,18 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		8CFE88951A714C7CAB7DCF52 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				61ECCEB93A374138A34773B9 /* en */,
+				19BB044C434F45408B576B3A /* vi */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		05F21FBB6CD51A2CEF7C7E3F /* Debug */ = {
@@ -496,7 +510,10 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = HotLingo/Resources/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
 				MARKETING_VERSION = 1.6.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.hotlingo.app;
 				PRODUCT_NAME = HotLingo;
@@ -513,7 +530,10 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = HotLingo/Resources/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
 				MARKETING_VERSION = 1.6.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.hotlingo.app;
 				PRODUCT_NAME = HotLingo;
