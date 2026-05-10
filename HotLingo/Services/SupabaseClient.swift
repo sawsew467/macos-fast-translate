@@ -50,6 +50,9 @@ actor SupabaseClient {
         try? KeychainHelper.delete(account: Constants.KeychainAccount.supabaseAccessToken)
         try? KeychainHelper.delete(account: Constants.KeychainAccount.supabaseRefreshToken)
         try? KeychainHelper.delete(account: Constants.KeychainAccount.supabaseUserEmail)
+        DispatchQueue.main.async {
+            NotificationCenter.default.post(name: .sessionExpired, object: nil)
+        }
     }
 
     // MARK: - Private

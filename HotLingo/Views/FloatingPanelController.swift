@@ -299,19 +299,19 @@ struct StreamingPanelContent: View {
     @ObservedObject private var creditService = CreditService.shared
 
     private var isCreditError: Bool {
-        guard let err = state.error else { return false }
-        return err.localizedLowercase.contains("credit") || err.contains("402")
+        state.error?.contains("Out of credits") == true
     }
 
     private var showLowCreditWarning: Bool {
         guard !state.isStreaming else { return false }
-        if isCreditError { return true }
-        return SupabaseAuthService.shared.authState.isLoggedIn && creditService.balance < 10
+        guard SupabaseAuthService.shared.authState.isLoggedIn else { return false }
+        return creditService.balance < 10 || isCreditError
     }
 
     /// Show neutral credit balance when using AI provider with healthy balance (≥ 10).
     private var showCreditBalance: Bool {
-        state.provider == .aiTranslation
+        state.error == nil
+            && state.provider == .aiTranslation
             && SupabaseAuthService.shared.authState.isLoggedIn
             && creditService.balance >= 10
     }

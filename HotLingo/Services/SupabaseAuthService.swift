@@ -15,6 +15,13 @@ final class SupabaseAuthService: ObservableObject {
 
     private init() {
         restoreSession()
+        NotificationCenter.default.addObserver(
+            forName: .sessionExpired,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.authState = .loggedOut
+        }
     }
 
     // MARK: - Public API

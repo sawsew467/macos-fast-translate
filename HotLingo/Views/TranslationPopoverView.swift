@@ -17,8 +17,7 @@ struct TranslationPopoverView: View {
     private let popoverShape = RoundedRectangle(cornerRadius: 26, style: .continuous)
 
     private var isCreditError: Bool {
-        guard let msg = errorMessage else { return false }
-        return msg.localizedLowercase.contains("credit") || msg.contains("402")
+        errorMessage?.contains("Out of credits") == true
     }
 
     var body: some View {
@@ -45,7 +44,7 @@ struct TranslationPopoverView: View {
     // MARK: - Credit Warning
 
     private var creditWarningBar: some View {
-        let isOut = creditService.balance == 0
+        let isOut = creditService.balance == 0 || isCreditError
         return Button {
             NotificationCenter.default.post(name: .openAccountTab, object: nil)
         } label: {
@@ -99,7 +98,8 @@ struct TranslationPopoverView: View {
     }
 
     private var showCreditBalance: Bool {
-        service.activeProviderType == .aiTranslation
+        errorMessage == nil
+            && service.activeProviderType == .aiTranslation
             && SupabaseAuthService.shared.authState.isLoggedIn
             && creditService.balance >= 10
     }

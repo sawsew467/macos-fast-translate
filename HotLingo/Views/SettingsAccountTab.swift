@@ -112,10 +112,9 @@ struct SettingsAccountTab: View {
                     }
                     .disabled(email.isEmpty || password.isEmpty)
 
-                    Button(isSignup ? "Have account? Log in" : "New? Sign up") {
+                    SettingsButton(isSignup ? "Have account? Log in" : "New? Sign up", systemImage: isSignup ? "person.fill" : "person.badge.plus") {
                         isSignup.toggle()
                     }
-                    .font(.caption)
 
                     if authService.authState == .loading { ProgressView().scaleEffect(0.7) }
                 }
