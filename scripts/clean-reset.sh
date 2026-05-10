@@ -1,21 +1,21 @@
 #!/bin/bash
-# Reset FastTranslate to fresh state for testing.
+# Reset HotLingo to fresh state for testing.
 # Usage: ./scripts/clean-reset.sh
 # Note: Permission reset requires sudo (tccutil) and reboot to take full effect.
 
 set -e
 
-BUNDLE_ID="com.fasttranslate.app"
-KEYCHAIN_SERVICE="com.fasttranslate.app"
+BUNDLE_ID="com.hotlingo.app"
+KEYCHAIN_SERVICE="com.hotlingo.app"
 KEYCHAIN_ACCOUNT="openai_api_key"
-APP_SUPPORT=~/Library/Application\ Support/FastTranslate
+APP_SUPPORT=~/Library/Application\ Support/HotLingo
 
-echo "=== FastTranslate Clean Reset ==="
+echo "=== HotLingo Clean Reset ==="
 echo ""
 
 # Kill running instances
-if pgrep -f "FastTranslate" > /dev/null 2>&1; then
-    killall FastTranslate 2>/dev/null && echo "✓ Killed running FastTranslate" || true
+if pgrep -f "HotLingo" > /dev/null 2>&1; then
+    killall HotLingo 2>/dev/null && echo "✓ Killed running HotLingo" || true
 else
     echo "· App not running"
 fi
@@ -56,8 +56,8 @@ tccutil reset ScreenCapture com.apple.dt.Xcode 2>/dev/null && echo "✓ Xcode Sc
 # Xcode DerivedData
 echo ""
 echo "--- Clearing Build Cache ---"
-if ls ~/Library/Developer/Xcode/DerivedData/FastTranslate-* 1>/dev/null 2>&1; then
-    rm -rf ~/Library/Developer/Xcode/DerivedData/FastTranslate-*
+if ls ~/Library/Developer/Xcode/DerivedData/HotLingo-* 1>/dev/null 2>&1; then
+    rm -rf ~/Library/Developer/Xcode/DerivedData/HotLingo-*
     echo "✓ DerivedData cleared"
 else
     echo "· DerivedData already clean"
@@ -71,7 +71,7 @@ echo "=== Done ==="
 echo ""
 echo "IMPORTANT next steps:"
 echo "  1. Open System Settings > Privacy & Security > Accessibility"
-echo "     → Remove any old FastTranslate entries manually if they remain"
+echo "     → Remove any old HotLingo entries manually if they remain"
 echo "  2. Same for Screen Recording"
 echo "  3. Clean Build in Xcode (Cmd+Shift+K) then Build (Cmd+B)"
 echo "  4. On first run, macOS will prompt for permissions again"

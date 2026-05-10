@@ -5,16 +5,16 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-PROJECT="$ROOT/FastTranslate.xcodeproj"
-SCHEME="FastTranslate"
+PROJECT="$ROOT/HotLingo.xcodeproj"
+SCHEME="HotLingo"
 DERIVED="$ROOT/build/DerivedData"
 PRODUCTS="$DERIVED/Build/Products/Release"
-APP="$PRODUCTS/FastTranslate.app"
+APP="$PRODUCTS/HotLingo.app"
 DIST="$ROOT/build/dist"
 STAGE="$DIST/dmg-staging"
-RW_DMG="$DIST/FastTranslate-rw.dmg"
-DMG="$DIST/FastTranslate.dmg"
-VOLNAME="FastTranslate"
+RW_DMG="$DIST/HotLingo-rw.dmg"
+DMG="$DIST/HotLingo.dmg"
+VOLNAME="HotLingo"
 BG_DIR="$STAGE/.background"
 BG_PNG="$BG_DIR/background.png"
 APP_ICON="$APP/Contents/Resources/AppIcon.icns"
@@ -33,6 +33,9 @@ xcodebuild \
   CODE_SIGN_IDENTITY= \
   build
 
+echo "==> Ad-hoc signing app (required for TCC permission grants to work)"
+codesign --force --deep --sign - "$APP"
+
 echo "==> Preparing DMG staging"
 rm -rf "$STAGE" "$RW_DMG" "$DMG"
 mkdir -p "$BG_DIR"
@@ -40,6 +43,9 @@ cp -R "$APP" "$STAGE/"
 ln -s /Applications "$STAGE/Applications"
 find "$STAGE" -name "._*" -delete
 cp "$APP_ICON" "$STAGE/.VolumeIcon.icns"
+
+# Strip quarantine so macOS does not block TCC grants after install from DMG
+xattr -cr "$STAGE/HotLingo.app" 2>/dev/null || true
 
 python3 - <<'PY' "$BG_PNG"
 from pathlib import Path
@@ -86,8 +92,8 @@ def font(size):
     return ImageFont.load_default()
 
 # Header text only, intentionally no logo.
-d.text((66, 56), 'FastTranslate', font=font(36), fill=(27, 33, 37, 255))
-d.text((68, 102), 'Drag FastTranslate into Applications to install', font=font(17), fill=(86, 94, 100, 225))
+d.text((66, 56), 'HotLingo', font=font(36), fill=(27, 33, 37, 255))
+d.text((68, 102), 'Drag HotLingo into Applications to install', font=font(17), fill=(86, 94, 100, 225))
 
 # Install direction arrow sits between Finder icons.
 d.line((312, 260, 452, 260), fill=(32, 123, 255, 210), width=8)
@@ -101,14 +107,20 @@ PY
 echo "==> Creating writable DMG"
 hdiutil create -volname "$VOLNAME" -srcfolder "$STAGE" -ov -format UDRW "$RW_DMG" >/dev/null
 
-MOUNT_DIR="/Volumes/$VOLNAME"
 cleanup() {
-  hdiutil detach "$MOUNT_DIR" -quiet 2>/dev/null || true
+  [ -n "${MOUNT_DIR:-}" ] && hdiutil detach "$MOUNT_DIR" -quiet 2>/dev/null || true
 }
 trap cleanup EXIT
 
 echo "==> Mounting and applying Finder layout"
-hdiutil attach "$RW_DMG" -mountpoint "$MOUNT_DIR" -readwrite -noverify -noautoopen -quiet
+# Let hdiutil pick the mountpoint to avoid /Volumes permission issues
+MOUNT_DIR=$(hdiutil attach "$RW_DMG" -readwrite -noverify -noautoopen | awk 'END{$1=$2=""; print substr($0,3)}')
+# Trim leading/trailing whitespace
+MOUNT_DIR="${MOUNT_DIR#"${MOUNT_DIR%%[![:space:]]*}"}"
+MOUNT_DIR="${MOUNT_DIR%"${MOUNT_DIR##*[![:space:]]}"}"
+# Derive actual disk name from mount path (e.g. /Volumes/HotLingo 1 → HotLingo 1)
+DISK_NAME="${MOUNT_DIR#/Volumes/}"
+echo "    Mounted at: $MOUNT_DIR (disk: $DISK_NAME)"
 
 # Custom mounted-volume icon shown on the Desktop/Finder sidebar while the DMG is mounted.
 if command -v SetFile >/dev/null 2>&1; then
@@ -119,7 +131,7 @@ fi
 # Finder layout requires Finder/AppleScript. If it fails, the DMG still builds.
 osascript <<OSA || true
 tell application "Finder"
-  tell disk "$VOLNAME"
+  tell disk "$DISK_NAME"
     open
     set current view of container window to icon view
     set toolbar visible of container window to false
@@ -129,7 +141,7 @@ tell application "Finder"
     set arrangement of theViewOptions to not arranged
     set icon size of theViewOptions to 96
     set background picture of theViewOptions to file ".background:background.png"
-    set position of item "FastTranslate.app" of container window to {225, 263}
+    set position of item "HotLingo.app" of container window to {225, 263}
     set position of item "Applications" of container window to {545, 263}
     close
     open
@@ -147,9 +159,9 @@ rm -f "$RW_DMG"
 
 echo "==> Applying Finder icon to DMG file"
 if command -v sips >/dev/null 2>&1 && command -v DeRez >/dev/null 2>&1 && command -v Rez >/dev/null 2>&1 && command -v SetFile >/dev/null 2>&1; then
-  DMG_ICON_PNG="$DIST/FastTranslate-dmg-icon.png"
-  DMG_ICON_RSRC="$DIST/FastTranslate-dmg-icon.rsrc"
-  cp "$ROOT/FastTranslate/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon.png" "$DMG_ICON_PNG"
+  DMG_ICON_PNG="$DIST/HotLingo-dmg-icon.png"
+  DMG_ICON_RSRC="$DIST/HotLingo-dmg-icon.rsrc"
+  cp "$ROOT/HotLingo/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon.png" "$DMG_ICON_PNG"
   sips -i "$DMG_ICON_PNG" >/dev/null
   DeRez -only icns "$DMG_ICON_PNG" > "$DMG_ICON_RSRC"
   Rez -append "$DMG_ICON_RSRC" -o "$DMG"
@@ -163,7 +175,7 @@ ls -lh "$DMG"
 
 # Create versioned .zip of the signed app for auto-update (UpdateService expects a .zip asset in GitHub Releases)
 APP_VERSION=$(defaults read "$APP/Contents/Info.plist" CFBundleShortVersionString 2>/dev/null || echo "unknown")
-ZIP="$DIST/FastTranslate-${APP_VERSION}.zip"
+ZIP="$DIST/HotLingo-${APP_VERSION}.zip"
 echo "==> Creating update ZIP: $ZIP"
 ditto -c -k --keepParent "$APP" "$ZIP"
 ls -lh "$ZIP"

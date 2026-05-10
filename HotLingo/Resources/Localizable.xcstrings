@@ -1,0 +1,1185 @@
+{
+  "sourceLanguage" : "en",
+  "version" : "1.0",
+  "strings" : {
+
+    "HotLingo" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "HotLingo" } }
+      }
+    },
+
+    "Quick setup for menu bar translation" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Thi\u1EBFt l\u1EADp nhanh d\u1ECBch thu\u1EADt thanh menu" } }
+      }
+    },
+
+    "Permissions" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Quy\u1EC1n truy c\u1EADp" } }
+      }
+    },
+
+    "Language" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ng\u00F4n ng\u1EEF" } }
+      }
+    },
+
+    "Setup" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "C\u00E0i \u0111\u1EB7t" } }
+      }
+    },
+
+    "Shortcuts" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ph\u00EDm t\u1EAFt" } }
+      }
+    },
+
+    "Back" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Quay l\u1EA1i" } }
+      }
+    },
+
+    "Continue" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ti\u1EBFp t\u1EE5c" } }
+      }
+    },
+
+    "Start Using HotLingo" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "B\u1EAFt \u0111\u1EA7u d\u00F9ng HotLingo" } }
+      }
+    },
+
+    "Grant permissions" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "C\u1EA5p quy\u1EC1n truy c\u1EADp" } }
+      }
+    },
+
+    "macOS needs approval before HotLingo can read selected text or capture OCR screenshots." : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "macOS c\u1EA7n ph\u00EA duy\u1EC7t tr\u01B0\u1EDBc khi HotLingo c\u00F3 th\u1EC3 \u0111\u1ECDc v\u0103n b\u1EA3n \u0111\u01B0\u1EE3c ch\u1ECDn ho\u1EB7c ch\u1EE5p \u1EA3nh OCR." } }
+      }
+    },
+
+    "Accessibility" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Tr\u1EE3 n\u0103ng" } }
+      }
+    },
+
+    "Read selected text with Control + Option + T" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "\u0110\u1ECDc v\u0103n b\u1EA3n \u0111\u01B0\u1EE3c ch\u1ECDn b\u1EB1ng Control + Option + T" } }
+      }
+    },
+
+    "Screen Recording" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ghi m\u00E0n h\u00ECnh" } }
+      }
+    },
+
+    "Capture OCR regions with Control + Option + S" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ch\u1EE5p v\u00F9ng OCR b\u1EB1ng Control + Option + S" } }
+      }
+    },
+
+    "Granted" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "\u0110\u00E3 c\u1EA5p" } }
+      }
+    },
+
+    "Open Settings" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "M\u1EDF C\u00E0i \u0111\u1EB7t" } }
+      }
+    },
+
+    "Default language" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ng\u00F4n ng\u1EEF m\u1EB7c \u0111\u1ECBnh" } }
+      }
+    },
+
+    "Choose the language you translate to most often. You can change this anytime." : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ch\u1ECDn ng\u00F4n ng\u1EEF b\u1EA1n d\u1ECBch th\u01B0\u1EDDng xuy\u00EAn nh\u1EA5t. B\u1EA1n c\u00F3 th\u1EC3 thay \u0111\u1ED5i b\u1EA5t c\u1EE9 l\u00FAc n\u00E0o." } }
+      }
+    },
+
+    "Choose your translator" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ch\u1ECDn tr\u00ECnh d\u1ECBch" } }
+      }
+    },
+
+    "You can change this anytime in Settings." : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "B\u1EA1n c\u00F3 th\u1EC3 thay \u0111\u1ED5i b\u1EA5t c\u1EE9 l\u00FAc n\u00E0o trong C\u00E0i \u0111\u1EB7t." } }
+      }
+    },
+
+    "Recommended" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "\u0110\u1EC1 xu\u1EA5t" } }
+      }
+    },
+
+    "50 free translations to get started" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "50 l\u01B0\u1EE3t d\u1ECBch mi\u1EC5n ph\u00ED \u0111\u1EC3 b\u1EAFt \u0111\u1EA7u" } }
+      }
+    },
+
+    "Bring your own API key" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "D\u00F9ng API key c\u1EE7a b\u1EA1n" } }
+      }
+    },
+
+    "Free, no setup needed" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Mi\u1EC5n ph\u00ED, kh\u00F4ng c\u1EA7n c\u00E0i \u0111\u1EB7t" } }
+      }
+    },
+
+    "Two ways to translate" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Hai c\u00E1ch \u0111\u1EC3 d\u1ECBch" } }
+      }
+    },
+
+    "Use these shortcuts anywhere on your Mac." : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "D\u00F9ng c\u00E1c ph\u00EDm t\u1EAFt n\u00E0y \u1EDF b\u1EA5t k\u1EF3 \u0111\u00E2u tr\u00EAn m\u00E1y Mac." } }
+      }
+    },
+
+    "Translate selected text" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "D\u1ECBch v\u0103n b\u1EA3n \u0111\u00E3 ch\u1ECDn" } }
+      }
+    },
+
+    "Select any text in any app" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ch\u1ECDn v\u0103n b\u1EA3n b\u1EA5t k\u1EF3 trong \u1EE9ng d\u1EE5ng b\u1EA5t k\u1EF3" } }
+      }
+    },
+
+    "Press the shortcut" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Nh\u1EA5n ph\u00EDm t\u1EAFt" } }
+      }
+    },
+
+    "Translation appears instantly" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "B\u1EA3n d\u1ECBch xu\u1EA5t hi\u1EC7n ngay l\u1EADp t\u1EE9c" } }
+      }
+    },
+
+    "Screenshot & translate" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ch\u1EE5p m\u00E0n h\u00ECnh & d\u1ECBch" } }
+      }
+    },
+
+    "Draw a region on screen" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "V\u1EBD v\u00F9ng ch\u1ECDn tr\u00EAn m\u00E0n h\u00ECnh" } }
+      }
+    },
+
+    "Text is extracted and translated" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "V\u0103n b\u1EA3n \u0111\u01B0\u1EE3c tr\u00EDch xu\u1EA5t v\u00E0 d\u1ECBch" } }
+      }
+    },
+
+    "General" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Chung" } }
+      }
+    },
+
+    "Account" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "T\u00E0i kho\u1EA3n" } }
+      }
+    },
+
+    "API Keys" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "API Keys" } }
+      }
+    },
+
+    "Hotkeys" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ph\u00EDm t\u1EAFt" } }
+      }
+    },
+
+    "About" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Th\u00F4ng tin" } }
+      }
+    },
+
+    "Tune how HotLingo behaves across popover and floating panel." : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "\u0110i\u1EC1u ch\u1EC9nh c\u00E1ch HotLingo ho\u1EA1t \u0111\u1ED9ng tr\u00EAn popover v\u00E0 b\u1EA3ng n\u1ED5i." } }
+      }
+    },
+
+    "Translation Engine" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "C\u00F4ng c\u1EE5 d\u1ECBch" } }
+      }
+    },
+
+    "Google Translate is free with no setup. AI Translation offers high quality with 50 free credits." : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Google D\u1ECBch mi\u1EC5n ph\u00ED kh\u00F4ng c\u1EA7n c\u00E0i \u0111\u1EB7t. AI Translation cung c\u1EA5p ch\u1EA5t l\u01B0\u1EE3ng cao v\u1EDBi 50 l\u01B0\u1EE3t mi\u1EC5n ph\u00ED." } }
+      }
+    },
+
+    "Google Translate" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Google D\u1ECBch" } }
+      }
+    },
+
+    "AI Translation \u2728" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "AI Translation \u2728" } }
+      }
+    },
+
+    "GPT-4o mini (BYOK)" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "GPT-4o mini (BYOK)" } }
+      }
+    },
+
+    "Log in to use AI Translation" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "\u0110\u0103ng nh\u1EADp \u0111\u1EC3 d\u00F9ng AI Translation" } }
+      }
+    },
+
+    "Go to Account" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "\u0110\u1EBFn T\u00E0i kho\u1EA3n" } }
+      }
+    },
+
+    "Selection Button" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "N\u00FAt d\u1ECBch nhanh" } }
+      }
+    },
+
+    "Show a small translate button after selecting text in other apps." : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Hi\u1EC3n th\u1ECB n\u00FAt d\u1ECBch nh\u1ECF sau khi ch\u1ECDn v\u0103n b\u1EA3n trong \u1EE9ng d\u1EE5ng kh\u00E1c." } }
+      }
+    },
+
+    "Show translate button when text is selected" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Hi\u1EC7n n\u00FAt d\u1ECBch khi ch\u1ECDn v\u0103n b\u1EA3n" } }
+      }
+    },
+
+    "Translation Context" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ng\u1EEF c\u1EA3nh d\u1ECBch" } }
+      }
+    },
+
+    "Included in every translation for better accuracy." : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "\u0110\u01B0\u1EE3c \u0111\u01B0a v\u00E0o m\u1ED7i b\u1EA3n d\u1ECBch \u0111\u1EC3 t\u0103ng \u0111\u1ED9 ch\u00EDnh x\u00E1c." } }
+      }
+    },
+
+    "Default target used by popover and screenshot translation." : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ng\u00F4n ng\u1EEF \u0111\u00EDch m\u1EB7c \u0111\u1ECBnh cho d\u1ECBch popover v\u00E0 \u1EA3nh ch\u1EE5p m\u00E0n h\u00ECnh." } }
+      }
+    },
+
+    "Default Target" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "\u0110\u00EDch m\u1EB7c \u0111\u1ECBnh" } }
+      }
+    },
+
+    "Startup" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Kh\u1EDFi \u0111\u1ED9ng" } }
+      }
+    },
+
+    "Open HotLingo automatically when you sign in." : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "T\u1EF1 \u0111\u1ED9ng m\u1EDF HotLingo khi \u0111\u0103ng nh\u1EADp m\u00E1y." } }
+      }
+    },
+
+    "Launch at Login" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Kh\u1EDFi \u0111\u1ED9ng c\u00F9ng h\u1EC7 th\u1ED1ng" } }
+      }
+    },
+
+    "App Language" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ng\u00F4n ng\u1EEF \u1EE9ng d\u1EE5ng" } }
+      }
+    },
+
+    "Choose the language for the app interface." : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ch\u1ECDn ng\u00F4n ng\u1EEF hi\u1EC3n th\u1ECB giao di\u1EC7n \u1EE9ng d\u1EE5ng." } }
+      }
+    },
+
+    "System Default" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Theo h\u1EC7 th\u1ED1ng" } }
+      }
+    },
+
+    "Manage your AI Translation account and credits." : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Qu\u1EA3n l\u00FD t\u00E0i kho\u1EA3n AI Translation v\u00E0 s\u1ED1 l\u01B0\u1EE3t d\u1ECBch." } }
+      }
+    },
+
+    "Balance" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "S\u1ED1 d\u01B0" } }
+      }
+    },
+
+    "credits" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "l\u01B0\u1EE3t d\u1ECBch" } }
+      }
+    },
+
+    "Refresh" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "L\u00E0m m\u1EDBi" } }
+      }
+    },
+
+    "Top Up" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "N\u1EA1p th\u00EAm" } }
+      }
+    },
+
+    "Purchase more credits." : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Mua th\u00EAm l\u01B0\u1EE3t d\u1ECBch." } }
+      }
+    },
+
+    "Get Now" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Mua ngay" } }
+      }
+    },
+
+    "Log Out" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "\u0110\u0103ng xu\u1EA5t" } }
+      }
+    },
+
+    "Sign Up" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "\u0110\u0103ng k\u00FD" } }
+      }
+    },
+
+    "Log In" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "\u0110\u0103ng nh\u1EADp" } }
+      }
+    },
+
+    "Create an account to use AI Translation." : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "T\u1EA1o t\u00E0i kho\u1EA3n \u0111\u1EC3 s\u1EED d\u1EE5ng AI Translation." } }
+      }
+    },
+
+    "Email" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Email" } }
+      }
+    },
+
+    "Password" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "M\u1EADt kh\u1EA9u" } }
+      }
+    },
+
+    "Have account? Log in" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "\u0110\u00E3 c\u00F3 t\u00E0i kho\u1EA3n? \u0110\u0103ng nh\u1EADp" } }
+      }
+    },
+
+    "New? Sign up" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ch\u01B0a c\u00F3? \u0110\u0103ng k\u00FD" } }
+      }
+    },
+
+    "Verify your email" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "X\u00E1c th\u1EF1c email" } }
+      }
+    },
+
+    "Enter the 6-digit code sent to %@" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Nh\u1EADp m\u00E3 6 ch\u1EEF s\u1ED1 \u0111\u01B0\u1EE3c g\u1EEDi \u0111\u1EBFn %@" } }
+      }
+    },
+
+    "Verify" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "X\u00E1c th\u1EF1c" } }
+      }
+    },
+
+    "Store provider credentials securely in macOS Keychain." : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "L\u01B0u tr\u1EEF th\u00F4ng tin x\u00E1c th\u1EF1c nh\u00E0 cung c\u1EA5p an to\u00E0n trong Keychain c\u1EE7a macOS." } }
+      }
+    },
+
+    "You're using Google Translate (free). Switch to OpenAI in General settings for AI-powered translation with context support." : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "B\u1EA1n \u0111ang d\u00F9ng Google D\u1ECBch (mi\u1EC5n ph\u00ED). Chuy\u1EC3n sang OpenAI trong C\u00E0i \u0111\u1EB7t Chung \u0111\u1EC3 d\u1ECBch b\u1EB1ng AI v\u1EDBi h\u1ED7 tr\u1EE3 ng\u1EEF c\u1EA3nh." } }
+      }
+    },
+
+    "OpenAI" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "OpenAI" } }
+      }
+    },
+
+    "Used for translation and streaming responses." : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "D\u00F9ng \u0111\u1EC3 d\u1ECBch v\u00E0 ph\u1EA3n h\u1ED3i streaming." } }
+      }
+    },
+
+    "Save" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "L\u01B0u" } }
+      }
+    },
+
+    "Test" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ki\u1EC3m tra" } }
+      }
+    },
+
+    "Quick actions available globally while the app is running." : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ph\u00EDm t\u1EAFt ho\u1EA1t \u0111\u1ED9ng to\u00E0n c\u1EE5c khi \u1EE9ng d\u1EE5ng \u0111ang ch\u1EA1y." } }
+      }
+    },
+
+    "Click a shortcut field, then press your desired key combo." : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Nh\u1EA5p v\u00E0o \u00F4 ph\u00EDm t\u1EAFt, sau \u0111\u00F3 nh\u1EA5n t\u1ED5 h\u1EE3p ph\u00EDm mong mu\u1ED1n." } }
+      }
+    },
+
+    "Translate Selected Text" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "D\u1ECBch v\u0103n b\u1EA3n \u0111\u01B0\u1EE3c ch\u1ECDn" } }
+      }
+    },
+
+    "Screenshot OCR" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ch\u1EE5p m\u00E0n h\u00ECnh OCR" } }
+      }
+    },
+
+    "Reset to Defaults" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "\u0110\u1EB7t l\u1EA1i m\u1EB7c \u0111\u1ECBnh" } }
+      }
+    },
+
+    "Failed to register %@ hotkey: %@" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Kh\u00F4ng th\u1EC3 \u0111\u0103ng k\u00FD ph\u00EDm t\u1EAFt %@: %@" } }
+      }
+    },
+
+    "Version info and software updates." : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Th\u00F4ng tin phi\u00EAn b\u1EA3n v\u00E0 c\u1EADp nh\u1EADt ph\u1EA7n m\u1EC1m." } }
+      }
+    },
+
+    "Fast Vi\u2194En translation for macOS." : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "D\u1ECBch nhanh Vi\u2194En cho macOS." } }
+      }
+    },
+
+    "Software Update" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "C\u1EADp nh\u1EADt ph\u1EA7n m\u1EC1m" } }
+      }
+    },
+
+    "Check GitHub Releases for a newer version." : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ki\u1EC3m tra GitHub Releases \u0111\u1EC3 t\u00ECm phi\u00EAn b\u1EA3n m\u1EDBi h\u01A1n." } }
+      }
+    },
+
+    "Checking for updates\u2026" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "\u0110ang ki\u1EC3m tra c\u1EADp nh\u1EADt\u2026" } }
+      }
+    },
+
+    "You're up to date." : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "B\u1EA1n \u0111\u00E3 d\u00F9ng phi\u00EAn b\u1EA3n m\u1EDBi nh\u1EA5t." } }
+      }
+    },
+
+    "Version %@ is available." : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Phi\u00EAn b\u1EA3n %@ \u0111\u00E3 s\u1EB5n s\u00E0ng." } }
+      }
+    },
+
+    "Downloading update\u2026" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "\u0110ang t\u1EA3i c\u1EADp nh\u1EADt\u2026" } }
+      }
+    },
+
+    "Check for Updates" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ki\u1EC3m tra c\u1EADp nh\u1EADt" } }
+      }
+    },
+
+    "Install Update" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "C\u00E0i \u0111\u1EB7t c\u1EADp nh\u1EADt" } }
+      }
+    },
+
+    "Auto Detect" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "T\u1EF1 \u0111\u1ED9ng" } }
+      }
+    },
+
+    "Context" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ng\u1EEF c\u1EA3nh" } }
+      }
+    },
+
+    "Add context for better translation..." : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Th\u00EAm ng\u1EEF c\u1EA3nh \u0111\u1EC3 d\u1ECBch ch\u00EDnh x\u00E1c h\u01A1n..." } }
+      }
+    },
+
+    "Enter text to translate..." : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Nh\u1EADp v\u0103n b\u1EA3n c\u1EA7n d\u1ECBch..." } }
+      }
+    },
+
+    "Translating..." : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "\u0110ang d\u1ECBch..." } }
+      }
+    },
+
+    "Translation will appear here" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "B\u1EA3n d\u1ECBch s\u1EBD hi\u1EC3n th\u1ECB \u1EDF \u0111\u00E2y" } }
+      }
+    },
+
+    "Copy" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Sao ch\u00E9p" } }
+      }
+    },
+
+    "Hide" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "\u1EA8n" } }
+      }
+    },
+
+    "History" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "L\u1ECBch s\u1EED" } }
+      }
+    },
+
+    "Clear" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "X\u00F3a" } }
+      }
+    },
+
+    "Out of credits" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "H\u1EBFt l\u01B0\u1EE3t d\u1ECBch" } }
+      }
+    },
+
+    "credits.low %lld" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Only %lld credits left" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ch\u1EC9 c\u00F2n %lld l\u01B0\u1EE3t d\u1ECBch" } }
+      }
+    },
+
+    "Top Up \u2192" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "N\u1EA1p th\u00EAm \u2192" } }
+      }
+    },
+
+    "Translation History" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "L\u1ECBch s\u1EED d\u1ECBch" } }
+      }
+    },
+
+    "Try AI \u2014 50 free translations" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Th\u1EED AI \u2014 50 l\u01B0\u1EE3t mi\u1EC5n ph\u00ED" } }
+      }
+    },
+
+    "Top up to continue using AI Translation" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "N\u1EA1p th\u00EAm \u0111\u1EC3 ti\u1EBFp t\u1EE5c d\u00F9ng AI Translation" } }
+      }
+    },
+
+    "Use Google" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "D\u00F9ng Google" } }
+      }
+    },
+
+    "Out of credits \u2014 top up to keep translating" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "H\u1EBFt l\u01B0\u1EE3t d\u1ECBch \u2014 n\u1EA1p th\u00EAm \u0111\u1EC3 ti\u1EBFp t\u1EE5c" } }
+      }
+    },
+
+    "history.count %lld" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "%lld saved translations" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "%lld b\u1EA3n d\u1ECBch \u0111\u00E3 l\u01B0u" } }
+      }
+    },
+
+    "Select" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ch\u1ECDn" } }
+      }
+    },
+
+    "Done" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Xong" } }
+      }
+    },
+
+    "Search history..." : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "T\u00ECm ki\u1EBFm l\u1ECBch s\u1EED..." } }
+      }
+    },
+
+    "Select All" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ch\u1ECDn t\u1EA5t c\u1EA3" } }
+      }
+    },
+
+    "Deselect All" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "B\u1ECF ch\u1ECDn t\u1EA5t c\u1EA3" } }
+      }
+    },
+
+    "history.selected %lld" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "%lld selected" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "\u0110\u00E3 ch\u1ECDn %lld" } }
+      }
+    },
+
+    "Delete" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "X\u00F3a" } }
+      }
+    },
+
+    "Clear all translation history?" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "X\u00F3a to\u00E0n b\u1ED9 l\u1ECBch s\u1EED d\u1ECBch?" } }
+      }
+    },
+
+    "Clear History" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "X\u00F3a l\u1ECBch s\u1EED" } }
+      }
+    },
+
+    "Cancel" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "H\u1EE7y" } }
+      }
+    },
+
+    "This removes all saved translations from this Mac. This action cannot be undone." : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Thao t\u00E1c n\u00E0y s\u1EBD x\u00F3a t\u1EA5t c\u1EA3 b\u1EA3n d\u1ECBch \u0111\u00E3 l\u01B0u tr\u00EAn m\u00E1y Mac n\u00E0y. Kh\u00F4ng th\u1EC3 ho\u00E0n t\u00E1c." } }
+      }
+    },
+
+    "No translations yet" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ch\u01B0a c\u00F3 b\u1EA3n d\u1ECBch n\u00E0o" } }
+      }
+    },
+
+    "No matching results" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Kh\u00F4ng t\u00ECm th\u1EA5y k\u1EBFt qu\u1EA3" } }
+      }
+    },
+
+    "Translate something and it will appear here." : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "D\u1ECBch m\u1ED9t \u0111o\u1EA1n v\u0103n b\u1EA3n v\u00E0 n\u00F3 s\u1EBD hi\u1EC3n th\u1ECB \u1EDF \u0111\u00E2y." } }
+      }
+    },
+
+    "Try another keyword or language name." : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Th\u1EED t\u1EEB kh\u00F3a ho\u1EB7c t\u00EAn ng\u00F4n ng\u1EEF kh\u00E1c." } }
+      }
+    },
+
+    "Select a translation" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ch\u1ECDn m\u1ED9t b\u1EA3n d\u1ECBch" } }
+      }
+    },
+
+    "Translation Detail" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Chi ti\u1EBFt b\u1EA3n d\u1ECBch" } }
+      }
+    },
+
+    "Source" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ngu\u1ED3n" } }
+      }
+    },
+
+    "Translation" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "B\u1EA3n d\u1ECBch" } }
+      }
+    },
+
+    "Copy Source" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Sao ch\u00E9p ngu\u1ED3n" } }
+      }
+    },
+
+    "Copy Translation" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Sao ch\u00E9p b\u1EA3n d\u1ECBch" } }
+      }
+    },
+
+    "Copy All" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Sao ch\u00E9p t\u1EA5t c\u1EA3" } }
+      }
+    },
+
+    "copied.label %@" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Copied %@" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "\u0110\u00E3 sao ch\u00E9p %@" } }
+      }
+    },
+
+    "language.autoDetect" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Auto Detect" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "T\u1EF1 \u0111\u1ED9ng ph\u00E1t hi\u1EC7n" } }
+      }
+    },
+
+    "language.vietnamese" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Vietnamese" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ti\u1EBFng Vi\u1EC7t" } }
+      }
+    },
+
+    "language.english" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "English" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ti\u1EBFng Anh" } }
+      }
+    },
+
+    "language.japanese" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Japanese" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ti\u1EBFng Nh\u1EADt" } }
+      }
+    },
+
+    "language.korean" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Korean" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ti\u1EBFng H\u00E0n" } }
+      }
+    },
+
+    "language.simplifiedChinese" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Chinese (Simplified)" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ti\u1EBFng Trung (Gi\u1EA3n th\u1EC3)" } }
+      }
+    },
+
+    "language.traditionalChinese" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Chinese (Traditional)" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ti\u1EBFng Trung (Ph\u1ED3n th\u1EC3)" } }
+      }
+    },
+
+    "language.french" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "French" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ti\u1EBFng Ph\u00E1p" } }
+      }
+    },
+
+    "language.german" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "German" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ti\u1EBFng \u0110\u1EE9c" } }
+      }
+    },
+
+    "language.spanish" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Spanish" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ti\u1EBFng T\u00E2y Ban Nha" } }
+      }
+    },
+
+    "language.portuguese" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Portuguese" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ti\u1EBFng B\u1ED3 \u0110\u00E0o Nha" } }
+      }
+    },
+
+    "language.italian" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Italian" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ti\u1EBFng \u00DD" } }
+      }
+    },
+
+    "language.russian" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Russian" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ti\u1EBFng Nga" } }
+      }
+    },
+
+    "language.thai" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Thai" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ti\u1EBFng Th\u00E1i" } }
+      }
+    },
+
+    "language.indonesian" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Indonesian" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ti\u1EBFng Indonesia" } }
+      }
+    },
+
+    "error.noAPIKey" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "OpenAI API key is not set. Please add your key in Settings." } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ch\u01B0a c\u00E0i \u0111\u1EB7t API key OpenAI. Vui l\u00F2ng th\u00EAm key trong C\u00E0i \u0111\u1EB7t." } }
+      }
+    },
+
+    "error.networkError %@" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Network error: %@" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "L\u1ED7i m\u1EA1ng: %@" } }
+      }
+    },
+
+    "error.rateLimited" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Rate limit reached. Please wait a moment and try again." } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "\u0110\u00E3 \u0111\u1EA1t gi\u1EDBi h\u1EA1n t\u1ED1c \u0111\u1ED9. Vui l\u00F2ng ch\u1EDD m\u1ED9t l\u00FAc v\u00E0 th\u1EED l\u1EA1i." } }
+      }
+    },
+
+    "error.invalidResponse" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Invalid response from translation service." } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ph\u1EA3n h\u1ED3i kh\u00F4ng h\u1EE3p l\u1EC7 t\u1EEB d\u1ECBch v\u1EE5 d\u1ECBch thu\u1EADt." } }
+      }
+    },
+
+    "error.emptyInput" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Please enter text to translate." } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Vui l\u00F2ng nh\u1EADp v\u0103n b\u1EA3n c\u1EA7n d\u1ECBch." } }
+      }
+    },
+
+    "error.noCredits" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Out of credits. Top up in Settings to continue." } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "H\u1EBFt l\u01B0\u1EE3t d\u1ECBch. N\u1EA1p th\u00EAm trong C\u00E0i \u0111\u1EB7t \u0111\u1EC3 ti\u1EBFp t\u1EE5c." } }
+      }
+    },
+
+    "error.notAuthenticated" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Please log in to use AI Translation." } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Vui l\u00F2ng \u0111\u0103ng nh\u1EADp \u0111\u1EC3 d\u00F9ng AI Translation." } }
+      }
+    },
+
+    "Signed in" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "\u0110\u00E3 \u0111\u0103ng nh\u1EADp" } }
+      }
+    },
+
+    "Enter verification code" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Nh\u1EADp m\u00E3 x\u00E1c th\u1EF1c" } }
+      }
+    },
+
+    "Sign in to AI Translation" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "\u0110\u0103ng nh\u1EADp AI Translation" } }
+      }
+    },
+
+    "Create account" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "T\u1EA1o t\u00E0i kho\u1EA3n" } }
+      }
+    },
+
+    "auth.loggedInAs %@" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Logged in as %@" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "\u0110\u00E3 \u0111\u0103ng nh\u1EADp: %@" } }
+      }
+    },
+
+    "50 free credits granted!" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "\u0110\u00E3 nh\u1EADn 50 l\u01B0\u1EE3t d\u1ECBch mi\u1EC5n ph\u00ED!" } }
+      }
+    },
+
+    "We sent a 6-digit code to" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ch\u00FAng t\u00F4i \u0111\u00E3 g\u1EEDi m\u00E3 6 ch\u1EEF s\u1ED1 \u0111\u1EBFn" } }
+      }
+    },
+
+    "Have account?" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "\u0110\u00E3 c\u00F3 t\u00E0i kho\u1EA3n?" } }
+      }
+    },
+
+    "OpenAI API Key" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "OpenAI API Key" } }
+      }
+    },
+
+    "Conflicts with another shortcut" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Tr\u00F9ng v\u1EDBi ph\u00EDm t\u1EAFt kh\u00E1c" } }
+      }
+    },
+
+    "Check for Updates\u2026" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ki\u1EC3m tra c\u1EADp nh\u1EADt\u2026" } }
+      }
+    },
+
+    "Settings\u2026" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "C\u00E0i \u0111\u1EB7t\u2026" } }
+      }
+    },
+
+    "Quit HotLingo" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Tho\u00E1t HotLingo" } }
+      }
+    },
+
+    "HotLingo Settings" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "C\u00E0i \u0111\u1EB7t HotLingo" } }
+      }
+    },
+
+    "Welcome to HotLingo" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ch\u00E0o m\u1EEBng \u0111\u1EBFn HotLingo" } }
+      }
+    },
+
+    "payment.title" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Top Up" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "N\u1EA1p ti\u1EC1n" } }
+      }
+    },
+
+    "payment.bank" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Bank" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ng\u00E2n h\u00E0ng" } }
+      }
+    },
+
+    "payment.accountNumber" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Account No." } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "S\u1ED1 TK" } }
+      }
+    },
+
+    "payment.amount" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Amount" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "S\u1ED1 ti\u1EC1n" } }
+      }
+    },
+
+    "payment.transferContent" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Transfer note" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "N\u1ED9i dung CK" } }
+      }
+    },
+
+    "payment.copied" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Copied" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "\u0110\u00E3 sao ch\u00E9p" } }
+      }
+    },
+
+    "payment.copy" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Copy" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Sao ch\u00E9p" } }
+      }
+    },
+
+    "payment.waiting %lld" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Waiting for payment... (%llds)" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "\u0110ang ch\u1EDD thanh to\u00E1n... (%llds)" } }
+      }
+    },
+
+    "payment.close" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Close" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "\u0110\u00F3ng" } }
+      }
+    },
+
+    "payment.success" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Top up successful!" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "N\u1EA1p ti\u1EC1n th\u00E0nh c\u00F4ng!" } }
+      }
+    },
+
+    "payment.balance %lld" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Balance: %lld credits" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "S\u1ED1 d\u01B0: %lld credits" } }
+      }
+    }
+
+  }
+}

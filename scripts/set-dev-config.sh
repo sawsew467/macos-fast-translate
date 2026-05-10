@@ -18,5 +18,5 @@ if [ -z "$OPENAI_API_KEY" ] || [ "$OPENAI_API_KEY" = "sk-your-key-here" ]; then
   exit 1
 fi
 
-defaults write com.fasttranslate.app openai_api_key "$OPENAI_API_KEY"
-echo "✓ API key written to UserDefaults (com.fasttranslate.app)"
+defaults write com.hotlingo.app openai_api_key "$OPENAI_API_KEY"
+echo "✓ API key written to UserDefaults (com.hotlingo.app)"
