@@ -34,14 +34,15 @@ enum KeychainHelper {
     }
 
     /// Load a value from the Keychain. Returns nil if not found.
+    /// Note: kSecAttrAccessible is intentionally omitted — it is not a valid search
+    /// predicate and would prevent finding items saved under a different accessibility class.
     static func load(account: String) -> String? {
         let query: [CFString: Any] = [
             kSecClass: kSecClassGenericPassword,
             kSecAttrService: service,
             kSecAttrAccount: account,
             kSecReturnData: true,
-            kSecMatchLimit: kSecMatchLimitOne,
-            kSecAttrAccessible: kSecAttrAccessibleAfterFirstUnlock
+            kSecMatchLimit: kSecMatchLimitOne
         ]
         var result: AnyObject?
         guard SecItemCopyMatching(query as CFDictionary, &result) == errSecSuccess,

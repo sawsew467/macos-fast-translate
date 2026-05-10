@@ -4,7 +4,8 @@ import Foundation
 
 actor SupabaseClient {
     static let shared = SupabaseClient()
-    private var isRefreshing = false
+    /// Coalesces concurrent refresh attempts — all callers await the same in-flight task.
+    private var refreshTask: Task<Void, Error>?
 
     // MARK: - Public API
 
@@ -86,8 +87,9 @@ actor SupabaseClient {
         for try await line in bytes.lines {
             guard line.hasPrefix("data: ") else { continue }
             let payload = String(line.dropFirst(6))
-            continuation.yield(payload)
+            // Consume the sentinel internally — do not leak it to callers.
             if payload == "[DONE]" { break }
+            continuation.yield(payload)
         }
         continuation.finish()
     }
@@ -182,11 +184,22 @@ actor SupabaseClient {
         return req
     }
 
+    /// Refreshes the access token using the stored refresh token.
+    /// Concurrent callers coalesce on the same in-flight Task so only one
+    /// HTTP request is made regardless of how many callers race simultaneously.
     func refreshTokenIfNeeded() async throws {
-        guard !isRefreshing else { return }
-        isRefreshing = true
-        defer { isRefreshing = false }
+        if let existing = refreshTask {
+            return try await existing.value
+        }
+        let task = Task<Void, Error> { [self] in
+            defer { self.refreshTask = nil }
+            try await self.performRefresh()
+        }
+        refreshTask = task
+        try await task.value
+    }
 
+    private func performRefresh() async throws {
         guard let refreshToken = KeychainHelper.load(account: Constants.KeychainAccount.supabaseRefreshToken) else {
             clearTokens()
             throw SupabaseError.notAuthenticated

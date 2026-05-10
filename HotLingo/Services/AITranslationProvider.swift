@@ -81,7 +81,6 @@ final class AITranslationProvider: TranslationProvider {
 
                 do {
                     for try await payload in sseStream {
-                        if payload == "[DONE]" { break }
 
                         guard let data = payload.data(using: .utf8) else { continue }
 
