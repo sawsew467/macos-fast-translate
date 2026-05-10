@@ -173,17 +173,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func showStatusItemMenu(_ sender: NSStatusBarButton) {
+        let locale = effectiveLocale
         let menu = NSMenu()
-        let updatesItem = NSMenuItem(title: String(localized: "Check for Updates\u{2026}"), action: #selector(checkForUpdates), keyEquivalent: "")
+        let updatesItem = NSMenuItem(title: String(localized: "Check for Updates\u{2026}", locale: locale), action: #selector(checkForUpdates), keyEquivalent: "")
         updatesItem.target = self
         updatesItem.image = NSImage(systemSymbolName: "arrow.clockwise.circle", accessibilityDescription: "Check for Updates")
         menu.addItem(updatesItem)
         menu.addItem(.separator())
-        let settingsItem = NSMenuItem(title: String(localized: "Settings\u{2026}"), action: #selector(openSettings), keyEquivalent: ",")
+        let settingsItem = NSMenuItem(title: String(localized: "Settings\u{2026}", locale: locale), action: #selector(openSettings), keyEquivalent: ",")
         settingsItem.target = self
         menu.addItem(settingsItem)
         menu.addItem(.separator())
-        menu.addItem(withTitle: String(localized: "Quit HotLingo"), action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        menu.addItem(withTitle: String(localized: "Quit HotLingo", locale: locale), action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         menu.popUp(positioning: nil, at: NSPoint(x: 0, y: sender.bounds.height + 4), in: sender)
     }
 

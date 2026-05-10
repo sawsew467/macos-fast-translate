@@ -258,7 +258,7 @@ private struct FloatingPanelContent: View {
             HStack(alignment: .center, spacing: 8) {
                 copyButton(action: onCopy)
 
-                Text("\(result.sourceLanguage.displayName) → \(result.targetLanguage.displayName)")
+                (Text(result.sourceLanguage.localizationKey) + Text(verbatim: " → ") + Text(result.targetLanguage.localizationKey))
                     .font(.caption2)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
@@ -380,7 +380,7 @@ struct StreamingPanelContent: View {
                     onSelect: { language in onTargetLanguageChange?(language) }
                 )
 
-                Text("\(state.sourceLanguage.displayName) → \(state.targetLanguage.displayName)")
+                (Text(state.sourceLanguage.localizationKey) + Text(verbatim: " → ") + Text(state.targetLanguage.localizationKey))
                     .font(.caption2)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
@@ -533,7 +533,9 @@ private func targetLanguageMenu(
 ) -> some View {
     Menu {
         ForEach(Language.targetOptions) { language in
-            Button(language.displayName) { onSelect(language) }
+            Button(action: { onSelect(language) }) {
+                Text(language.localizationKey)
+            }
         }
     } label: {
         Text(selected.shortName)
