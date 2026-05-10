@@ -129,7 +129,7 @@ final class HotkeyManager {
             let anchorPoint = NSEvent.mouseLocation
             guard let cgImage = await screenCaptureService.captureRegion() else {
                 if !ScreenCaptureService.hasPermission() {
-                    floatingPanel.showMessage("Screen Recording permission required", systemImage: "record.circle", near: anchorPoint)
+                    floatingPanel.showMessage(String(localized: "panel.screenRecordingRequired"), systemImage: "record.circle", near: anchorPoint)
                 }
                 return
             }
@@ -152,7 +152,7 @@ final class HotkeyManager {
         print("[HotkeyManager] hotkey fired — mouseLocation = \(anchorPoint)")
         Task { @MainActor in
             guard let text = await SelectedTextReader.readSelectedText(), !text.isEmpty else {
-                floatingPanel.showMessage("No text selected", systemImage: "text.cursor", near: anchorPoint)
+                floatingPanel.showMessage(String(localized: "panel.noTextSelected"), systemImage: "text.cursor", near: anchorPoint)
                 return
             }
             do {

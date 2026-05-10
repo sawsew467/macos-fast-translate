@@ -188,3 +188,14 @@
 "payment.close" = "Đóng";
 "payment.success" = "Nạp tiền thành công!";
 "payment.balance %lld" = "Số dư: %lld credits";
+"AI Translation" = "AI Dịch thuật";
+"OpenAI GPT" = "OpenAI GPT";
+"Version %@" = "Phiên bản %@";
+"status.saved" = "Đã lưu";
+"status.validKey" = "Khóa API hợp lệ";
+"status.networkError" = "Lỗi mạng";
+"status.httpError %lld" = "Lỗi HTTP %lld";
+"panel.screenRecordingRequired" = "Cần quyền Quay màn hình";
+"panel.noTextSelected" = "Chưa chọn văn bản";
+"Exit selection" = "Thoát chọn";
+"Select translations" = "Chọn bản dịch";

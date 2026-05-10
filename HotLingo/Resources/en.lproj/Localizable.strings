@@ -188,3 +188,14 @@
 "payment.close" = "Close";
 "payment.success" = "Top up successful!";
 "payment.balance %lld" = "Balance: %lld credits";
+"AI Translation" = "AI Translation";
+"OpenAI GPT" = "OpenAI GPT";
+"Version %@" = "Version %@";
+"status.saved" = "Saved";
+"status.validKey" = "Valid API key";
+"status.networkError" = "Network error";
+"status.httpError %lld" = "HTTP error %lld";
+"panel.screenRecordingRequired" = "Screen Recording permission required";
+"panel.noTextSelected" = "No text selected";
+"Exit selection" = "Exit selection";
+"Select translations" = "Select translations";

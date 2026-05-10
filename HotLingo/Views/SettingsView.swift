@@ -46,6 +46,7 @@ struct APIKeysSettingsTab: View {
     @AppStorage(Constants.UserDefaultsKey.defaultProvider) private var defaultProvider = ProviderType.googleTranslate.rawValue
     @State private var openAIKey = ""
     @State private var openAIStatus: String?
+    @State private var openAIStatusIsOK = false
     @State private var isTesting = false
 
     private var isUsingGoogle: Bool {
@@ -81,16 +82,16 @@ struct APIKeysSettingsTab: View {
                         }
 
                     HStack(spacing: 10) {
-                        SettingsButton("Save", systemImage: "lock.doc", isPrimary: true) { saveOpenAIKey() }
+                        SettingsButton(String(localized: "Save"), systemImage: "lock.doc", isPrimary: true) { saveOpenAIKey() }
                             .disabled(openAIKey.isEmpty)
-                        SettingsButton("Test", systemImage: "checkmark.seal") { testOpenAIKey() }
+                        SettingsButton(String(localized: "Test"), systemImage: "checkmark.seal") { testOpenAIKey() }
                             .disabled(openAIKey.isEmpty || isTesting)
 
                         if isTesting { ProgressView().scaleEffect(0.75) }
                         if let status = openAIStatus {
                             Text(status)
                                 .font(.caption.weight(.medium))
-                                .foregroundStyle(status.hasPrefix("OK") ? Color.green : Color.red)
+                                .foregroundStyle(openAIStatusIsOK ? Color.green : Color.red)
                         }
                         Spacer()
                     }
@@ -105,9 +106,11 @@ struct APIKeysSettingsTab: View {
     private func saveOpenAIKey() {
         do {
             try KeychainHelper.save(account: Constants.KeychainAccount.openAIAPIKey, value: openAIKey)
-            openAIStatus = "OK Saved"
+            openAIStatus = String(localized: "status.saved")
+            openAIStatusIsOK = true
         } catch {
-            openAIStatus = "Error \(error.localizedDescription)"
+            openAIStatus = error.localizedDescription
+            openAIStatusIsOK = false
         }
     }
 
@@ -130,11 +133,16 @@ struct APIKeysSettingsTab: View {
                 let (_, resp) = try await URLSession.shared.data(for: req)
                 let code = (resp as? HTTPURLResponse)?.statusCode ?? 0
                 await MainActor.run {
-                    openAIStatus = code == 200 ? "OK Valid key" : "Error HTTP \(code)"
+                    openAIStatusIsOK = code == 200
+                    openAIStatus = code == 200 ? String(localized: "status.validKey") : String(localized: "status.httpError \(code)")
                     isTesting = false
                 }
             } catch {
-                await MainActor.run { openAIStatus = "Error Network"; isTesting = false }
+                await MainActor.run {
+                    openAIStatus = String(localized: "status.networkError")
+                    openAIStatusIsOK = false
+                    isTesting = false
+                }
             }
         }
     }
@@ -150,14 +158,14 @@ struct HotkeysSettingsTab: View {
             SettingsCard(systemImage: "keyboard", title: String(localized: "Shortcuts"), subtitle: String(localized: "Click a shortcut field, then press your desired key combo.")) {
                 VStack(spacing: 10) {
                     HotkeyRecorderRow(
-                        title: "Translate Selected Text",
+                        title: String(localized: "Translate Selected Text"),
                         systemImage: "character.cursor.ibeam",
                         action: .translate,
                         binding: $hotkeyStore.translateBinding,
                         store: hotkeyStore
                     )
                     HotkeyRecorderRow(
-                        title: "Screenshot OCR",
+                        title: String(localized: "Screenshot OCR"),
                         systemImage: "viewfinder",
                         action: .screenshot,
                         binding: $hotkeyStore.screenshotBinding,
@@ -176,7 +184,7 @@ struct HotkeysSettingsTab: View {
             }
 
             HStack {
-                SettingsButton("Reset to Defaults", systemImage: "arrow.counterclockwise") {
+                SettingsButton(String(localized: "Reset to Defaults"), systemImage: "arrow.counterclockwise") {
                     hotkeyStore.resetToDefaults()
                 }
                 Spacer()
@@ -249,14 +257,14 @@ struct AboutSettingsTab: View {
 
     private var checkButton: some View {
         let isBusy = updateService.state == .checking || updateService.state == .installing
-        return SettingsButton("Check for Updates", systemImage: "arrow.clockwise", isPrimary: true) {
+        return SettingsButton(String(localized: "Check for Updates"), systemImage: "arrow.clockwise", isPrimary: true) {
             updateService.checkForUpdates()
         }
         .disabled(isBusy)
     }
 
     private var installButton: some View {
-        SettingsButton("Install Update", systemImage: "arrow.down.circle") {
+        SettingsButton(String(localized: "Install Update"), systemImage: "arrow.down.circle") {
             updateService.installUpdate()
         }
     }

@@ -21,7 +21,7 @@ struct OnboardingProviderStep: View {
             VStack(spacing: 10) {
                 ProviderOptionCard(
                     systemImage: "wand.and.stars",
-                    title: "AI Translation",
+                    title: String(localized: "AI Translation"),
                     subtitle: aiSubtitle,
                     badge: String(localized: "Recommended"),
                     isSelected: selectedProvider == .aiTranslation
@@ -34,7 +34,7 @@ struct OnboardingProviderStep: View {
 
                 ProviderOptionCard(
                     systemImage: "sparkles",
-                    title: "OpenAI GPT",
+                    title: String(localized: "OpenAI GPT"),
                     subtitle: String(localized: "Bring your own API key"),
                     badge: nil,
                     isSelected: selectedProvider == .openAI
@@ -45,7 +45,7 @@ struct OnboardingProviderStep: View {
 
                 ProviderOptionCard(
                     systemImage: "globe",
-                    title: "Google Translate",
+                    title: String(localized: "Google Translate"),
                     subtitle: String(localized: "Free, no setup needed"),
                     badge: nil,
                     isSelected: selectedProvider == .googleTranslate
@@ -323,8 +323,7 @@ struct OpenAIKeyPanelView: View {
     @State private var apiKey = ""
     @State private var isTesting = false
     @State private var testStatus: String?
-
-    private var isValid: Bool { testStatus?.hasPrefix("OK") == true }
+    @State private var isValidKey = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -360,14 +359,14 @@ struct OpenAIKeyPanelView: View {
                 Button("Save") { saveAPIKey() }
                     .controlSize(.small)
                     .buttonStyle(.borderedProminent)
-                    .disabled(!isValid)
+                    .disabled(!isValidKey)
 
                 if isTesting { ProgressView().scaleEffect(0.7) }
 
                 if let status = testStatus {
                     Text(status)
                         .font(.caption.weight(.medium))
-                        .foregroundStyle(isValid ? .green : .red)
+                        .foregroundStyle(isValidKey ? .green : .red)
                 }
             }
         }
@@ -377,7 +376,8 @@ struct OpenAIKeyPanelView: View {
 
     private func saveAPIKey() {
         try? KeychainHelper.save(account: Constants.KeychainAccount.openAIAPIKey, value: apiKey)
-        testStatus = "OK Saved"
+        testStatus = String(localized: "status.saved")
+        isValidKey = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { onDismiss() }
     }
 
@@ -398,11 +398,16 @@ struct OpenAIKeyPanelView: View {
                 let (_, resp) = try await URLSession.shared.data(for: req)
                 let code = (resp as? HTTPURLResponse)?.statusCode ?? 0
                 await MainActor.run {
-                    testStatus = code == 200 ? "OK Valid key" : "HTTP \(code)"
+                    isValidKey = code == 200
+                    testStatus = code == 200 ? String(localized: "status.validKey") : String(localized: "status.httpError \(code)")
                     isTesting = false
                 }
             } catch {
-                await MainActor.run { testStatus = "Network error"; isTesting = false }
+                await MainActor.run {
+                    testStatus = String(localized: "status.networkError")
+                    isValidKey = false
+                    isTesting = false
+                }
             }
         }
     }

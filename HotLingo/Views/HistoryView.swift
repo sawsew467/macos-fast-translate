@@ -73,7 +73,7 @@ struct HistoryView: View {
                 .background(.regularMaterial, in: Capsule(style: .continuous))
                 .overlay { Capsule(style: .continuous).stroke(.primary.opacity(0.08), lineWidth: 1) }
                 .disabled(entries.isEmpty)
-                .help(isSelecting ? "Exit selection" : "Select translations")
+                .help(isSelecting ? String(localized: "Exit selection") : String(localized: "Select translations"))
             }
 
             if isSelecting {

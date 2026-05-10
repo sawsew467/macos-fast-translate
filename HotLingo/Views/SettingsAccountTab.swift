@@ -64,7 +64,7 @@ struct SettingsAccountTab: View {
         }
 
         HStack {
-            SettingsButton("Log Out", systemImage: "rectangle.portrait.and.arrow.right") {
+            SettingsButton(String(localized: "Log Out"), systemImage: "rectangle.portrait.and.arrow.right") {
                 authService.logout()
             }
             Spacer()
@@ -129,7 +129,7 @@ struct SettingsAccountTab: View {
     private func otpCard(email: String) -> some View {
         SettingsCard(
             systemImage: "envelope.badge",
-            title: "Verify your email",
+            title: String(localized: "Verify your email"),
             subtitle: String(localized: "Enter the 6-digit code sent to \(email)")
         ) {
             VStack(alignment: .leading, spacing: 12) {
