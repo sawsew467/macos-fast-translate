@@ -81,7 +81,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func setupStatusItem() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         guard let button = statusItem.button else { return }
-        button.image = NSImage(systemSymbolName: "character.bubble", accessibilityDescription: "HotLingo")
+        button.image = NSImage(systemSymbolName: "flame", accessibilityDescription: "HotLingo")
         button.action = #selector(statusItemClicked)
         button.target = self
         button.sendAction(on: [.leftMouseUp, .rightMouseUp])
@@ -111,13 +111,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func setupPopover() {
         let controller = NSHostingController(rootView: LocaleWrapper { TranslationPopoverView() })
+        // Prevent the hosting controller from auto-resizing the window when SwiftUI
+        // reports an ideal size — the window manages its own frame.
+        controller.sizingOptions = []
         let window = QuickTranslatePanel(
-            contentRect: NSRect(x: 0, y: 0, width: 380, height: 340),
-            styleMask: [.borderless, .fullSizeContentView],
+            contentRect: NSRect(x: 0, y: 0, width: 420, height: 360),
+            styleMask: [.borderless, .fullSizeContentView, .resizable],
             backing: .buffered,
             defer: false
         )
         window.contentViewController = controller
+        // Re-affirm the desired size after the view controller is attached,
+        // so any implicit sizing from the hosting controller doesn't override it.
+        window.setContentSize(NSSize(width: 420, height: 360))
         window.backgroundColor = .clear
         window.isOpaque = false
         window.hasShadow = true
@@ -129,6 +135,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         window.level = .floating
         window.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .transient]
         window.hidesOnDeactivate = false
+        window.minSize = NSSize(width: 420, height: 320)
+        window.maxSize = NSSize(width: 760, height: 680)
+        window.delegate = self
         popoverWindow = window
     }
 
@@ -450,4 +459,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 private final class QuickTranslatePanel: NSPanel {
     override var canBecomeKey: Bool { true }
     override var canBecomeMain: Bool { true }
+}
+
+extension AppDelegate: NSWindowDelegate {
+    func windowWillResize(_ sender: NSWindow, to frameSize: NSSize) -> NSSize {
+        guard sender === popoverWindow else { return frameSize }
+        return NSSize(
+            width: max(420, min(760, frameSize.width)),
+            height: max(320, min(680, frameSize.height))
+        )
+    }
 }

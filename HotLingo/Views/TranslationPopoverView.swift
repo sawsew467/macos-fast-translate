@@ -9,10 +9,8 @@ struct TranslationPopoverView: View {
     @State private var showContext = false
     @State private var contextText = ""
     @State private var errorMessage: String?
+    @Environment(\.locale) private var locale
 
-    private let popoverWidth: CGFloat = 380
-    private let compactHeight: CGFloat = 340
-    private let expandedHeight: CGFloat = 420
     private let outerPadding: CGFloat = 18
     private let popoverShape = RoundedRectangle(cornerRadius: 26, style: .continuous)
 
@@ -35,7 +33,7 @@ struct TranslationPopoverView: View {
             }
             .padding(outerPadding)
         }
-        .frame(width: popoverWidth, height: showContext ? expandedHeight : compactHeight)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .clipShape(popoverShape)
         .contentShape(popoverShape)
         .task { await CreditService.shared.fetchBalance() }
@@ -82,7 +80,7 @@ struct TranslationPopoverView: View {
 
     private var headerBar: some View {
         HStack(spacing: 10) {
-            Text(languageLabel)
+            languageLabelView
                 .font(.system(size: 13, weight: .semibold))
                 .foregroundStyle(.secondary)
                 .lineLimit(1)
@@ -110,9 +108,24 @@ struct TranslationPopoverView: View {
             && creditService.balance >= 10
     }
 
-    private var languageLabel: String {
-        guard let last = service.lastResult else { return String(localized: "Auto Detect") }
-        return "\(last.sourceLanguage.displayName) -> \(last.targetLanguage.displayName)"
+    @ViewBuilder private var languageLabelView: some View {
+        if let last = service.lastResult {
+            Text(last.sourceLanguage.localizationKey) + Text(verbatim: " → ") + Text(last.targetLanguage.localizationKey)
+        } else {
+            Text("Auto Detect")
+        }
+    }
+
+    private func localizedString(_ key: String) -> String {
+        let codes = [locale.identifier, String(locale.identifier.prefix(2))]
+        for code in codes {
+            if let path = Bundle.main.path(forResource: code, ofType: "lproj"),
+               let bundle = Bundle(path: path) {
+                let result = bundle.localizedString(forKey: key, value: nil, table: nil)
+                if result != key { return result }
+            }
+        }
+        return Bundle.main.localizedString(forKey: key, value: key, table: nil)
     }
 
     private var selectedTargetLanguage: Language {
@@ -126,7 +139,7 @@ struct TranslationPopoverView: View {
             Text("Context")
                 .font(.caption.weight(.medium))
                 .foregroundStyle(.secondary)
-            textBox(text: $contextText, height: 58, placeholder: "Add context for better translation...")
+            textBox(text: $contextText, height: 58, placeholder: localizedString("Add context for better translation..."))
         }
         .transition(.opacity.combined(with: .move(edge: .top)))
     }
@@ -134,7 +147,7 @@ struct TranslationPopoverView: View {
     // MARK: - Input
 
     private var inputEditor: some View {
-        textBox(text: $inputText, height: showContext ? 76 : 92, placeholder: "Enter text to translate...") {
+        textBox(text: $inputText, height: showContext ? 76 : 92, placeholder: localizedString("Enter text to translate...")) {
             triggerTranslation()
         }
     }
@@ -255,7 +268,6 @@ struct TranslationPopoverView: View {
                 Text(title)
                     .font(.system(size: 13, weight: .medium))
                     .lineLimit(1)
-                    .fixedSize(horizontal: true, vertical: false)
             }
             .foregroundStyle(.primary.opacity(isDisabled ? 0.36 : 0.88))
             .padding(.horizontal, 10)
@@ -279,7 +291,6 @@ struct TranslationPopoverView: View {
                 Text(label)
                     .font(.system(size: 13, weight: .medium))
                     .lineLimit(1)
-                    .fixedSize(horizontal: true, vertical: false)
             }
             .foregroundStyle(.secondary)
             .frame(height: 34)
