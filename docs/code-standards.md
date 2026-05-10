@@ -11,7 +11,7 @@
 
 ### File Organization
 ```
-FastTranslate/
+HotLingo/
 ├── App/          # Entry point, AppDelegate
 ├── Models/       # Data structs, enums
 ├── Views/        # SwiftUI views, AppKit controllers

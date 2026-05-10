@@ -52,7 +52,7 @@ macOS menu bar-only app (no dock icon, no main window). Luôn chạy nền, truy
 
 | Component | File | Responsibility |
 |-----------|------|----------------|
-| **FastTranslateApp** | `App/FastTranslateApp.swift` | @main entry, SwiftUI lifecycle |
+| **HotLingoApp** | `App/HotLingoApp.swift` | @main entry, SwiftUI lifecycle |
 | **AppDelegate** | `App/AppDelegate.swift` | NSStatusItem, NSPopover, wiring |
 | **TranslationService** | `Services/TranslationService.swift` | Translation coordinator, context merging, history |
 | **TranslationProvider** | `Services/TranslationProvider.swift` | Protocol for swappable backends |
@@ -136,4 +136,4 @@ All 3 merged into system prompt sent to GPT-4o-mini. Google Translate ignores co
 |------|----------|--------|
 | API keys | macOS Keychain | Secure |
 | Settings | UserDefaults | @AppStorage |
-| Translation history | ~/Library/Application Support/FastTranslate/history.json | JSON |
+| Translation history | ~/Library/Application Support/HotLingo/history.json | JSON |

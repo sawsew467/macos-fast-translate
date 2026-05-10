@@ -1,5 +1,29 @@
 # Project Changelog
 
+## [2.0.0] - 2026-05-11
+
+### Added
+- **Supabase Integration** — auth, payment system, and credit-based AI translation provider
+- **Real SSE Streaming** — live token streaming for AI translations (replaces single-shot)
+- **i18n Localization** — full English and Vietnamese localization for all UI strings
+- **Credit System** — persistent credit balance, top-up UI, and state management
+- **Custom Settings Tab Bar** — redesigned Settings UI with improved tab navigation
+
+### Changed
+- **App renamed** from FastTranslate to **HotLingo** (source, project, scripts, bundle ID)
+- Updated app icon, menu bar icon, and build/uninstall scripts
+
+### Fixed
+- Auth token auto-refresh for SSE streams and on app startup
+- 402 detection in AITranslationProvider for credit exhaustion
+- "Use Google" no longer permanently overwrites provider setting
+- Popover layout, localization, and resize behavior
+- Status bar menu localization (lproj bundle loading)
+- Floating panel language picker localization
+- SwiftUI environment locale propagation to Settings and popover
+- TopUp UI stays visible when translation error occurs
+- Multiple auth and SSE bugs found in code review (8 fixes)
+
 ## [1.6.0] - 2026-05-09
 
 ### Added

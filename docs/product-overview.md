@@ -1,7 +1,7 @@
-# FastTranslate — Product Overview
+# HotLingo — Product Overview
 
 ## What is it?
-A native macOS menu bar app for instant Vietnamese ↔ English translation. Powered by GPT-4o-mini with real-time streaming, smart context system, and screenshot OCR — all accessible via global hotkeys without leaving your current app.
+A native macOS menu bar app for instant Vietnamese ↔ English translation. Supports Google Translate (free), OpenAI GPT-4o-mini, and Supabase credit-based AI translation with real-time streaming, smart context system, and screenshot OCR — all accessible via global hotkeys without leaving your current app.
 
 ## Problem
 Vietnamese professionals communicating with English-speaking clients daily face a slow, repetitive workflow:
@@ -10,7 +10,7 @@ Vietnamese professionals communicating with English-speaking clients daily face 
 2. Screenshot client messages → upload to AI → read translation (**30-60s per message**)
 3. Desktop cluttered with junk screenshot files
 
-**FastTranslate reduces each translation to 2-3 seconds with zero context switching and zero junk files.**
+**HotLingo reduces each translation to 2-3 seconds with zero context switching and zero junk files.**
 
 ## Target Users
 - Vietnamese professionals working with English-speaking clients or colleagues
@@ -36,6 +36,12 @@ Rebind translate and screenshot shortcuts to any key combination in Settings →
 ### 4. Menu Bar Popover
 Click the menu bar icon → type or paste text with optional context → get translation. Best for longer passages or when you need specific context.
 
+### 5. Credit-based AI Translation
+Sign in with Supabase auth, purchase credits, and use AI-powered translation with real-time SSE streaming.
+
+### 6. i18n Localization
+Full English and Vietnamese localization for all UI strings.
+
 ## Smart Context System
 
 A key advantage over Google Translate: provide **context** for more accurate, natural translations.
@@ -57,12 +63,11 @@ A key advantage over Google Translate: provide **context** for more accurate, na
 - **Auto language detection** — type Vietnamese → translates to English, and vice versa
 - **Global hotkeys** — work from any app via Carbon Events API
 - **Zero junk files** — screenshots processed in memory
-- **Low cost** — ~$0.30/month with GPT-4o-mini at 100 translations/day
 - **Zero external dependencies** — 100% Apple native frameworks
+- **Supabase integration** — auth, credits, and payment system
 
 ## System Requirements
 - macOS 13 (Ventura) or later
-- OpenAI API key
 - Accessibility permission (for global hotkeys + reading selected text)
 - Screen Recording permission (for screenshot OCR)
 

@@ -2,7 +2,7 @@ import Foundation
 import Security
 
 /// Secure storage for API keys using macOS Keychain.
-/// Service identifier: "com.fasttranslate.app"
+/// Service identifier: "com.hotlingo.app"
 enum KeychainHelper {
     private static let service = "com.hotlingo.app"
 

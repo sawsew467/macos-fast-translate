@@ -20,6 +20,7 @@
 		3B1AA885624EE6EA0229EA43 /* HotkeyBinding.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC78416F4661032E9BCF75E /* HotkeyBinding.swift */; };
 		4269706F5B5A588EAB57516C /* KeychainHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4072669AA8FFBD14BC04D55F /* KeychainHelper.swift */; };
 		4505D92EB40EBBF5F26C929D /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89037981F08DCDD31CBF4693 /* HistoryView.swift */; };
+		489AB248459540AB954E675A /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8CFE88951A714C7CAB7DCF52 /* Localizable.strings */; };
 		49AA0B646347F60428544403 /* AITranslationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2444090F1786F69BF8DDEA20 /* AITranslationProvider.swift */; };
 		565A07966F7A3ADA20B12626 /* TranslationModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0B61BB39F7B81D8125813A /* TranslationModels.swift */; };
 		59CA86294CC279E70F945752 /* LanguageDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97DA6300D18F1BFB56F812AC /* LanguageDetector.swift */; };
@@ -51,7 +52,6 @@
 		EC7B12164D21FA56210446A0 /* ScreenCaptureService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8CF4D8E92B29C1407B01B64 /* ScreenCaptureService.swift */; };
 		F455241EBAB4DF07152D4D04 /* OnboardingLanguageStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AD5B460ABBE74DDED7D1F3 /* OnboardingLanguageStep.swift */; };
 		F5C55B166B7FB26DE4C80E21 /* PaymentModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D18080995BE85309E41F211 /* PaymentModels.swift */; };
-		489AB248459540AB954E675A /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8CFE88951A714C7CAB7DCF52 /* Localizable.strings */; };
 		FDF1D29066C016D2C34F64A6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2410F309D1E5B5BBAEF3EC72 /* Assets.xcassets */; };
 		FF82ADF95A09E21F1160E287 /* SelectionTranslateButtonController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A118941161556474A7B3F2D1 /* SelectionTranslateButtonController.swift */; };
 /* End PBXBuildFile section */
@@ -506,17 +506,22 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = HotLingo/Resources/HotLingo.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = YWSHDN5Y3H;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = HotLingo/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.6.0;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.hotlingo.app;
 				PRODUCT_NAME = HotLingo;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 			};
 			name = Debug;
@@ -526,17 +531,22 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = HotLingo/Resources/HotLingo.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = YWSHDN5Y3H;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = HotLingo/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.6.0;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.hotlingo.app;
 				PRODUCT_NAME = HotLingo;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 			};
 			name = Release;

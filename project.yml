@@ -1,6 +1,6 @@
-name: FastTranslate
+name: HotLingo
 options:
-  bundleIdPrefix: com.fasttranslate
+  bundleIdPrefix: com.hotlingo
   deploymentTarget:
     macOS: "13.0"
   xcodeVersion: "16.0"
@@ -17,10 +17,10 @@ settings:
     MACOSX_DEPLOYMENT_TARGET: "13.0"
 
 schemes:
-  FastTranslate:
+  HotLingo:
     build:
       targets:
-        FastTranslate: all
+        HotLingo: all
     run:
       config: Debug
     test:
@@ -29,22 +29,22 @@ schemes:
       config: Release
 
 targets:
-  FastTranslate:
+  HotLingo:
     type: application
     platform: macOS
     sources:
-      - FastTranslate
+      - HotLingo
     dependencies:
       - sdk: Carbon.framework
     settings:
       base:
-        MARKETING_VERSION: "1.6.0"
+        MARKETING_VERSION: "2.0.0"
         CURRENT_PROJECT_VERSION: "1"
         ENABLE_HARDENED_RUNTIME: true
-        INFOPLIST_FILE: FastTranslate/Resources/Info.plist
-        CODE_SIGN_ENTITLEMENTS: FastTranslate/Resources/FastTranslate.entitlements
-        PRODUCT_BUNDLE_IDENTIFIER: com.fasttranslate.app
-        PRODUCT_NAME: FastTranslate
+        INFOPLIST_FILE: HotLingo/Resources/Info.plist
+        CODE_SIGN_ENTITLEMENTS: HotLingo/Resources/HotLingo.entitlements
+        PRODUCT_BUNDLE_IDENTIFIER: com.hotlingo.app
+        PRODUCT_NAME: HotLingo
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         COMBINE_HIDPI_IMAGES: true
         LD_RUNPATH_SEARCH_PATHS: "$(inherited) @executable_path/../Frameworks"
