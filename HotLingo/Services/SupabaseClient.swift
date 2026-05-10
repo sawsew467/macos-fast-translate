@@ -35,46 +35,61 @@ actor SupabaseClient {
 
     /// Stream SSE events from a POST endpoint.
     /// Yields raw payload strings from `data: <payload>` lines (prefix stripped).
-    /// Caller handles JSON parsing, "[DONE]" sentinel, and error events.
+    /// Automatically refreshes the access token when it is expiring soon or when
+    /// the server returns 401. Retries the stream once after a successful refresh.
     func streamSSE<B: Encodable>(endpoint: String, body: B) -> AsyncThrowingStream<String, Error> {
         AsyncThrowingStream { continuation in
             Task {
-                guard let token = self.accessToken else {
-                    continuation.finish(throwing: SupabaseError.notAuthenticated)
-                    return
-                }
-
-                let url = URL(string: "\(Constants.Supabase.url)\(endpoint)")!
-                var req = URLRequest(url: url)
-                req.httpMethod = "POST"
-                req.setValue(Constants.Supabase.anonKey, forHTTPHeaderField: "apikey")
-                req.setValue("application/json", forHTTPHeaderField: "Content-Type")
-                req.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-                req.httpBody = try? JSONEncoder().encode(body)
-
                 do {
-                    let (bytes, response) = try await URLSession.shared.bytes(for: req)
-                    guard let http = response as? HTTPURLResponse else {
-                        continuation.finish(throwing: SupabaseError.invalidResponse)
-                        return
+                    // Proactively refresh before the stream starts if token is close to expiry.
+                    if self.isTokenExpiringSoon {
+                        try await self.refreshTokenIfNeeded()
                     }
-                    guard http.statusCode < 400 else {
-                        continuation.finish(throwing: SupabaseError.httpError(http.statusCode))
-                        return
-                    }
-
-                    for try await line in bytes.lines {
-                        guard line.hasPrefix("data: ") else { continue }
-                        let payload = String(line.dropFirst(6))
-                        continuation.yield(payload)
-                        if payload == "[DONE]" { break }
-                    }
-                    continuation.finish()
+                    try await self.runSSEStream(
+                        endpoint: endpoint, body: body,
+                        continuation: continuation, isRetry: false
+                    )
                 } catch {
                     continuation.finish(throwing: error)
                 }
             }
         }
+    }
+
+    /// Executes the SSE stream request. On 401, refreshes token and retries once.
+    private func runSSEStream<B: Encodable>(
+        endpoint: String,
+        body: B,
+        continuation: AsyncThrowingStream<String, Error>.Continuation,
+        isRetry: Bool
+    ) async throws {
+        guard let token = accessToken else { throw SupabaseError.notAuthenticated }
+
+        var req = URLRequest(url: URL(string: "\(Constants.Supabase.url)\(endpoint)")!)
+        req.httpMethod = "POST"
+        req.setValue(Constants.Supabase.anonKey, forHTTPHeaderField: "apikey")
+        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        req.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        req.httpBody = try? JSONEncoder().encode(body)
+
+        let (bytes, response) = try await URLSession.shared.bytes(for: req)
+        guard let http = response as? HTTPURLResponse else { throw SupabaseError.invalidResponse }
+
+        if http.statusCode == 401 && !isRetry {
+            // Token expired mid-flight — refresh and retry once.
+            try await refreshTokenIfNeeded()
+            try await runSSEStream(endpoint: endpoint, body: body, continuation: continuation, isRetry: true)
+            return
+        }
+        guard http.statusCode < 400 else { throw SupabaseError.httpError(http.statusCode) }
+
+        for try await line in bytes.lines {
+            guard line.hasPrefix("data: ") else { continue }
+            let payload = String(line.dropFirst(6))
+            continuation.yield(payload)
+            if payload == "[DONE]" { break }
+        }
+        continuation.finish()
     }
 
     // MARK: - Token Management
@@ -84,6 +99,27 @@ actor SupabaseClient {
     }
 
     var isLoggedIn: Bool { accessToken != nil }
+
+    /// Returns true when the access token is missing or expires within 60 seconds.
+    var isTokenExpiringSoon: Bool {
+        guard let token = accessToken, let expiry = jwtExpiry(from: token) else { return true }
+        return expiry.timeIntervalSinceNow < 60
+    }
+
+    /// Decodes the `exp` claim from a JWT without external dependencies.
+    private func jwtExpiry(from token: String) -> Date? {
+        let parts = token.split(separator: ".")
+        guard parts.count == 3 else { return nil }
+        var base64 = String(parts[1])
+            .replacingOccurrences(of: "-", with: "+")
+            .replacingOccurrences(of: "_", with: "/")
+        let rem = base64.count % 4
+        if rem != 0 { base64 += String(repeating: "=", count: 4 - rem) }
+        guard let data = Data(base64Encoded: base64),
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let exp = json["exp"] as? TimeInterval else { return nil }
+        return Date(timeIntervalSince1970: exp)
+    }
 
     func saveTokens(access: String, refresh: String) {
         try? KeychainHelper.save(account: Constants.KeychainAccount.supabaseAccessToken, value: access)
@@ -146,7 +182,7 @@ actor SupabaseClient {
         return req
     }
 
-    private func refreshTokenIfNeeded() async throws {
+    func refreshTokenIfNeeded() async throws {
         guard !isRefreshing else { return }
         isRefreshing = true
         defer { isRefreshing = false }

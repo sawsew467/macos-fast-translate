@@ -7,15 +7,21 @@ enum KeychainHelper {
     private static let service = "com.hotlingo.app"
 
     /// Save or update a value in the Keychain.
+    /// Items are stored with `kSecAttrAccessibleAfterFirstUnlock` so they remain
+    /// accessible across binary updates without requiring a Keychain password prompt.
     static func save(account: String, value: String) throws {
         guard let data = value.data(using: .utf8) else { return }
         let base: [CFString: Any] = [
             kSecClass: kSecClassGenericPassword,
             kSecAttrService: service,
-            kSecAttrAccount: account
+            kSecAttrAccount: account,
+            kSecAttrAccessible: kSecAttrAccessibleAfterFirstUnlock
         ]
-        // Try update first; if not found, add.
-        let attrs: [CFString: Any] = [kSecValueData: data]
+        // Include accessibility in the update so existing items are migrated.
+        let attrs: [CFString: Any] = [
+            kSecValueData: data,
+            kSecAttrAccessible: kSecAttrAccessibleAfterFirstUnlock
+        ]
         let updateStatus = SecItemUpdate(base as CFDictionary, attrs as CFDictionary)
         if updateStatus == errSecItemNotFound {
             var addQuery = base
@@ -34,7 +40,8 @@ enum KeychainHelper {
             kSecAttrService: service,
             kSecAttrAccount: account,
             kSecReturnData: true,
-            kSecMatchLimit: kSecMatchLimitOne
+            kSecMatchLimit: kSecMatchLimitOne,
+            kSecAttrAccessible: kSecAttrAccessibleAfterFirstUnlock
         ]
         var result: AnyObject?
         guard SecItemCopyMatching(query as CFDictionary, &result) == errSecSuccess,

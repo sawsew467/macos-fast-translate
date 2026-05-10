@@ -15,6 +15,8 @@ final class SupabaseAuthService: ObservableObject {
 
     private init() {
         restoreSession()
+        // Silently refresh if the stored token is expiring soon.
+        Task { await validateAndRefreshIfNeeded() }
         NotificationCenter.default.addObserver(
             forName: .sessionExpired,
             object: nil,
@@ -106,6 +108,20 @@ final class SupabaseAuthService: ObservableObject {
            KeychainHelper.load(account: Constants.KeychainAccount.supabaseAccessToken) != nil {
             authState = .loggedIn(email: email)
         } else {
+            authState = .loggedOut
+        }
+    }
+
+    /// Silently refreshes the access token on startup if it is expired or expiring soon.
+    /// Logs out only when the refresh token itself is invalid (session truly ended).
+    private func validateAndRefreshIfNeeded() async {
+        guard case .loggedIn = authState else { return }
+        let client = SupabaseClient.shared
+        guard await client.isTokenExpiringSoon else { return }
+        do {
+            try await client.refreshTokenIfNeeded()
+        } catch {
+            // Refresh token expired — session is truly over.
             authState = .loggedOut
         }
     }
