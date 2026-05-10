@@ -14,6 +14,10 @@ final class StreamingTranslationState: ObservableObject {
     let provider: ProviderType
     let presentation: TranslationPresentation
 
+    /// The active stream-consumer task. Cancel this before starting a new stream
+    /// to prevent two Tasks racing to append to `streamedText`.
+    var consumeTask: Task<Void, Never>?
+
     init(
         sourceText: String,
         sourceLanguage: Language,

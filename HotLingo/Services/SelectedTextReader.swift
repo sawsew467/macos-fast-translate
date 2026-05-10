@@ -68,7 +68,8 @@ struct SelectedTextReader {
             element,
             kAXFocusedUIElementAttribute as CFString,
             &focusedElement
-        ) == .success, let focusedElement {
+        ) == .success, let focusedElement,
+           CFGetTypeID(focusedElement) == AXUIElementGetTypeID() {
             targetElement = focusedElement as! AXUIElement
         } else {
             targetElement = element

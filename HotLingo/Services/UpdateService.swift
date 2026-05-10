@@ -118,10 +118,11 @@ final class UpdateService: ObservableObject {
         state = .installing
         do {
             let release = try await fetchLatestRelease()
-            guard let asset = release.zipAsset else {
+            guard let asset = release.zipAsset,
+                  let downloadURL = URL(string: asset.browserDownloadUrl) else {
                 throw UpdateError.noZipAsset
             }
-            let zipURL = try await downloadAsset(url: URL(string: asset.browserDownloadUrl)!)
+            let zipURL = try await downloadAsset(url: downloadURL)
             try replaceAndRelaunch(zipURL: zipURL)
         } catch {
             // Fall back to browser

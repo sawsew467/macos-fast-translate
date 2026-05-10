@@ -102,7 +102,9 @@ final class AITranslationProvider: TranslationProvider {
                 } catch let error as SupabaseError {
                     switch error {
                     case .httpError(402): continuation.finish(throwing: TranslationError.noCredits)
+                    case .serverError(let msg) where msg.hasPrefix("[402]"): continuation.finish(throwing: TranslationError.noCredits)
                     case .httpError(401), .notAuthenticated: continuation.finish(throwing: TranslationError.notAuthenticated)
+                    case .serverError(let msg) where msg.hasPrefix("[401]"): continuation.finish(throwing: TranslationError.notAuthenticated)
                     default: continuation.finish(throwing: TranslationError.networkError(error))
                     }
                 } catch {

@@ -61,7 +61,11 @@ private final class RegionSelector: NSObject {
 
     func present() {
         let mousePoint = NSEvent.mouseLocation
-        let screen = NSScreen.screens.first { NSMouseInRect(mousePoint, $0.frame, false) } ?? NSScreen.main!
+        guard let screen = NSScreen.screens.first(where: { NSMouseInRect(mousePoint, $0.frame, false) })
+            ?? NSScreen.screens.first else {
+            onComplete(nil)
+            return
+        }
 
         let win = OverlayWindow(
             contentRect: screen.frame,

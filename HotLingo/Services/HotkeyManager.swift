@@ -207,6 +207,10 @@ final class HotkeyManager {
                     ? "Translate this chat transcript message-by-message. Preserve speaker names, timestamps, mentions, emojis, and message order. Return [speaker timestamp] headers followed by translated message text."
                     : nil
             )
+            // Cancel any in-flight consumer before resetting state to prevent two Tasks
+            // racing to append to streamedText.
+            state.consumeTask?.cancel()
+            state.consumeTask = nil
             state.streamedText = ""
             state.error = nil
             state.isStreaming = true
@@ -220,7 +224,7 @@ final class HotkeyManager {
 
     @MainActor
     private func consume(_ stream: AsyncThrowingStream<String, Error>, into state: StreamingTranslationState) {
-        Task { @MainActor in
+        state.consumeTask = Task { @MainActor in
             do {
                 for try await chunk in stream {
                     state.streamedText += chunk
