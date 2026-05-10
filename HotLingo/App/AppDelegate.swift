@@ -26,6 +26,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         checkFirstLaunch()
         showPopoverOnLaunchIfNeeded()
         UpdateService.shared.checkOnLaunch()
+        Task { await DeviceTrackingService.shared.trackLaunch() }
 
         NotificationCenter.default.addObserver(
             forName: UserDefaults.didChangeNotification,
