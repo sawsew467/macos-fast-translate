@@ -52,7 +52,9 @@ struct TranslationPopoverView: View {
                 Image(systemName: isOut ? "creditcard.trianglebadge.exclamationmark" : "exclamationmark.triangle.fill")
                     .font(.system(size: 11))
                     .foregroundStyle(isOut ? Color.red : Color.orange)
-                Text(isOut ? "Out of credits" : "Only \(creditService.balance) credits left")
+                Text(isOut
+                    ? String(localized: "Out of credits")
+                    : String(localized: "credits.low \(creditService.balance)"))
                     .font(.system(size: 11, weight: .medium))
                     .foregroundStyle(isOut ? AnyShapeStyle(Color.red) : AnyShapeStyle(Color.primary.opacity(0.7)))
                 Spacer()
@@ -105,7 +107,7 @@ struct TranslationPopoverView: View {
     }
 
     private var languageLabel: String {
-        guard let last = service.lastResult else { return "Auto Detect" }
+        guard let last = service.lastResult else { return String(localized: "Auto Detect") }
         return "\(last.sourceLanguage.displayName) -> \(last.targetLanguage.displayName)"
     }
 
@@ -198,7 +200,7 @@ struct TranslationPopoverView: View {
                 copyTranslation()
             }
 
-            popoverActionButton(showContext ? "Hide" : "Context", systemImage: "text.bubble") {
+            popoverActionButton(showContext ? String(localized: "Hide") : String(localized: "Context"), systemImage: "text.bubble") {
                 toggleContext()
             }
 
@@ -302,9 +304,11 @@ struct TranslationPopoverView: View {
     }
 
     private func openHistoryWindow() {
-        let controller = NSHostingController(rootView: HistoryView())
+        let appLanguageRaw = UserDefaults.standard.string(forKey: Constants.UserDefaultsKey.appLanguage) ?? Constants.AppLanguage.system.rawValue
+        let locale = Constants.AppLanguage(rawValue: appLanguageRaw)?.locale ?? Locale.current
+        let controller = NSHostingController(rootView: LocaleWrapper { HistoryView() })
         let window = NSWindow(contentViewController: controller)
-        window.title = "Translation History"
+        window.title = String(localized: "Translation History", locale: locale)
         window.styleMask = [.titled, .closable, .resizable]
         window.setContentSize(NSSize(width: 440, height: 440))
         window.center()

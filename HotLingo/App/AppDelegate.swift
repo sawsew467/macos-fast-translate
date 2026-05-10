@@ -26,6 +26,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         checkFirstLaunch()
         showPopoverOnLaunchIfNeeded()
         UpdateService.shared.checkOnLaunch()
+
+        NotificationCenter.default.addObserver(
+            forName: UserDefaults.didChangeNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.updateWindowTitlesForLanguage()
+        }
+    }
+
+    private func updateWindowTitlesForLanguage() {
+        settingsWindow?.title = String(localized: "HotLingo Settings", locale: effectiveLocale)
+        onboardingWindow?.title = String(localized: "Welcome to HotLingo", locale: effectiveLocale)
     }
 
     func applicationWillTerminate(_ notification: Notification) {
@@ -74,8 +87,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         button.sendAction(on: [.leftMouseUp, .rightMouseUp])
     }
 
+    /// Returns the effective locale based on user's app language preference.
+    private var effectiveLocale: Locale {
+        let raw = UserDefaults.standard.string(forKey: Constants.UserDefaultsKey.appLanguage) ?? Constants.AppLanguage.system.rawValue
+        let lang = Constants.AppLanguage(rawValue: raw) ?? .system
+        return lang.locale ?? Locale.current
+    }
+
     private func setupPopover() {
-        let controller = NSHostingController(rootView: TranslationPopoverView())
+        let controller = NSHostingController(rootView: LocaleWrapper { TranslationPopoverView() })
         let window = QuickTranslatePanel(
             contentRect: NSRect(x: 0, y: 0, width: 380, height: 340),
             styleMask: [.borderless, .fullSizeContentView],
@@ -154,16 +174,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func showStatusItemMenu(_ sender: NSStatusBarButton) {
         let menu = NSMenu()
-        let updatesItem = NSMenuItem(title: "Check for Updates…", action: #selector(checkForUpdates), keyEquivalent: "")
+        let updatesItem = NSMenuItem(title: String(localized: "Check for Updates\u{2026}"), action: #selector(checkForUpdates), keyEquivalent: "")
         updatesItem.target = self
         updatesItem.image = NSImage(systemSymbolName: "arrow.clockwise.circle", accessibilityDescription: "Check for Updates")
         menu.addItem(updatesItem)
         menu.addItem(.separator())
-        let settingsItem = NSMenuItem(title: "Settings…", action: #selector(openSettings), keyEquivalent: ",")
+        let settingsItem = NSMenuItem(title: String(localized: "Settings\u{2026}"), action: #selector(openSettings), keyEquivalent: ",")
         settingsItem.target = self
         menu.addItem(settingsItem)
         menu.addItem(.separator())
-        menu.addItem(withTitle: "Quit HotLingo", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        menu.addItem(withTitle: String(localized: "Quit HotLingo"), action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         menu.popUp(positioning: nil, at: NSPoint(x: 0, y: sender.bounds.height + 4), in: sender)
     }
 
@@ -180,9 +200,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc private func openSettings() {
         if settingsWindow == nil {
-            let controller = NSHostingController(rootView: SettingsView())
+            let controller = NSHostingController(rootView: LocaleWrapper { SettingsView() })
             let window = NSWindow(contentViewController: controller)
-            window.title = "HotLingo Settings"
+            window.title = String(localized: "HotLingo Settings", locale: effectiveLocale)
             window.styleMask = [.titled, .closable]
             window.setFrame(NSRect(x: 0, y: 0, width: 560, height: 500), display: false)
             centerWindowOnMainScreen(window)
@@ -316,9 +336,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             self?.onboardingWindow?.close()
             self?.onboardingWindow = nil
         }
-        let controller = NSHostingController(rootView: view)
+        let controller = NSHostingController(rootView: LocaleWrapper { view })
         let window = NSWindow(contentViewController: controller)
-        window.title = "Welcome to HotLingo"
+        window.title = String(localized: "Welcome to HotLingo", locale: effectiveLocale)
         window.styleMask = [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView]
         window.titleVisibility = .hidden
         window.titlebarAppearsTransparent = true

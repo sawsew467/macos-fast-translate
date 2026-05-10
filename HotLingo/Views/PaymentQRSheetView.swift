@@ -35,7 +35,7 @@ struct PaymentQRSheetView: View {
 
     private var qrView: some View {
         VStack(spacing: 16) {
-            Text("Nạp tiền").font(.title2.bold())
+            Text(String(localized: "payment.title")).font(.title2.bold())
 
             AsyncImage(url: URL(string: qrInfo.qr_data)) { image in
                 image.resizable().scaledToFit()
@@ -46,13 +46,13 @@ struct PaymentQRSheetView: View {
             .clipShape(RoundedRectangle(cornerRadius: 12))
 
             VStack(alignment: .leading, spacing: 8) {
-                detailRow("Ngân hàng", qrInfo.bank_name)
-                detailRow("Số TK", qrInfo.bank_account)
-                detailRow("Số tiền", formatVND(qrInfo.amount))
+                detailRow(String(localized: "payment.bank"), qrInfo.bank_name)
+                detailRow(String(localized: "payment.accountNumber"), qrInfo.bank_account)
+                detailRow(String(localized: "payment.amount"), formatVND(qrInfo.amount))
                 HStack {
-                    detailRow("Nội dung CK", qrInfo.transfer_content)
+                    detailRow(String(localized: "payment.transferContent"), qrInfo.transfer_content)
                     Spacer()
-                    Button(copied ? "Đã sao chép" : "Sao chép") {
+                    Button(copied ? String(localized: "payment.copied") : String(localized: "payment.copy")) {
                         NSPasteboard.general.clearContents()
                         NSPasteboard.general.setString(qrInfo.transfer_content, forType: .string)
                         copied = true
@@ -64,11 +64,11 @@ struct PaymentQRSheetView: View {
 
             HStack(spacing: 6) {
                 ProgressView().scaleEffect(0.7)
-                Text("Đang chờ thanh toán... (\(secondsRemaining)s)")
+                Text(String(localized: "payment.waiting \(secondsRemaining)"))
                     .font(.caption).foregroundStyle(.secondary)
             }
 
-            Button("Đóng") { onDismiss() }
+            Button(String(localized: "payment.close")) { onDismiss() }
                 .buttonStyle(.bordered)
         }
     }
@@ -79,10 +79,10 @@ struct PaymentQRSheetView: View {
         VStack(spacing: 16) {
             Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 48)).foregroundStyle(.green)
-            Text("Nạp tiền thành công!").font(.title2.bold())
-            Text("Số dư: \(creditService.balance) credits")
+            Text(String(localized: "payment.success")).font(.title2.bold())
+            Text(String(localized: "payment.balance \(creditService.balance)"))
                 .font(.headline).foregroundStyle(.secondary)
-            Button("Đóng") { onDismiss() }
+            Button(String(localized: "payment.close")) { onDismiss() }
                 .buttonStyle(.borderedProminent)
         }
     }

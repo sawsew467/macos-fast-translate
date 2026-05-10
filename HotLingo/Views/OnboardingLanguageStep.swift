@@ -8,8 +8,8 @@ struct OnboardingLanguageStep: View {
         SetupCard(
             systemImage: "globe.asia.australia",
             tint: .blue,
-            title: "Default language",
-            subtitle: "Choose the language you translate to most often. You can change this anytime."
+            title: String(localized: "Default language"),
+            subtitle: String(localized: "Choose the language you translate to most often. You can change this anytime.")
         ) {
             Picker("Target Language", selection: $defaultTargetLanguage) {
                 ForEach(Language.targetOptions) { lang in

@@ -85,7 +85,9 @@ struct LowCreditRow: View {
                 Image(systemName: isOut ? "creditcard.trianglebadge.exclamationmark" : "exclamationmark.triangle.fill")
                     .font(.system(size: 11))
                     .foregroundStyle(isOut ? Color.red : Color.orange)
-                Text(isOut ? "Out of credits — top up to keep translating" : "Only \(balance) credits left")
+                Text(isOut
+                    ? String(localized: "Out of credits \u{2014} top up to keep translating")
+                    : String(localized: "credits.low \(balance)"))
                     .font(.system(size: 11, weight: .medium))
                     .foregroundStyle(isOut ? AnyShapeStyle(Color.red) : AnyShapeStyle(Color.primary.opacity(0.7)))
                 Spacer()

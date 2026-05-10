@@ -52,14 +52,14 @@ struct HistoryView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("History")
                         .font(.system(size: 24, weight: .bold))
-                    Text("\(entries.count) saved translations")
+                    Text(String(localized: "history.count \(entries.count)"))
                         .font(.system(size: 12))
                         .foregroundStyle(.secondary)
                 }
 
                 Spacer()
 
-                Button(isSelecting ? "Done" : "Select") {
+                Button(isSelecting ? String(localized: "Done") : String(localized: "Select")) {
                     withAnimation(.easeInOut(duration: 0.15)) {
                         isSelecting.toggle()
                         selectedForDeletion.removeAll()
@@ -150,7 +150,7 @@ struct HistoryView: View {
 
     private var selectionToolbar: some View {
         HStack(spacing: 10) {
-            Button(selectedForDeletion.count == filtered.count ? "Deselect All" : "Select All") {
+            Button(selectedForDeletion.count == filtered.count ? String(localized: "Deselect All") : String(localized: "Select All")) {
                 if selectedForDeletion.count == filtered.count {
                     selectedForDeletion.removeAll()
                 } else {
@@ -162,7 +162,7 @@ struct HistoryView: View {
 
             Spacer()
 
-            Text("\(selectedForDeletion.count) selected")
+            Text(String(localized: "history.selected \(selectedForDeletion.count)"))
                 .font(.caption)
                 .foregroundStyle(.secondary)
 
@@ -190,9 +190,11 @@ struct HistoryView: View {
             Image(systemName: entries.isEmpty ? "clock.badge.questionmark" : "magnifyingglass")
                 .font(.system(size: 28, weight: .medium))
                 .foregroundStyle(.tertiary)
-            Text(entries.isEmpty ? "No translations yet" : "No matching results")
+            Text(entries.isEmpty ? String(localized: "No translations yet") : String(localized: "No matching results"))
                 .font(.system(size: 13, weight: .semibold))
-            Text(entries.isEmpty ? "Translate something and it will appear here." : "Try another keyword or language name.")
+            Text(entries.isEmpty
+                ? String(localized: "Translate something and it will appear here.")
+                : String(localized: "Try another keyword or language name."))
                 .font(.system(size: 12))
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -230,9 +232,9 @@ struct HistoryView: View {
     private func copyText(_ text: String, label: String) {
         NSPasteboard.general.clearContents()
         NSPasteboard.general.setString(text, forType: .string)
-        copiedMessage = "Copied \(label)"
+        copiedMessage = String(localized: "copied.label \(label)")
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.4) {
-            if copiedMessage == "Copied \(label)" {
+            if copiedMessage == String(localized: "copied.label \(label)") {
                 copiedMessage = nil
             }
         }

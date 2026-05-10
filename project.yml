@@ -5,6 +5,11 @@ options:
     macOS: "13.0"
   xcodeVersion: "16.0"
   createIntermediateGroups: true
+  developmentLanguage: en
+
+localizations:
+  - en
+  - vi
 
 settings:
   base:

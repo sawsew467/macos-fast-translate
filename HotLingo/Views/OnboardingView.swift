@@ -5,7 +5,14 @@ struct OnboardingView: View {
     let onDismiss: () -> Void
     @AppStorage(Constants.UserDefaultsKey.onboardingStep) private var step = 0
 
-    private let steps = ["Permissions", "Language", "Setup", "Shortcuts"]
+    private var steps: [String] {
+        [
+            String(localized: "Permissions"),
+            String(localized: "Language"),
+            String(localized: "Setup"),
+            String(localized: "Shortcuts")
+        ]
+    }
     private let lastStep = 3
 
     var body: some View {
@@ -69,7 +76,7 @@ struct OnboardingView: View {
 
             Spacer()
 
-            Button(step < lastStep ? "Continue" : "Start Using HotLingo") {
+            Button(step < lastStep ? String(localized: "Continue") : String(localized: "Start Using HotLingo")) {
                 if step < lastStep { step += 1 } else { onDismiss() }
             }
             .buttonStyle(.borderedProminent)

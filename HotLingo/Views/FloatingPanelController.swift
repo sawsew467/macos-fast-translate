@@ -83,7 +83,7 @@ final class FloatingPanelController {
         fixedHeight: CGFloat? = nil,
         isResizable: Bool = true
     ) {
-        let hosting = NSHostingController(rootView: rootView)
+        let hosting = NSHostingController(rootView: LocaleWrapper { rootView })
         hosting.view.wantsLayer = true
         hosting.view.layer?.backgroundColor = NSColor.clear.cgColor
         hosting.view.layer?.cornerRadius = floatingPanelCornerRadius
@@ -330,7 +330,7 @@ struct StreamingPanelContent: View {
                         } else if state.streamedText.isEmpty && state.isStreaming {
                             HStack(spacing: 6) {
                                 ProgressView().scaleEffect(0.7)
-                                Text("Translating…")
+                                Text("Translating...")
                                     .font(.system(size: 13))
                                     .foregroundStyle(.secondary)
                             }

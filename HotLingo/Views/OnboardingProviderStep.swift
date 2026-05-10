@@ -15,15 +15,15 @@ struct OnboardingProviderStep: View {
         SetupCard(
             systemImage: "sparkles",
             tint: .purple,
-            title: "Choose your translator",
-            subtitle: "You can change this anytime in Settings."
+            title: String(localized: "Choose your translator"),
+            subtitle: String(localized: "You can change this anytime in Settings.")
         ) {
             VStack(spacing: 10) {
                 ProviderOptionCard(
                     systemImage: "wand.and.stars",
                     title: "AI Translation",
                     subtitle: aiSubtitle,
-                    badge: "Recommended",
+                    badge: String(localized: "Recommended"),
                     isSelected: selectedProvider == .aiTranslation
                 ) {
                     defaultProvider = ProviderType.aiTranslation.rawValue
@@ -35,7 +35,7 @@ struct OnboardingProviderStep: View {
                 ProviderOptionCard(
                     systemImage: "sparkles",
                     title: "OpenAI GPT",
-                    subtitle: "Bring your own API key",
+                    subtitle: String(localized: "Bring your own API key"),
                     badge: nil,
                     isSelected: selectedProvider == .openAI
                 ) {
@@ -46,7 +46,7 @@ struct OnboardingProviderStep: View {
                 ProviderOptionCard(
                     systemImage: "globe",
                     title: "Google Translate",
-                    subtitle: "Free, no setup needed",
+                    subtitle: String(localized: "Free, no setup needed"),
                     badge: nil,
                     isSelected: selectedProvider == .googleTranslate
                 ) {
@@ -58,9 +58,10 @@ struct OnboardingProviderStep: View {
     }
 
     private var aiSubtitle: String {
-        authService.authState.isLoggedIn
-            ? "Logged in as \(authService.authState.email ?? "")"
-            : "50 free translations to get started"
+        if authService.authState.isLoggedIn {
+            return String(localized: "auth.loggedInAs \(authService.authState.email ?? "")")
+        }
+        return String(localized: "50 free translations to get started")
     }
 }
 
@@ -112,7 +113,7 @@ final class ProviderFormPanel {
         newPanel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
         newPanel.isMovableByWindowBackground = true
 
-        let hostingView = NSHostingView(rootView: content())
+        let hostingView = NSHostingView(rootView: LocaleWrapper { content() })
         newPanel.contentView = hostingView
         newPanel.contentView?.wantsLayer = true
         newPanel.contentView?.layer?.cornerRadius = 20
@@ -179,16 +180,16 @@ struct AIAuthPanelView: View {
     }
 
     private var panelTitle: String {
-        if authService.authState.isLoggedIn { return "Signed in" }
-        if pendingOTPEmail != nil { return "Enter verification code" }
-        return isSignup ? "Create account" : "Sign in to AI Translation"
+        if authService.authState.isLoggedIn { return String(localized: "Signed in") }
+        if pendingOTPEmail != nil { return String(localized: "Enter verification code") }
+        return isSignup ? String(localized: "Create account") : String(localized: "Sign in to AI Translation")
     }
 
     // MARK: - Logged in
 
     private var loggedInView: some View {
         VStack(spacing: 10) {
-            Label("Logged in as \(authService.authState.email ?? "")", systemImage: "checkmark.circle.fill")
+            Label(String(localized: "auth.loggedInAs \(authService.authState.email ?? "")"), systemImage: "checkmark.circle.fill")
                 .font(.system(size: 13, weight: .medium))
                 .foregroundStyle(.green)
             if let msg = trialMessage {
@@ -274,7 +275,7 @@ struct AIAuthPanelView: View {
                 .controlSize(.small)
                 .disabled(email.isEmpty || password.isEmpty)
 
-                Button(isSignup ? "Have account?" : "New? Sign up") { isSignup.toggle() }
+                Button(isSignup ? String(localized: "Have account?") : String(localized: "New? Sign up")) { isSignup.toggle() }
                     .font(.caption)
                     .buttonStyle(.plain)
 

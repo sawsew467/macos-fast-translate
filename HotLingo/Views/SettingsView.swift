@@ -53,7 +53,7 @@ struct APIKeysSettingsTab: View {
     }
 
     var body: some View {
-        SettingsPage(title: "API Keys", subtitle: "Store provider credentials securely in macOS Keychain.") {
+        SettingsPage(title: String(localized: "API Keys"), subtitle: String(localized: "Store provider credentials securely in macOS Keychain.")) {
             if isUsingGoogle {
                 HStack(spacing: 10) {
                     Image(systemName: "info.circle.fill").foregroundStyle(.blue)
@@ -68,7 +68,7 @@ struct APIKeysSettingsTab: View {
                 }
             }
 
-            SettingsCard(systemImage: "sparkles", title: "OpenAI", subtitle: "Used for translation and streaming responses.") {
+            SettingsCard(systemImage: "sparkles", title: String(localized: "OpenAI"), subtitle: String(localized: "Used for translation and streaming responses.")) {
                 VStack(alignment: .leading, spacing: 12) {
                     SecureField("sk-proj-...", text: $openAIKey)
                         .font(.system(size: 13, design: .monospaced))
@@ -146,8 +146,8 @@ struct HotkeysSettingsTab: View {
     @StateObject private var hotkeyStore = HotkeyStore.shared
 
     var body: some View {
-        SettingsPage(title: "Hotkeys", subtitle: "Quick actions available globally while the app is running.") {
-            SettingsCard(systemImage: "keyboard", title: "Shortcuts", subtitle: "Click a shortcut field, then press your desired key combo.") {
+        SettingsPage(title: String(localized: "Hotkeys"), subtitle: String(localized: "Quick actions available globally while the app is running.")) {
+            SettingsCard(systemImage: "keyboard", title: String(localized: "Shortcuts"), subtitle: String(localized: "Click a shortcut field, then press your desired key combo.")) {
                 VStack(spacing: 10) {
                     HotkeyRecorderRow(
                         title: "Translate Selected Text",
@@ -169,7 +169,7 @@ struct HotkeysSettingsTab: View {
             if let error = hotkeyStore.registrationError {
                 HStack(spacing: 6) {
                     Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.orange)
-                    Text("Failed to register \(error.action.rawValue) hotkey: \(error.message)")
+                    Text(String(localized: "Failed to register \(error.action.rawValue) hotkey: \(error.message)"))
                         .font(.caption).foregroundStyle(.secondary)
                 }
                 .padding(.horizontal, 4)
@@ -191,8 +191,8 @@ struct AboutSettingsTab: View {
     @ObservedObject private var updateService = UpdateService.shared
 
     var body: some View {
-        SettingsPage(title: "About", subtitle: "Version info and software updates.") {
-            SettingsCard(systemImage: "app.badge", title: "HotLingo", subtitle: "Fast Vi↔En translation for macOS.") {
+        SettingsPage(title: String(localized: "About"), subtitle: String(localized: "Version info and software updates.")) {
+            SettingsCard(systemImage: "app.badge", title: String(localized: "HotLingo"), subtitle: String(localized: "Fast Vi↔En translation for macOS.")) {
                 HStack(spacing: 16) {
                     if let icon = NSImage(named: "AppIcon") {
                         Image(nsImage: icon)
@@ -209,7 +209,7 @@ struct AboutSettingsTab: View {
                 }
             }
 
-            SettingsCard(systemImage: "arrow.down.circle", title: "Software Update", subtitle: "Check GitHub Releases for a newer version.") {
+            SettingsCard(systemImage: "arrow.down.circle", title: String(localized: "Software Update"), subtitle: String(localized: "Check GitHub Releases for a newer version.")) {
                 VStack(alignment: .leading, spacing: 12) {
                     updateStatusView
                     HStack(spacing: 10) {

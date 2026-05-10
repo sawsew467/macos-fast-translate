@@ -44,6 +44,34 @@ enum Constants {
         static let hasClaimedTrial = "has_claimed_trial"
         static let hasEverLoggedIn = "has_ever_logged_in"
         static let lastKnownCreditBalance = "last_known_credit_balance"
+        static let appLanguage = "app_language"
+    }
+
+    // MARK: - App Language
+
+    enum AppLanguage: String, CaseIterable, Identifiable {
+        case system = "system"
+        case english = "en"
+        case vietnamese = "vi"
+
+        var id: String { rawValue }
+
+        var displayName: String {
+            switch self {
+            case .system: return String(localized: "System Default")
+            case .english: return "English"
+            case .vietnamese: return "Tiếng Việt"
+            }
+        }
+
+        /// Returns the Locale to apply, or nil for system default.
+        var locale: Locale? {
+            switch self {
+            case .system: return nil
+            case .english: return Locale(identifier: "en")
+            case .vietnamese: return Locale(identifier: "vi")
+            }
+        }
     }
 
     // MARK: - UI

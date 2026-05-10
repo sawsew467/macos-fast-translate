@@ -25,21 +25,21 @@ enum Language: String, CaseIterable, Codable, Identifiable {
 
     var displayName: String {
         switch self {
-        case .autoDetect: return "Auto Detect"
-        case .vietnamese: return "Vietnamese"
-        case .english: return "English"
-        case .japanese: return "Japanese"
-        case .korean: return "Korean"
-        case .simplifiedChinese: return "Chinese (Simplified)"
-        case .traditionalChinese: return "Chinese (Traditional)"
-        case .french: return "French"
-        case .german: return "German"
-        case .spanish: return "Spanish"
-        case .portuguese: return "Portuguese"
-        case .italian: return "Italian"
-        case .russian: return "Russian"
-        case .thai: return "Thai"
-        case .indonesian: return "Indonesian"
+        case .autoDetect: return String(localized: "language.autoDetect")
+        case .vietnamese: return String(localized: "language.vietnamese")
+        case .english: return String(localized: "language.english")
+        case .japanese: return String(localized: "language.japanese")
+        case .korean: return String(localized: "language.korean")
+        case .simplifiedChinese: return String(localized: "language.simplifiedChinese")
+        case .traditionalChinese: return String(localized: "language.traditionalChinese")
+        case .french: return String(localized: "language.french")
+        case .german: return String(localized: "language.german")
+        case .spanish: return String(localized: "language.spanish")
+        case .portuguese: return String(localized: "language.portuguese")
+        case .italian: return String(localized: "language.italian")
+        case .russian: return String(localized: "language.russian")
+        case .thai: return String(localized: "language.thai")
+        case .indonesian: return String(localized: "language.indonesian")
         }
     }
 
@@ -112,19 +112,19 @@ enum TranslationError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .noAPIKey:
-            return "OpenAI API key is not set. Please add your key in Settings."
+            return String(localized: "error.noAPIKey")
         case .networkError(let error):
-            return "Network error: \(error.localizedDescription)"
+            return String(localized: "error.networkError \(error.localizedDescription)")
         case .rateLimited:
-            return "Rate limit reached. Please wait a moment and try again."
+            return String(localized: "error.rateLimited")
         case .invalidResponse:
-            return "Invalid response from translation service."
+            return String(localized: "error.invalidResponse")
         case .emptyInput:
-            return "Please enter text to translate."
+            return String(localized: "error.emptyInput")
         case .noCredits:
-            return "Out of credits. Top up in Settings to continue."
+            return String(localized: "error.noCredits")
         case .notAuthenticated:
-            return "Please log in to use AI Translation."
+            return String(localized: "error.notAuthenticated")
         }
     }
 }

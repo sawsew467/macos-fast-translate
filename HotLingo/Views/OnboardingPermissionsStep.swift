@@ -9,19 +9,19 @@ struct OnboardingPermissionsStep: View {
         SetupCard(
             systemImage: "lock.shield",
             tint: .orange,
-            title: "Grant permissions",
-            subtitle: "macOS needs approval before HotLingo can read selected text or capture OCR screenshots."
+            title: String(localized: "Grant permissions"),
+            subtitle: String(localized: "macOS needs approval before HotLingo can read selected text or capture OCR screenshots.")
         ) {
             VStack(spacing: 12) {
                 PermissionRow(
-                    title: "Accessibility",
-                    detail: "Read selected text with Control + Option + T",
+                    title: String(localized: "Accessibility"),
+                    detail: String(localized: "Read selected text with Control + Option + T"),
                     isGranted: hasAccessibility,
                     settingsURL: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility"
                 )
                 PermissionRow(
-                    title: "Screen Recording",
-                    detail: "Capture OCR regions with Control + Option + S",
+                    title: String(localized: "Screen Recording"),
+                    detail: String(localized: "Capture OCR regions with Control + Option + S"),
                     isGranted: hasScreenRecording,
                     settingsURL: "x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture"
                 )

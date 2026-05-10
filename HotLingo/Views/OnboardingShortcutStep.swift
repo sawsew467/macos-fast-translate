@@ -7,29 +7,29 @@ struct OnboardingShortcutStep: View {
         SetupCard(
             systemImage: "keyboard",
             tint: .indigo,
-            title: "Two ways to translate",
-            subtitle: "Use these shortcuts anywhere on your Mac."
+            title: String(localized: "Two ways to translate"),
+            subtitle: String(localized: "Use these shortcuts anywhere on your Mac.")
         ) {
             VStack(spacing: 12) {
                 shortcutRow(
                     hotkey: store.translateBinding.displayString,
                     icon: "text.cursor",
-                    title: "Translate selected text",
+                    title: String(localized: "Translate selected text"),
                     steps: [
-                        "Select any text in any app",
-                        "Press the shortcut",
-                        "Translation appears instantly"
+                        String(localized: "Select any text in any app"),
+                        String(localized: "Press the shortcut"),
+                        String(localized: "Translation appears instantly")
                     ]
                 )
 
                 shortcutRow(
                     hotkey: store.screenshotBinding.displayString,
                     icon: "camera.viewfinder",
-                    title: "Screenshot & translate",
+                    title: String(localized: "Screenshot & translate"),
                     steps: [
-                        "Press the shortcut",
-                        "Draw a region on screen",
-                        "Text is extracted and translated"
+                        String(localized: "Press the shortcut"),
+                        String(localized: "Draw a region on screen"),
+                        String(localized: "Text is extracted and translated")
                     ]
                 )
             }
