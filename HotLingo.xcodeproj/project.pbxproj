@@ -51,12 +51,14 @@
 		EC7B12164D21FA56210446A0 /* ScreenCaptureService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8CF4D8E92B29C1407B01B64 /* ScreenCaptureService.swift */; };
 		F455241EBAB4DF07152D4D04 /* OnboardingLanguageStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AD5B460ABBE74DDED7D1F3 /* OnboardingLanguageStep.swift */; };
 		F5C55B166B7FB26DE4C80E21 /* PaymentModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D18080995BE85309E41F211 /* PaymentModels.swift */; };
+		E664DAE695D744B3A8B28E5D /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = BC637F6915EA41B391338B1E /* Localizable.xcstrings */; };
 		FDF1D29066C016D2C34F64A6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2410F309D1E5B5BBAEF3EC72 /* Assets.xcassets */; };
 		FF82ADF95A09E21F1160E287 /* SelectionTranslateButtonController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A118941161556474A7B3F2D1 /* SelectionTranslateButtonController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		00E6DC9D78142C0B9D887CFE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		BC637F6915EA41B391338B1E /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		092A678724B1253411AC4AAE /* StreamingTranslationState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamingTranslationState.swift; sourceTree = "<group>"; };
 		0937076663B00A3C9A289D0C /* OnboardingShortcutStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingShortcutStep.swift; sourceTree = "<group>"; };
 		0B82F1A185658243C2287B09 /* TranslationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationService.swift; sourceTree = "<group>"; };
@@ -194,6 +196,7 @@
 				2410F309D1E5B5BBAEF3EC72 /* Assets.xcassets */,
 				74DDCFADDC84A16CB1355D44 /* HotLingo.entitlements */,
 				00E6DC9D78142C0B9D887CFE /* Info.plist */,
+				BC637F6915EA41B391338B1E /* Localizable.xcstrings */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -303,6 +306,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E664DAE695D744B3A8B28E5D /* Localizable.xcstrings in Resources */,
 				FDF1D29066C016D2C34F64A6 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
