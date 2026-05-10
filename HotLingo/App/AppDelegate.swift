@@ -199,7 +199,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         menu.addItem(settingsItem)
         menu.addItem(.separator())
         menu.addItem(withTitle: localizedString("Quit HotLingo"), action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
-        menu.popUp(positioning: nil, at: NSPoint(x: 0, y: sender.bounds.height + 4), in: sender)
+        if let event = NSApp.currentEvent {
+            NSMenu.popUpContextMenu(menu, with: event, for: sender)
+        }
     }
 
     @objc private func checkForUpdates() {
