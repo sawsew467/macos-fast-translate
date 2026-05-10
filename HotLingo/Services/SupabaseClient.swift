@@ -33,6 +33,50 @@ actor SupabaseClient {
         )
     }
 
+    /// Stream SSE events from a POST endpoint.
+    /// Yields raw payload strings from `data: <payload>` lines (prefix stripped).
+    /// Caller handles JSON parsing, "[DONE]" sentinel, and error events.
+    func streamSSE<B: Encodable>(endpoint: String, body: B) -> AsyncThrowingStream<String, Error> {
+        AsyncThrowingStream { continuation in
+            Task {
+                guard let token = self.accessToken else {
+                    continuation.finish(throwing: SupabaseError.notAuthenticated)
+                    return
+                }
+
+                let url = URL(string: "\(Constants.Supabase.url)\(endpoint)")!
+                var req = URLRequest(url: url)
+                req.httpMethod = "POST"
+                req.setValue(Constants.Supabase.anonKey, forHTTPHeaderField: "apikey")
+                req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+                req.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+                req.httpBody = try? JSONEncoder().encode(body)
+
+                do {
+                    let (bytes, response) = try await URLSession.shared.bytes(for: req)
+                    guard let http = response as? HTTPURLResponse else {
+                        continuation.finish(throwing: SupabaseError.invalidResponse)
+                        return
+                    }
+                    guard http.statusCode < 400 else {
+                        continuation.finish(throwing: SupabaseError.httpError(http.statusCode))
+                        return
+                    }
+
+                    for try await line in bytes.lines {
+                        guard line.hasPrefix("data: ") else { continue }
+                        let payload = String(line.dropFirst(6))
+                        continuation.yield(payload)
+                        if payload == "[DONE]" { break }
+                    }
+                    continuation.finish()
+                } catch {
+                    continuation.finish(throwing: error)
+                }
+            }
+        }
+    }
+
     // MARK: - Token Management
 
     var accessToken: String? {
