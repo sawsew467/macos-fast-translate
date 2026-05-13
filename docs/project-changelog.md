@@ -1,5 +1,16 @@
 # Project Changelog
 
+## [2.1.0] - 2026-05-13
+
+### Added
+- **Device Tracking** — hardware UUID-based device identification via `DeviceTrackingService`
+
+### Changed
+- Renamed OpenAI provider label to "GPT" in UI
+
+### Improved
+- **Code Signing & Notarization** — app is now signed with Developer ID certificate and notarized by Apple (no more Gatekeeper warnings)
+
 ## [2.0.0] - 2026-05-11
 
 ### Added
