@@ -9,6 +9,10 @@ struct SettingsAccountTab: View {
     @State private var isSignup = false
     @State private var otp = ""
     @State private var pendingOTPEmail: String?
+    @State private var pendingPasswordResetEmail: String?
+    @State private var resetOTP = ""
+    @State private var newPassword = ""
+    @State private var showPasswordResetAction = false
     @State private var packages: [TopupPackage] = []
     @State private var qrInfo: QRPaymentInfo?
 
@@ -75,7 +79,9 @@ struct SettingsAccountTab: View {
 
     @ViewBuilder
     private var loggedOutContent: some View {
-        if let otpEmail = pendingOTPEmail {
+        if let resetEmail = pendingPasswordResetEmail {
+            passwordResetCard(email: resetEmail)
+        } else if let otpEmail = pendingOTPEmail {
             otpCard(email: otpEmail)
         } else {
             authCard
@@ -96,16 +102,20 @@ struct SettingsAccountTab: View {
                     SettingsButton(isSignup ? "Sign Up" : "Log In", systemImage: "arrow.right", isPrimary: true) {
                         Task {
                             if isSignup {
+                                showPasswordResetAction = false
                                 await authService.signup(email: email, password: password)
                                 if authService.authError == nil { pendingOTPEmail = email }
                             } else {
                                 await authService.login(email: email, password: password)
                                 if authService.authState.isLoggedIn {
+                                    showPasswordResetAction = false
                                     await creditService.fetchBalance()
                                     await loadPackages()
                                     if !creditService.trialClaimed {
                                         await creditService.claimTrial()
                                     }
+                                } else {
+                                    showPasswordResetAction = authService.authError != nil
                                 }
                             }
                         }
@@ -114,6 +124,23 @@ struct SettingsAccountTab: View {
 
                     SettingsButton(isSignup ? "Have account? Log in" : "New? Sign up", systemImage: isSignup ? "person.fill" : "person.badge.plus") {
                         isSignup.toggle()
+                        showPasswordResetAction = false
+                        authService.authError = nil
+                    }
+
+                    if !isSignup && showPasswordResetAction {
+                        SettingsButton("Reset password", systemImage: "lock.rotation") {
+                            Task {
+                                await authService.sendPasswordResetOTP(email: email)
+                                if authService.authError == nil {
+                                    pendingPasswordResetEmail = email
+                                    resetOTP = ""
+                                    newPassword = ""
+                                    showPasswordResetAction = false
+                                }
+                            }
+                        }
+                        .disabled(email.isEmpty || authService.authState == .loading)
                     }
 
                     if authService.authState == .loading { ProgressView().scaleEffect(0.7) }
@@ -155,9 +182,80 @@ struct SettingsAccountTab: View {
                     }
                     .disabled(otp.count < 6)
 
+                    SettingsButton("Resend code", systemImage: "arrow.clockwise") {
+                        Task {
+                            await authService.resendSignupOTP(email: email)
+                            if authService.authError == nil { otp = "" }
+                        }
+                    }
+                    .disabled(authService.authState == .loading)
+
                     Button("Back") {
                         pendingOTPEmail = nil
                         otp = ""
+                        authService.authError = nil
+                    }
+                    .font(.caption)
+
+                    if authService.authState == .loading { ProgressView().scaleEffect(0.7) }
+                }
+
+                if let error = authService.authError {
+                    Text(error).font(.caption).foregroundStyle(.red)
+                }
+            }
+        }
+    }
+
+    private func passwordResetCard(email: String) -> some View {
+        SettingsCard(
+            systemImage: "lock.rotation",
+            title: "Reset Password",
+            subtitle: "Enter the 6-digit code sent to \(email)"
+        ) {
+            VStack(alignment: .leading, spacing: 12) {
+                TextField("000000", text: $resetOTP)
+                    .textFieldStyle(.roundedBorder)
+                    .font(.system(size: 20, weight: .bold, design: .monospaced))
+                    .multilineTextAlignment(.center)
+                    .onChange(of: resetOTP) { newValue in
+                        resetOTP = String(newValue.filter(\.isNumber).prefix(6))
+                    }
+
+                SecureField("New password", text: $newPassword)
+                    .textFieldStyle(.roundedBorder)
+
+                HStack(spacing: 10) {
+                    SettingsButton("Update Password", systemImage: "checkmark", isPrimary: true) {
+                        Task {
+                            await authService.resetPassword(
+                                email: email,
+                                token: resetOTP,
+                                newPassword: newPassword
+                            )
+                            if authService.authState.isLoggedIn {
+                                pendingPasswordResetEmail = nil
+                                resetOTP = ""
+                                newPassword = ""
+                                await creditService.fetchBalance()
+                                await loadPackages()
+                            }
+                        }
+                    }
+                    .disabled(resetOTP.count < 6 || newPassword.count < 6)
+
+                    SettingsButton("Resend code", systemImage: "arrow.clockwise") {
+                        Task {
+                            await authService.sendPasswordResetOTP(email: email)
+                            if authService.authError == nil { resetOTP = "" }
+                        }
+                    }
+                    .disabled(authService.authState == .loading)
+
+                    Button("Back") {
+                        pendingPasswordResetEmail = nil
+                        resetOTP = ""
+                        newPassword = ""
                         authService.authError = nil
                     }
                     .font(.caption)

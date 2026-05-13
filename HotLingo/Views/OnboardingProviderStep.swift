@@ -148,6 +148,10 @@ struct AIAuthPanelView: View {
     @State private var isSignup = false
     @State private var otp = ""
     @State private var pendingOTPEmail: String?
+    @State private var pendingPasswordResetEmail: String?
+    @State private var resetOTP = ""
+    @State private var newPassword = ""
+    @State private var showPasswordResetAction = false
     @State private var trialMessage: String?
 
     var body: some View {
@@ -169,6 +173,8 @@ struct AIAuthPanelView: View {
 
             if authService.authState.isLoggedIn {
                 loggedInView
+            } else if let resetEmail = pendingPasswordResetEmail {
+                passwordResetView(email: resetEmail)
             } else if let otpEmail = pendingOTPEmail {
                 otpView(email: otpEmail)
             } else {
@@ -181,6 +187,7 @@ struct AIAuthPanelView: View {
 
     private var panelTitle: String {
         if authService.authState.isLoggedIn { return String(localized: "Signed in") }
+        if pendingPasswordResetEmail != nil { return String(localized: "Reset password") }
         if pendingOTPEmail != nil { return String(localized: "Enter verification code") }
         return isSignup ? String(localized: "Create account") : String(localized: "Sign in to AI Translation")
     }
@@ -234,9 +241,80 @@ struct AIAuthPanelView: View {
                 .controlSize(.small)
                 .disabled(otp.count < 6)
 
+                Button("Resend code") {
+                    Task { await resendSignupOTP(email: email) }
+                }
+                .font(.caption)
+                .controlSize(.small)
+                .buttonStyle(.plain)
+                .disabled(authService.authState == .loading)
+
                 Button("Back") {
                     pendingOTPEmail = nil
                     otp = ""
+                    authService.authError = nil
+                }
+                .controlSize(.small)
+                .buttonStyle(.plain)
+
+                if authService.authState == .loading { ProgressView().scaleEffect(0.7) }
+            }
+
+            if let error = authService.authError {
+                Text(error).font(.caption).foregroundStyle(.red)
+            }
+        }
+    }
+
+    // MARK: - Password reset step
+
+    private func passwordResetView(email: String) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("We sent a 6-digit code to")
+                    .font(.system(size: 12))
+                    .foregroundStyle(.secondary)
+                Text(email)
+                    .font(.system(size: 12, weight: .semibold))
+            }
+
+            TextField("000000", text: $resetOTP)
+                .textFieldStyle(.plain)
+                .font(.system(size: 22, weight: .bold, design: .monospaced))
+                .multilineTextAlignment(.center)
+                .padding(10)
+                .background(.background.opacity(0.5), in: RoundedRectangle(cornerRadius: 10))
+                .overlay { RoundedRectangle(cornerRadius: 10).stroke(.primary.opacity(0.12)) }
+                .onChange(of: resetOTP) { newValue in
+                    resetOTP = String(newValue.filter(\.isNumber).prefix(6))
+                }
+
+            SecureField("New password", text: $newPassword)
+                .textFieldStyle(.plain)
+                .padding(9)
+                .background(.background.opacity(0.5), in: RoundedRectangle(cornerRadius: 10))
+                .overlay { RoundedRectangle(cornerRadius: 10).stroke(.primary.opacity(0.12)) }
+
+            HStack(spacing: 8) {
+                Button("Update") {
+                    Task { await handlePasswordReset(email: email) }
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.small)
+                .disabled(resetOTP.count < 6 || newPassword.count < 6)
+
+                Button("Resend code") {
+                    Task { await resendPasswordResetOTP(email: email) }
+                }
+                .font(.caption)
+                .controlSize(.small)
+                .buttonStyle(.plain)
+                .disabled(authService.authState == .loading)
+
+                Button("Back") {
+                    pendingPasswordResetEmail = nil
+                    resetOTP = ""
+                    newPassword = ""
                     authService.authError = nil
                 }
                 .controlSize(.small)
@@ -275,9 +353,22 @@ struct AIAuthPanelView: View {
                 .controlSize(.small)
                 .disabled(email.isEmpty || password.isEmpty)
 
-                Button(isSignup ? String(localized: "Have account?") : String(localized: "New? Sign up")) { isSignup.toggle() }
+                Button(isSignup ? String(localized: "Have account?") : String(localized: "New? Sign up")) {
+                    isSignup.toggle()
+                    showPasswordResetAction = false
+                    authService.authError = nil
+                }
                     .font(.caption)
                     .buttonStyle(.plain)
+
+                if !isSignup && showPasswordResetAction {
+                    Button("Reset password") {
+                        Task { await startPasswordReset() }
+                    }
+                    .font(.caption)
+                    .buttonStyle(.plain)
+                    .disabled(email.isEmpty || authService.authState == .loading)
+                }
 
                 if authService.authState == .loading { ProgressView().scaleEffect(0.7) }
             }
@@ -293,6 +384,7 @@ struct AIAuthPanelView: View {
 
     private func handleAuth() async {
         if isSignup {
+            showPasswordResetAction = false
             await authService.signup(email: email, password: password)
             if authService.authError == nil {
                 pendingOTPEmail = email
@@ -300,10 +392,44 @@ struct AIAuthPanelView: View {
         } else {
             await authService.login(email: email, password: password)
             if authService.authState.isLoggedIn {
+                showPasswordResetAction = false
                 let claimed = await CreditService.shared.claimTrial()
                 trialMessage = claimed ? "50 free credits granted!" : nil
+            } else {
+                showPasswordResetAction = authService.authError != nil
             }
         }
+    }
+
+    private func startPasswordReset() async {
+        await authService.sendPasswordResetOTP(email: email)
+        if authService.authError == nil {
+            pendingPasswordResetEmail = email
+            resetOTP = ""
+            newPassword = ""
+            showPasswordResetAction = false
+        }
+    }
+
+    private func handlePasswordReset(email: String) async {
+        await authService.resetPassword(email: email, token: resetOTP, newPassword: newPassword)
+        if authService.authState.isLoggedIn {
+            pendingPasswordResetEmail = nil
+            resetOTP = ""
+            newPassword = ""
+            let claimed = await CreditService.shared.claimTrial()
+            trialMessage = claimed ? "50 free credits granted!" : nil
+        }
+    }
+
+    private func resendSignupOTP(email: String) async {
+        await authService.resendSignupOTP(email: email)
+        if authService.authError == nil { otp = "" }
+    }
+
+    private func resendPasswordResetOTP(email: String) async {
+        await authService.sendPasswordResetOTP(email: email)
+        if authService.authError == nil { resetOTP = "" }
     }
 
     private func handleOTP(email: String) async {

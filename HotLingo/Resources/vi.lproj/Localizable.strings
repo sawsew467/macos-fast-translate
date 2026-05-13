@@ -76,6 +76,12 @@
 "Verify your email" = "Xác thực email";
 "Enter the 6-digit code sent to %@" = "Nhập mã 6 chữ số được gửi đến %@";
 "Verify" = "Xác thực";
+"Resend code" = "Gửi lại mã";
+"Reset password" = "Đặt lại mật khẩu";
+"Reset Password" = "Đặt lại mật khẩu";
+"New password" = "Mật khẩu mới";
+"Update" = "Cập nhật";
+"Update Password" = "Cập nhật mật khẩu";
 "Store provider credentials securely in macOS Keychain." = "Lưu trữ thông tin xác thực nhà cung cấp an toàn trong Keychain của macOS.";
 "You're using Google Translate (free). Switch to OpenAI in General settings for AI-powered translation with context support." = "Bạn đang dùng Google Dịch (miễn phí). Chuyển sang OpenAI trong Cài đặt Chung để dịch bằng AI với hỗ trợ ngữ cảnh.";
 "OpenAI" = "OpenAI";

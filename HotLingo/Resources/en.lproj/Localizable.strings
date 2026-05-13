@@ -76,6 +76,12 @@
 "Verify your email" = "Verify your email";
 "Enter the 6-digit code sent to %@" = "Enter the 6-digit code sent to %@";
 "Verify" = "Verify";
+"Resend code" = "Resend code";
+"Reset password" = "Reset password";
+"Reset Password" = "Reset Password";
+"New password" = "New password";
+"Update" = "Update";
+"Update Password" = "Update Password";
 "Store provider credentials securely in macOS Keychain." = "Store provider credentials securely in macOS Keychain.";
 "You're using Google Translate (free). Switch to OpenAI in General settings for AI-powered translation with context support." = "You're using Google Translate (free). Switch to OpenAI in General settings for AI-powered translation with context support.";
 "OpenAI" = "OpenAI";

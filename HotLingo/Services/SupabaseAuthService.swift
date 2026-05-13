@@ -105,6 +105,73 @@ final class SupabaseAuthService: ObservableObject {
         }
     }
 
+    func resendSignupOTP(email: String) async {
+        authState = .loading
+        authError = nil
+        do {
+            _ = try await SupabaseClient.shared.requestRaw(
+                endpoint: "/auth/v1/resend",
+                method: "POST",
+                body: ResendOTPBody(type: "signup", email: email),
+                authenticated: false
+            )
+            authState = .loggedOut
+        } catch {
+            authState = .loggedOut
+            authError = parseAuthError(error)
+        }
+    }
+
+    func sendPasswordResetOTP(email: String) async {
+        authState = .loading
+        authError = nil
+        do {
+            _ = try await SupabaseClient.shared.requestRaw(
+                endpoint: "/auth/v1/recover",
+                method: "POST",
+                body: PasswordRecoveryBody(email: email),
+                authenticated: false
+            )
+            authState = .loggedOut
+        } catch {
+            authState = .loggedOut
+            authError = parseAuthError(error)
+        }
+    }
+
+    func resetPassword(email: String, token: String, newPassword: String) async {
+        authState = .loading
+        authError = nil
+        do {
+            let response: AuthTokenResponse = try await SupabaseClient.shared.request(
+                endpoint: "/auth/v1/verify",
+                method: "POST",
+                body: OTPVerifyBody(type: "recovery", email: email, token: token),
+                authenticated: false
+            )
+            await SupabaseClient.shared.saveTokens(
+                access: response.access_token,
+                refresh: response.refresh_token
+            )
+            _ = try await SupabaseClient.shared.requestRaw(
+                endpoint: "/auth/v1/user",
+                method: "PUT",
+                body: UpdatePasswordBody(password: newPassword),
+                authenticated: true
+            )
+            try? KeychainHelper.save(
+                account: Constants.KeychainAccount.supabaseUserEmail,
+                value: email
+            )
+            authState = .loggedIn(email: email)
+            Task { await DeviceTrackingService.shared.linkToUser() }
+        } catch {
+            await SupabaseClient.shared.clearTokens()
+            authState = .loggedOut
+            authError = parseAuthError(error)
+        }
+    }
+
     func logout() {
         Task { await SupabaseClient.shared.clearTokens() }
         authState = .loggedOut
@@ -217,10 +284,23 @@ private struct LoginBody: Encodable {
     let password: String
 }
 
+private struct PasswordRecoveryBody: Encodable {
+    let email: String
+}
+
+private struct ResendOTPBody: Encodable {
+    let type: String
+    let email: String
+}
+
 private struct OTPVerifyBody: Encodable {
     let type: String
     let email: String
     let token: String
+}
+
+private struct UpdatePasswordBody: Encodable {
+    let password: String
 }
 
 private struct AuthTokenResponse: Decodable {

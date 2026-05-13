@@ -164,26 +164,23 @@ final class HotkeyManager {
     }
 
     /// Show panel immediately, then pipe streamed tokens into it.
-    /// Pass `providerOverride` to use a specific provider for this call only — does not change settings.
     @MainActor
     private func streamTranslation(
         _ text: String,
         near point: NSPoint,
         perMessageContext: String? = nil,
-        presentation: TranslationPresentation = .plain,
-        providerOverride: ProviderType? = nil
+        presentation: TranslationPresentation = .plain
     ) throws {
-        let (source, target, stream) = try translationService.translateStreaming(
+        let (source, target, provider, stream) = try translationService.translateStreaming(
             text,
-            perMessageContext: perMessageContext,
-            providerOverride: providerOverride
+            perMessageContext: perMessageContext
         )
 
         let state = StreamingTranslationState(
             sourceText: text,
             sourceLanguage: source,
             targetLanguage: target,
-            provider: translationService.activeProviderType,
+            provider: provider,
             presentation: presentation
         )
         floatingPanel.showStreaming(
@@ -200,7 +197,7 @@ final class HotkeyManager {
     @MainActor
     private func restartTranslation(state: StreamingTranslationState, targetLanguage: Language) {
         do {
-            let (source, target, stream) = try translationService.translateStreaming(
+            let (_, target, _, stream) = try translationService.translateStreaming(
                 state.sourceText,
                 targetLanguage: targetLanguage,
                 perMessageContext: state.presentation == .conversation
