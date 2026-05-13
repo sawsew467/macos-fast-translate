@@ -7,7 +7,11 @@ final class SupabaseAuthService: ObservableObject {
     @Published var authState: AuthState = .loggedOut {
         didSet {
             if case .loggedIn = authState {
+                let hadEverLoggedIn = UserDefaults.standard.bool(forKey: Constants.UserDefaultsKey.hasEverLoggedIn)
                 UserDefaults.standard.set(true, forKey: Constants.UserDefaultsKey.hasEverLoggedIn)
+                selectAITranslationForFirstAccountLoginIfNeeded(hadEverLoggedIn: hadEverLoggedIn)
+            } else if case .loggedIn = oldValue {
+                fallbackFromAITranslationIfNeeded()
             }
         }
     }
@@ -22,7 +26,9 @@ final class SupabaseAuthService: ObservableObject {
             object: nil,
             queue: .main
         ) { [weak self] _ in
-            self?.authState = .loggedOut
+            Task { @MainActor in
+                self?.authState = .loggedOut
+            }
         }
     }
 
@@ -129,6 +135,30 @@ final class SupabaseAuthService: ObservableObject {
     }
 
     // MARK: - Private
+
+    private func fallbackFromAITranslationIfNeeded() {
+        let key = Constants.UserDefaultsKey.defaultProvider
+        let currentProvider = ProviderType(rawValue: UserDefaults.standard.string(forKey: key) ?? "")
+        guard currentProvider == .aiTranslation else { return }
+
+        let openAIKey = KeychainHelper.load(account: Constants.KeychainAccount.openAIAPIKey) ?? ""
+        let fallbackProvider: ProviderType = openAIKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            ? .googleTranslate
+            : .openAI
+
+        UserDefaults.standard.set(fallbackProvider.rawValue, forKey: key)
+    }
+
+    private func selectAITranslationForFirstAccountLoginIfNeeded(hadEverLoggedIn: Bool) {
+        guard !hadEverLoggedIn else { return }
+
+        let key = Constants.UserDefaultsKey.defaultProvider
+        let storedProvider = UserDefaults.standard.string(forKey: key) ?? ""
+        let currentProvider = ProviderType(rawValue: storedProvider)
+        guard UserDefaults.standard.object(forKey: key) == nil || currentProvider == .googleTranslate else { return }
+
+        UserDefaults.standard.set(ProviderType.aiTranslation.rawValue, forKey: key)
+    }
 
     private func parseAuthError(_ error: Error) -> String {
         if let supaErr = error as? SupabaseError {

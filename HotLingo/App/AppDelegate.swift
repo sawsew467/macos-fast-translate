@@ -9,6 +9,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var eventMonitor: Any?
     private var onboardingWindow: NSWindow?
     private var settingsWindow: NSWindow?
+    private var historyWindow: NSWindow?
     var floatingPanel = FloatingPanelController()
     private var hotkeyManager: HotkeyManager?
     private var selectionTranslateButton: SelectionTranslateButtonController?
@@ -23,6 +24,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         setupHotkeys()
         setupSelectionTranslateButton()
         setupAccountTabNotificationHandler()
+        setupHistoryWindowNotificationHandler()
+        setupPopoverCloseNotificationHandler()
         checkFirstLaunch()
         showPopoverOnLaunchIfNeeded()
         UpdateService.shared.checkOnLaunch()
@@ -33,12 +36,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             object: nil,
             queue: .main
         ) { [weak self] _ in
-            self?.updateWindowTitlesForLanguage()
+            Task { @MainActor in
+                self?.updateWindowTitlesForLanguage()
+            }
         }
     }
 
     private func updateWindowTitlesForLanguage() {
         settingsWindow?.title = localizedString("HotLingo Settings")
+        historyWindow?.title = localizedString("Translation History")
         onboardingWindow?.title = localizedString("Welcome to HotLingo")
     }
 
@@ -68,13 +74,39 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             object: nil,
             queue: .main
         ) { [weak self] _ in
-            guard let self else { return }
-            let isAlreadyOpen = self.settingsWindow?.isVisible == true
-            self.openSettings()
-            if !isAlreadyOpen {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
-                    NotificationCenter.default.post(name: .openAccountTab, object: nil)
+            Task { @MainActor in
+                guard let self else { return }
+                let isAlreadyOpen = self.settingsWindow?.isVisible == true
+                self.openSettings()
+                if !isAlreadyOpen {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                        NotificationCenter.default.post(name: .openAccountTab, object: nil)
+                    }
                 }
+            }
+        }
+    }
+
+    private func setupPopoverCloseNotificationHandler() {
+        NotificationCenter.default.addObserver(
+            forName: .closeQuickTranslatePopover,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor in
+                self?.closePopover()
+            }
+        }
+    }
+
+    private func setupHistoryWindowNotificationHandler() {
+        NotificationCenter.default.addObserver(
+            forName: .openHistoryWindow,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor in
+                self?.openHistoryWindow()
             }
         }
     }
@@ -230,6 +262,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc private func openSettings() {
+        closePopover()
+
         if settingsWindow == nil {
             let controller = NSHostingController(rootView: LocaleWrapper { SettingsView() })
             let window = NSWindow(contentViewController: controller)
@@ -241,14 +275,51 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             NotificationCenter.default.addObserver(
                 forName: NSWindow.willCloseNotification,
                 object: window, queue: .main
-            ) { [weak self] _ in self?.settingsWindow = nil }
+            ) { [weak self] _ in
+                Task { @MainActor in
+                    self?.settingsWindow = nil
+                }
+            }
             settingsWindow = window
         }
         if let settingsWindow {
             centerWindowOnMainScreen(settingsWindow)
-            settingsWindow.makeKeyAndOrderFront(nil)
+            focusWindow(settingsWindow)
         }
         NSApp.activate(ignoringOtherApps: true)
+    }
+
+    private func openHistoryWindow() {
+        closePopover()
+
+        if historyWindow == nil {
+            let controller = NSHostingController(rootView: LocaleWrapper { HistoryView() })
+            let window = NSWindow(contentViewController: controller)
+            window.title = localizedString("Translation History")
+            window.styleMask = [.titled, .closable, .resizable]
+            window.setContentSize(NSSize(width: 440, height: 440))
+            window.center()
+            NotificationCenter.default.addObserver(
+                forName: NSWindow.willCloseNotification,
+                object: window, queue: .main
+            ) { [weak self] _ in
+                Task { @MainActor in
+                    self?.historyWindow = nil
+                }
+            }
+            historyWindow = window
+        }
+        if let historyWindow {
+            focusWindow(historyWindow)
+        }
+        NSApp.activate(ignoringOtherApps: true)
+    }
+
+    private func focusWindow(_ window: NSWindow) {
+        if window.isMiniaturized {
+            window.deminiaturize(nil)
+        }
+        window.makeKeyAndOrderFront(nil)
     }
 
     private func centerWindowOnMainScreen(_ window: NSWindow) {
