@@ -103,7 +103,7 @@ enum ProviderType: String, CaseIterable, Codable {
     var displayName: String {
         switch self {
         case .googleTranslate: return "Google Translate"
-        case .openAI: return "GPT-4o mini"
+        case .openAI: return "GPT"
         case .aiTranslation: return "AI Translation"
         }
     }

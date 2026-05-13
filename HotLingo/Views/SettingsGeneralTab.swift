@@ -22,7 +22,7 @@ struct GeneralSettingsTab: View {
                 Picker("Provider", selection: $defaultProvider) {
                     Text("Google Translate").tag(ProviderType.googleTranslate.rawValue)
                     Text("AI Translation ✨").tag(ProviderType.aiTranslation.rawValue)
-                    Text("GPT-4o mini (BYOK)").tag(ProviderType.openAI.rawValue)
+                    Text("GPT (BYOK)").tag(ProviderType.openAI.rawValue)
                 }
                 .labelsHidden()
                 .pickerStyle(.menu)
