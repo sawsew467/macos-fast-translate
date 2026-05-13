@@ -12,6 +12,7 @@ actor DeviceTrackingService {
         let p_is_new_install: Bool
         let p_app_version: String?
         let p_os_version: String?
+        let p_platform: String
     }
 
     private struct LinkBody: Encodable {
@@ -33,7 +34,8 @@ actor DeviceTrackingService {
             p_hardware_uuid: uuid,
             p_is_new_install: isNewInstall,
             p_app_version: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String,
-            p_os_version: ProcessInfo.processInfo.operatingSystemVersionString
+            p_os_version: ProcessInfo.processInfo.operatingSystemVersionString,
+            p_platform: "macos"
         )
 
         do {
