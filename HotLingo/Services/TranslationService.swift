@@ -60,7 +60,8 @@ final class TranslationService: ObservableObject {
             screenshot: screenshotContext
         )
 
-        guard let provider = providers[activeProviderType] else {
+        let providerType = activeProviderType
+        guard let provider = providers[providerType] else {
             throw TranslationError.invalidResponse
         }
 
@@ -71,7 +72,7 @@ final class TranslationService: ObservableObject {
             translatedText: translated,
             sourceLanguage: source,
             targetLanguage: target,
-            provider: activeProviderType
+            provider: providerType
         )
 
         loadHistory()
@@ -83,14 +84,12 @@ final class TranslationService: ObservableObject {
 
     /// Start a streaming translation. Returns language info + token stream.
     /// Caller is responsible for consuming the stream and calling addToHistory() after.
-    /// Pass `providerOverride` to use a specific provider for this call only — does not change UserDefaults.
     func translateStreaming(
         _ text: String,
         targetLanguage: Language? = nil,
         perMessageContext: String? = nil,
-        screenshotContext: String? = nil,
-        providerOverride: ProviderType? = nil
-    ) throws -> (source: Language, target: Language, stream: AsyncThrowingStream<String, Error>) {
+        screenshotContext: String? = nil
+    ) throws -> (source: Language, target: Language, provider: ProviderType, stream: AsyncThrowingStream<String, Error>) {
         guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             throw TranslationError.emptyInput
         }
@@ -106,12 +105,13 @@ final class TranslationService: ObservableObject {
             screenshot: screenshotContext
         )
 
-        guard let provider = providers[providerOverride ?? activeProviderType] else {
+        let providerType = activeProviderType
+        guard let provider = providers[providerType] else {
             throw TranslationError.invalidResponse
         }
 
         let stream = provider.translateStream(text, from: source, to: target, context: context)
-        return (source, target, stream)
+        return (source, target, providerType, stream)
     }
 
     /// Save a completed translation to history. Called by hotkey handlers after streaming finishes.

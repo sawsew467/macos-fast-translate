@@ -99,6 +99,11 @@ struct GeneralSettingsTab: View {
             }
         }
         .onAppear { launchAtLogin = SMAppService.mainApp.status == .enabled }
+        .onChange(of: defaultProvider) { newValue in
+            if ProviderType(rawValue: newValue) != .aiTranslation {
+                authService.clearProviderSwitchNotice()
+            }
+        }
     }
 
     private func setLaunchAtLogin(_ enable: Bool) {

@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct SettingsAccountTab: View {
+    @AppStorage(Constants.UserDefaultsKey.defaultProvider) private var defaultProvider = ProviderType.googleTranslate.rawValue
     @ObservedObject private var authService = SupabaseAuthService.shared
     @ObservedObject private var creditService = CreditService.shared
 
@@ -9,8 +10,17 @@ struct SettingsAccountTab: View {
     @State private var isSignup = false
     @State private var otp = ""
     @State private var pendingOTPEmail: String?
+    @State private var pendingPasswordResetEmail: String?
+    @State private var resetOTP = ""
+    @State private var newPassword = ""
+    @State private var showPasswordResetAction = false
     @State private var packages: [TopupPackage] = []
     @State private var qrInfo: QRPaymentInfo?
+
+    private var shouldShowProviderSwitchNotice: Bool {
+        ProviderType(rawValue: defaultProvider) == .aiTranslation
+            && authService.providerSwitchNotice != nil
+    }
 
     var body: some View {
         SettingsPage(title: "Account", subtitle: "Manage your AI Translation account and credits.") {
@@ -29,6 +39,11 @@ struct SettingsAccountTab: View {
         .sheet(item: $qrInfo) { qr in
             PaymentQRSheetView(qrInfo: qr) { qrInfo = nil }
         }
+        .onChange(of: defaultProvider) { newValue in
+            if ProviderType(rawValue: newValue) != .aiTranslation {
+                authService.clearProviderSwitchNotice()
+            }
+        }
     }
 
     // MARK: - Logged In
@@ -37,13 +52,32 @@ struct SettingsAccountTab: View {
     private var loggedInContent: some View {
         SettingsCard(systemImage: "creditcard", title: "Balance",
                      subtitle: LocalizedStringKey(authService.authState.email ?? "")) {
-            HStack {
-                Text("\(creditService.balance)")
-                    .font(.system(size: 36, weight: .bold, design: .rounded))
-                Text("credits").font(.headline).foregroundStyle(.secondary)
-                Spacer()
-                Button("Refresh") { Task { await creditService.fetchBalance() } }
-                    .font(.caption).buttonStyle(.bordered)
+            VStack(alignment: .leading, spacing: 10) {
+                if let notice = authService.providerSwitchNotice, shouldShowProviderSwitchNotice {
+                    Label {
+                        Text(LocalizedStringKey(notice))
+                    } icon: {
+                        Image(systemName: "info.circle.fill")
+                    }
+                    .font(.caption)
+                    .foregroundStyle(.blue)
+                    .task {
+                        try? await Task.sleep(nanoseconds: 5_000_000_000)
+                        guard !Task.isCancelled else { return }
+                        await MainActor.run {
+                            authService.clearProviderSwitchNotice()
+                        }
+                    }
+                }
+
+                HStack {
+                    Text("\(creditService.balance)")
+                        .font(.system(size: 36, weight: .bold, design: .rounded))
+                    Text("credits").font(.headline).foregroundStyle(.secondary)
+                    Spacer()
+                    Button("Refresh") { Task { await creditService.fetchBalance() } }
+                        .font(.caption).buttonStyle(.bordered)
+                }
             }
         }
 
@@ -75,7 +109,9 @@ struct SettingsAccountTab: View {
 
     @ViewBuilder
     private var loggedOutContent: some View {
-        if let otpEmail = pendingOTPEmail {
+        if let resetEmail = pendingPasswordResetEmail {
+            passwordResetCard(email: resetEmail)
+        } else if let otpEmail = pendingOTPEmail {
             otpCard(email: otpEmail)
         } else {
             authCard
@@ -96,16 +132,20 @@ struct SettingsAccountTab: View {
                     SettingsButton(isSignup ? "Sign Up" : "Log In", systemImage: "arrow.right", isPrimary: true) {
                         Task {
                             if isSignup {
+                                showPasswordResetAction = false
                                 await authService.signup(email: email, password: password)
                                 if authService.authError == nil { pendingOTPEmail = email }
                             } else {
                                 await authService.login(email: email, password: password)
                                 if authService.authState.isLoggedIn {
+                                    showPasswordResetAction = false
                                     await creditService.fetchBalance()
                                     await loadPackages()
                                     if !creditService.trialClaimed {
-                                        await creditService.claimTrial()
+                                        _ = await creditService.claimTrial()
                                     }
+                                } else {
+                                    showPasswordResetAction = authService.canResetPasswordAfterLastLoginFailure
                                 }
                             }
                         }
@@ -114,6 +154,23 @@ struct SettingsAccountTab: View {
 
                     SettingsButton(isSignup ? "Have account? Log in" : "New? Sign up", systemImage: isSignup ? "person.fill" : "person.badge.plus") {
                         isSignup.toggle()
+                        showPasswordResetAction = false
+                        authService.authError = nil
+                    }
+
+                    if !isSignup && showPasswordResetAction {
+                        SettingsButton("Reset password", systemImage: "lock.rotation") {
+                            Task {
+                                await authService.sendPasswordResetOTP(email: email)
+                                if authService.authError == nil {
+                                    pendingPasswordResetEmail = email
+                                    resetOTP = ""
+                                    newPassword = ""
+                                    showPasswordResetAction = false
+                                }
+                            }
+                        }
+                        .disabled(email.isEmpty || authService.authState == .loading)
                     }
 
                     if authService.authState == .loading { ProgressView().scaleEffect(0.7) }
@@ -149,15 +206,86 @@ struct SettingsAccountTab: View {
                                 pendingOTPEmail = nil
                                 await creditService.fetchBalance()
                                 await loadPackages()
-                                await creditService.claimTrial()
+                                _ = await creditService.claimTrial()
                             }
                         }
                     }
                     .disabled(otp.count < 6)
 
+                    SettingsButton("Resend code", systemImage: "arrow.clockwise") {
+                        Task {
+                            await authService.resendSignupOTP(email: email)
+                            if authService.authError == nil { otp = "" }
+                        }
+                    }
+                    .disabled(authService.authState == .loading)
+
                     Button("Back") {
                         pendingOTPEmail = nil
                         otp = ""
+                        authService.authError = nil
+                    }
+                    .font(.caption)
+
+                    if authService.authState == .loading { ProgressView().scaleEffect(0.7) }
+                }
+
+                if let error = authService.authError {
+                    Text(error).font(.caption).foregroundStyle(.red)
+                }
+            }
+        }
+    }
+
+    private func passwordResetCard(email: String) -> some View {
+        SettingsCard(
+            systemImage: "lock.rotation",
+            title: "Reset Password",
+            subtitle: "Enter the 6-digit code sent to \(email)"
+        ) {
+            VStack(alignment: .leading, spacing: 12) {
+                TextField("000000", text: $resetOTP)
+                    .textFieldStyle(.roundedBorder)
+                    .font(.system(size: 20, weight: .bold, design: .monospaced))
+                    .multilineTextAlignment(.center)
+                    .onChange(of: resetOTP) { newValue in
+                        resetOTP = String(newValue.filter(\.isNumber).prefix(6))
+                    }
+
+                SecureField("New password", text: $newPassword)
+                    .textFieldStyle(.roundedBorder)
+
+                HStack(spacing: 10) {
+                    SettingsButton("Update Password", systemImage: "checkmark", isPrimary: true) {
+                        Task {
+                            await authService.resetPassword(
+                                email: email,
+                                token: resetOTP,
+                                newPassword: newPassword
+                            )
+                            if authService.authState.isLoggedIn {
+                                pendingPasswordResetEmail = nil
+                                resetOTP = ""
+                                newPassword = ""
+                                await creditService.fetchBalance()
+                                await loadPackages()
+                            }
+                        }
+                    }
+                    .disabled(resetOTP.count < 6 || newPassword.count < Constants.Supabase.minimumPasswordLength)
+
+                    SettingsButton("Resend code", systemImage: "arrow.clockwise") {
+                        Task {
+                            await authService.sendPasswordResetOTP(email: email)
+                            if authService.authError == nil { resetOTP = "" }
+                        }
+                    }
+                    .disabled(authService.authState == .loading)
+
+                    Button("Back") {
+                        pendingPasswordResetEmail = nil
+                        resetOTP = ""
+                        newPassword = ""
                         authService.authError = nil
                     }
                     .font(.caption)

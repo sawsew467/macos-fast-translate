@@ -321,16 +321,7 @@ struct TranslationPopoverView: View {
     }
 
     private func openHistoryWindow() {
-        let appLanguageRaw = UserDefaults.standard.string(forKey: Constants.UserDefaultsKey.appLanguage) ?? Constants.AppLanguage.system.rawValue
-        let locale = Constants.AppLanguage(rawValue: appLanguageRaw)?.locale ?? Locale.current
-        let controller = NSHostingController(rootView: LocaleWrapper { HistoryView() })
-        let window = NSWindow(contentViewController: controller)
-        window.title = String(localized: "Translation History", locale: locale)
-        window.styleMask = [.titled, .closable, .resizable]
-        window.setContentSize(NSSize(width: 440, height: 440))
-        window.center()
-        window.makeKeyAndOrderFront(nil)
-        NSApp.activate(ignoringOtherApps: true)
+        NotificationCenter.default.post(name: .openHistoryWindow, object: nil)
     }
 
     // MARK: - Actions

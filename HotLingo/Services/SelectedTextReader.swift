@@ -43,22 +43,30 @@ struct SelectedTextReader {
             return text
         }
 
-        // During debug the app can briefly become frontmost after the hotkey.
-        // Prefer the real user-facing app instead of querying HotLingo itself.
-        let candidates = NSWorkspace.shared.runningApplications.filter { app in
-            app.isActive && app.bundleIdentifier != Bundle.main.bundleIdentifier
-        } + NSWorkspace.shared.runningApplications.filter { app in
-            app.activationPolicy == .regular && app.bundleIdentifier != Bundle.main.bundleIdentifier
+        // Query only the active user-facing app. Scanning every regular app can pick up
+        // stale selections from background apps and translate old clipboard/selection text.
+        guard let app = frontmostUserApplication() else {
+            return nil
         }
 
-        for app in candidates {
-            let axApp = AXUIElementCreateApplication(app.processIdentifier)
-            if let text = selectedText(from: axApp) {
-                return text
-            }
+        let axApp = AXUIElementCreateApplication(app.processIdentifier)
+        if let text = selectedText(from: axApp) {
+            return text
         }
 
         return nil
+    }
+
+    private static func frontmostUserApplication() -> NSRunningApplication? {
+        let currentBundleID = Bundle.main.bundleIdentifier
+        if let app = NSWorkspace.shared.frontmostApplication,
+           app.bundleIdentifier != currentBundleID {
+            return app
+        }
+
+        return NSWorkspace.shared.runningApplications.first {
+            $0.isActive && $0.bundleIdentifier != currentBundleID
+        }
     }
 
     private static func selectedText(from element: AXUIElement) -> String? {
@@ -90,14 +98,23 @@ struct SelectedTextReader {
     private static func readViaClipboard() async -> String? {
         let tag = "SelectedTextReader.clipboard"
         let pasteboard = NSPasteboard.general
-        let changeCountBefore = pasteboard.changeCount
         let backupItems = (pasteboard.pasteboardItems ?? []).map(clonePasteboardItem)
+        let restorePasteboard = {
+            pasteboard.clearContents()
+            if !backupItems.isEmpty {
+                pasteboard.writeObjects(backupItems)
+            }
+        }
 
         // Brief pause so the hotkey keystrokes settle before we inject Cmd+C.
         try? await Task.sleep(nanoseconds: 180_000_000) // 180 ms
 
-        // Force a pasteboard change even when selected text matches existing clipboard text.
+        // Replace the current clipboard with a sentinel. If Cmd+C fails, the sentinel
+        // remains and we return nil instead of translating the user's previous clipboard.
+        let sentinel = "HotLingoPasteboardSentinel-\(UUID().uuidString)"
         pasteboard.clearContents()
+        pasteboard.setString(sentinel, forType: .string)
+        let sentinelChangeCount = pasteboard.changeCount
 
         // Use .privateState so physical modifier keys (⌃⌥ from the hotkey) don't leak into the event
         let source = CGEventSource(stateID: .privateState)
@@ -107,6 +124,7 @@ struct SelectedTextReader {
             let keyUp   = CGEvent(keyboardEventSource: source, virtualKey: CGKeyCode(kVK_ANSI_C), keyDown: false)
         else {
             print("[\(tag)] ❌ Failed to create CGEvent")
+            restorePasteboard()
             return nil
         }
 
@@ -119,8 +137,9 @@ struct SelectedTextReader {
         var selectedText: String?
         for _ in 0 ..< 24 {
             try? await Task.sleep(nanoseconds: 50_000_000) // 50 ms
-            if pasteboard.changeCount != changeCountBefore,
+            if pasteboard.changeCount != sentinelChangeCount,
                let copied = pasteboard.string(forType: .string),
+               copied != sentinel,
                !copied.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                 selectedText = copied
                 break
@@ -132,10 +151,7 @@ struct SelectedTextReader {
         }
 
         // Restore original clipboard as completely as possible.
-        pasteboard.clearContents()
-        if !backupItems.isEmpty {
-            pasteboard.writeObjects(backupItems)
-        }
+        restorePasteboard()
 
         return selectedText?.trimmingCharacters(in: .whitespacesAndNewlines)
     }

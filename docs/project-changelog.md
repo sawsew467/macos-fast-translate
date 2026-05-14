@@ -1,5 +1,16 @@
 # Project Changelog
 
+## [Unreleased] - 2026-05-14
+
+### Fixed
+- Hardened AI Translation logout fallback so it only runs on real `.loggedOut` transitions.
+- Limited reset-password CTA to credential login failures instead of every auth/network error.
+- Removed unused quick-popover close notification observer.
+
+### Improved
+- Added visible notice when first account login auto-selects AI Translation.
+- Centralized Supabase minimum password length for reset-password validation.
+
 ## [2.1.0] - 2026-05-13
 
 ### Added

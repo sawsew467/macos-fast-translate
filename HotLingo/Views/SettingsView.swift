@@ -4,6 +4,7 @@ import ServiceManagement
 extension Notification.Name {
     static let openAboutTab = Notification.Name("HotLingo.openAboutTab")
     static let openAccountTab = Notification.Name("HotLingo.openAccountTab")
+    static let openHistoryWindow = Notification.Name("HotLingo.openHistoryWindow")
     static let sessionExpired = Notification.Name("HotLingo.sessionExpired")
 }
 
