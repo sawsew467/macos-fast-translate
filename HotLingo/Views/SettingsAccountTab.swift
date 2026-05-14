@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct SettingsAccountTab: View {
+    @AppStorage(Constants.UserDefaultsKey.defaultProvider) private var defaultProvider = ProviderType.googleTranslate.rawValue
     @ObservedObject private var authService = SupabaseAuthService.shared
     @ObservedObject private var creditService = CreditService.shared
 
@@ -15,6 +16,11 @@ struct SettingsAccountTab: View {
     @State private var showPasswordResetAction = false
     @State private var packages: [TopupPackage] = []
     @State private var qrInfo: QRPaymentInfo?
+
+    private var shouldShowProviderSwitchNotice: Bool {
+        ProviderType(rawValue: defaultProvider) == .aiTranslation
+            && authService.providerSwitchNotice != nil
+    }
 
     var body: some View {
         SettingsPage(title: "Account", subtitle: "Manage your AI Translation account and credits.") {
@@ -33,6 +39,11 @@ struct SettingsAccountTab: View {
         .sheet(item: $qrInfo) { qr in
             PaymentQRSheetView(qrInfo: qr) { qrInfo = nil }
         }
+        .onChange(of: defaultProvider) { newValue in
+            if ProviderType(rawValue: newValue) != .aiTranslation {
+                authService.clearProviderSwitchNotice()
+            }
+        }
     }
 
     // MARK: - Logged In
@@ -41,13 +52,32 @@ struct SettingsAccountTab: View {
     private var loggedInContent: some View {
         SettingsCard(systemImage: "creditcard", title: "Balance",
                      subtitle: LocalizedStringKey(authService.authState.email ?? "")) {
-            HStack {
-                Text("\(creditService.balance)")
-                    .font(.system(size: 36, weight: .bold, design: .rounded))
-                Text("credits").font(.headline).foregroundStyle(.secondary)
-                Spacer()
-                Button("Refresh") { Task { await creditService.fetchBalance() } }
-                    .font(.caption).buttonStyle(.bordered)
+            VStack(alignment: .leading, spacing: 10) {
+                if let notice = authService.providerSwitchNotice, shouldShowProviderSwitchNotice {
+                    Label {
+                        Text(LocalizedStringKey(notice))
+                    } icon: {
+                        Image(systemName: "info.circle.fill")
+                    }
+                    .font(.caption)
+                    .foregroundStyle(.blue)
+                    .task {
+                        try? await Task.sleep(nanoseconds: 5_000_000_000)
+                        guard !Task.isCancelled else { return }
+                        await MainActor.run {
+                            authService.clearProviderSwitchNotice()
+                        }
+                    }
+                }
+
+                HStack {
+                    Text("\(creditService.balance)")
+                        .font(.system(size: 36, weight: .bold, design: .rounded))
+                    Text("credits").font(.headline).foregroundStyle(.secondary)
+                    Spacer()
+                    Button("Refresh") { Task { await creditService.fetchBalance() } }
+                        .font(.caption).buttonStyle(.bordered)
+                }
             }
         }
 
@@ -112,10 +142,10 @@ struct SettingsAccountTab: View {
                                     await creditService.fetchBalance()
                                     await loadPackages()
                                     if !creditService.trialClaimed {
-                                        await creditService.claimTrial()
+                                        _ = await creditService.claimTrial()
                                     }
                                 } else {
-                                    showPasswordResetAction = authService.authError != nil
+                                    showPasswordResetAction = authService.canResetPasswordAfterLastLoginFailure
                                 }
                             }
                         }
@@ -176,7 +206,7 @@ struct SettingsAccountTab: View {
                                 pendingOTPEmail = nil
                                 await creditService.fetchBalance()
                                 await loadPackages()
-                                await creditService.claimTrial()
+                                _ = await creditService.claimTrial()
                             }
                         }
                     }
@@ -242,7 +272,7 @@ struct SettingsAccountTab: View {
                             }
                         }
                     }
-                    .disabled(resetOTP.count < 6 || newPassword.count < 6)
+                    .disabled(resetOTP.count < 6 || newPassword.count < Constants.Supabase.minimumPasswordLength)
 
                     SettingsButton("Resend code", systemImage: "arrow.clockwise") {
                         Task {

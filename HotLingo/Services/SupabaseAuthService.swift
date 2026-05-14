@@ -10,12 +10,16 @@ final class SupabaseAuthService: ObservableObject {
                 let hadEverLoggedIn = UserDefaults.standard.bool(forKey: Constants.UserDefaultsKey.hasEverLoggedIn)
                 UserDefaults.standard.set(true, forKey: Constants.UserDefaultsKey.hasEverLoggedIn)
                 selectAITranslationForFirstAccountLoginIfNeeded(hadEverLoggedIn: hadEverLoggedIn)
-            } else if case .loggedIn = oldValue {
+            } else if case .loggedIn = oldValue, case .loggedOut = authState {
                 fallbackFromAITranslationIfNeeded()
             }
         }
     }
     @Published var authError: String?
+    @Published var canResetPasswordAfterLastLoginFailure = false
+    @Published var providerSwitchNotice: String?
+
+    static let providerSwitchNoticeKey = "AI Translation is now selected for this account. You can change it anytime in Settings."
 
     private init() {
         restoreSession()
@@ -37,6 +41,8 @@ final class SupabaseAuthService: ObservableObject {
     func login(email: String, password: String) async {
         authState = .loading
         authError = nil
+        canResetPasswordAfterLastLoginFailure = false
+        providerSwitchNotice = nil
         do {
             let response: AuthTokenResponse = try await SupabaseClient.shared.request(
                 endpoint: "/auth/v1/token?grant_type=password",
@@ -53,9 +59,11 @@ final class SupabaseAuthService: ObservableObject {
                 value: email
             )
             authState = .loggedIn(email: email)
+            canResetPasswordAfterLastLoginFailure = false
             Task { await DeviceTrackingService.shared.linkToUser() }
         } catch {
             authState = .loggedOut
+            canResetPasswordAfterLastLoginFailure = isPasswordResetEligibleLoginError(error)
             authError = parseAuthError(error)
         }
     }
@@ -63,6 +71,7 @@ final class SupabaseAuthService: ObservableObject {
     func signup(email: String, password: String) async {
         authState = .loading
         authError = nil
+        canResetPasswordAfterLastLoginFailure = false
         do {
             let _: SignupResponse = try await SupabaseClient.shared.request(
                 endpoint: "/auth/v1/signup",
@@ -82,6 +91,7 @@ final class SupabaseAuthService: ObservableObject {
     func verifySignupOTP(email: String, token: String) async {
         authState = .loading
         authError = nil
+        canResetPasswordAfterLastLoginFailure = false
         do {
             let response: AuthTokenResponse = try await SupabaseClient.shared.request(
                 endpoint: "/auth/v1/verify",
@@ -108,6 +118,7 @@ final class SupabaseAuthService: ObservableObject {
     func resendSignupOTP(email: String) async {
         authState = .loading
         authError = nil
+        canResetPasswordAfterLastLoginFailure = false
         do {
             _ = try await SupabaseClient.shared.requestRaw(
                 endpoint: "/auth/v1/resend",
@@ -125,6 +136,7 @@ final class SupabaseAuthService: ObservableObject {
     func sendPasswordResetOTP(email: String) async {
         authState = .loading
         authError = nil
+        canResetPasswordAfterLastLoginFailure = false
         do {
             _ = try await SupabaseClient.shared.requestRaw(
                 endpoint: "/auth/v1/recover",
@@ -142,6 +154,7 @@ final class SupabaseAuthService: ObservableObject {
     func resetPassword(email: String, token: String, newPassword: String) async {
         authState = .loading
         authError = nil
+        canResetPasswordAfterLastLoginFailure = false
         do {
             let response: AuthTokenResponse = try await SupabaseClient.shared.request(
                 endpoint: "/auth/v1/verify",
@@ -176,6 +189,12 @@ final class SupabaseAuthService: ObservableObject {
         Task { await SupabaseClient.shared.clearTokens() }
         authState = .loggedOut
         authError = nil
+        canResetPasswordAfterLastLoginFailure = false
+        providerSwitchNotice = nil
+    }
+
+    func clearProviderSwitchNotice() {
+        providerSwitchNotice = nil
     }
 
     func restoreSession() {
@@ -225,6 +244,17 @@ final class SupabaseAuthService: ObservableObject {
         guard UserDefaults.standard.object(forKey: key) == nil || currentProvider == .googleTranslate else { return }
 
         UserDefaults.standard.set(ProviderType.aiTranslation.rawValue, forKey: key)
+        providerSwitchNotice = Self.providerSwitchNoticeKey
+    }
+
+    private func isPasswordResetEligibleLoginError(_ error: Error) -> Bool {
+        guard let supaErr = error as? SupabaseError else { return false }
+        guard case .serverError(let raw) = supaErr else { return false }
+
+        let msg = raw.lowercased()
+        return msg.contains("invalid login credentials")
+            || msg.contains("invalid email or password")
+            || msg.contains("invalid_grant")
     }
 
     private func parseAuthError(_ error: Error) -> String {
@@ -233,20 +263,20 @@ final class SupabaseAuthService: ObservableObject {
             case .serverError(let raw):
                 return friendlyAuthMessage(from: raw)
             case .notAuthenticated:
-                return "Please log in to continue."
+                return String(localized: "Please log in to continue.")
             case .invalidResponse:
-                return "Something went wrong. Please try again."
+                return String(localized: "Something went wrong. Please try again.")
             case .httpError(let code):
                 return code >= 500
-                    ? "Server is temporarily unavailable. Please try again later."
-                    : "Something went wrong. Please try again."
+                    ? String(localized: "Server is temporarily unavailable. Please try again later.")
+                    : String(localized: "Something went wrong. Please try again.")
             }
         }
         let nsErr = error as NSError
         if nsErr.domain == NSURLErrorDomain && nsErr.code == NSURLErrorNotConnectedToInternet {
-            return "No internet connection. Please check your network."
+            return String(localized: "No internet connection. Please check your network.")
         }
-        return "Something went wrong. Please try again."
+        return String(localized: "Something went wrong. Please try again.")
     }
 
     /// Maps raw Supabase server error strings to human-readable messages.
@@ -254,25 +284,25 @@ final class SupabaseAuthService: ObservableObject {
         let msg = raw.lowercased()
         switch true {
         case msg.contains("invalid login credentials"), msg.contains("invalid email or password"):
-            return "Incorrect email or password. Please try again."
+            return String(localized: "Incorrect email or password. Please try again.")
         case msg.contains("email not confirmed"):
-            return "Please verify your email before logging in. Check your inbox."
+            return String(localized: "Please verify your email before logging in. Check your inbox.")
         case msg.contains("user not found"):
-            return "No account found with this email."
+            return String(localized: "No account found with this email.")
         case msg.contains("user already registered"), msg.contains("already registered"):
-            return "This email is already registered. Try logging in instead."
+            return String(localized: "This email is already registered. Try logging in instead.")
         case msg.contains("password should be"), msg.contains("password must be"):
-            return "Password must be at least 6 characters."
+            return String(localized: "Password must be at least 6 characters.")
         case msg.contains("token has expired"), msg.contains("otp has expired"):
-            return "Verification code has expired. Please request a new one."
+            return String(localized: "Verification code has expired. Please request a new one.")
         case msg.contains("invalid otp"), msg.contains("token is invalid"):
-            return "Invalid verification code. Please check and try again."
+            return String(localized: "Invalid verification code. Please check and try again.")
         case msg.contains("rate limit"), msg.contains("too many requests"):
-            return "Too many attempts. Please wait a moment and try again."
+            return String(localized: "Too many attempts. Please wait a moment and try again.")
         default:
             // Strip the [400] HTTP prefix if present, fall back to cleaned message
             let stripped = raw.replacingOccurrences(of: #"^\[\d+\]\s*"#, with: "", options: .regularExpression)
-            return stripped.isEmpty ? "Something went wrong. Please try again." : stripped
+            return stripped.isEmpty ? String(localized: "Something went wrong. Please try again.") : stripped
         }
     }
 }

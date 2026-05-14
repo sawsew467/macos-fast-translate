@@ -205,3 +205,16 @@
 "panel.noTextSelected" = "Chưa chọn văn bản";
 "Exit selection" = "Thoát chọn";
 "Select translations" = "Chọn bản dịch";
+"AI Translation is now selected for this account. You can change it anytime in Settings." = "AI Translation đã được chọn cho tài khoản này. Bạn có thể thay đổi bất cứ lúc nào trong Cài đặt.";
+"Please log in to continue." = "Vui lòng đăng nhập để tiếp tục.";
+"Something went wrong. Please try again." = "Đã có lỗi xảy ra. Vui lòng thử lại.";
+"Server is temporarily unavailable. Please try again later." = "Máy chủ tạm thời không khả dụng. Vui lòng thử lại sau.";
+"No internet connection. Please check your network." = "Không có kết nối internet. Vui lòng kiểm tra mạng.";
+"Incorrect email or password. Please try again." = "Email hoặc mật khẩu không đúng. Vui lòng thử lại.";
+"Please verify your email before logging in. Check your inbox." = "Vui lòng xác thực email trước khi đăng nhập. Hãy kiểm tra hộp thư.";
+"No account found with this email." = "Không tìm thấy tài khoản với email này.";
+"This email is already registered. Try logging in instead." = "Email này đã được đăng ký. Hãy thử đăng nhập.";
+"Password must be at least 6 characters." = "Mật khẩu phải có ít nhất 6 ký tự.";
+"Verification code has expired. Please request a new one." = "Mã xác thực đã hết hạn. Vui lòng yêu cầu mã mới.";
+"Invalid verification code. Please check and try again." = "Mã xác thực không hợp lệ. Vui lòng kiểm tra và thử lại.";
+"Too many attempts. Please wait a moment and try again." = "Quá nhiều lần thử. Vui lòng chờ một lúc rồi thử lại.";

@@ -40,6 +40,7 @@ struct OnboardingProviderStep: View {
                     isSelected: selectedProvider == .openAI
                 ) {
                     defaultProvider = ProviderType.openAI.rawValue
+                    authService.clearProviderSwitchNotice()
                     ProviderFormPanel.shared.openOpenAIKey()
                 }
 
@@ -51,6 +52,7 @@ struct OnboardingProviderStep: View {
                     isSelected: selectedProvider == .googleTranslate
                 ) {
                     defaultProvider = ProviderType.googleTranslate.rawValue
+                    authService.clearProviderSwitchNotice()
                     ProviderFormPanel.shared.close()
                 }
             }
@@ -142,6 +144,8 @@ final class ProviderFormPanel {
 struct AIAuthPanelView: View {
     let onDismiss: () -> Void
 
+    @AppStorage(Constants.UserDefaultsKey.defaultProvider)
+    private var defaultProvider = ProviderType.googleTranslate.rawValue
     @ObservedObject private var authService = SupabaseAuthService.shared
     @State private var email = ""
     @State private var password = ""
@@ -153,6 +157,11 @@ struct AIAuthPanelView: View {
     @State private var newPassword = ""
     @State private var showPasswordResetAction = false
     @State private var trialMessage: String?
+
+    private var shouldShowProviderSwitchNotice: Bool {
+        ProviderType(rawValue: defaultProvider) == .aiTranslation
+            && authService.providerSwitchNotice != nil
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -201,6 +210,23 @@ struct AIAuthPanelView: View {
                 .foregroundStyle(.green)
             if let msg = trialMessage {
                 Text(msg).font(.caption).foregroundStyle(.green)
+            }
+            if let notice = authService.providerSwitchNotice, shouldShowProviderSwitchNotice {
+                Label {
+                    Text(LocalizedStringKey(notice))
+                } icon: {
+                    Image(systemName: "info.circle.fill")
+                }
+                    .font(.caption)
+                    .foregroundStyle(.blue)
+                    .multilineTextAlignment(.center)
+                    .task {
+                        try? await Task.sleep(nanoseconds: 5_000_000_000)
+                        guard !Task.isCancelled else { return }
+                        await MainActor.run {
+                            authService.clearProviderSwitchNotice()
+                        }
+                    }
             }
             Button("Done", action: onDismiss)
                 .buttonStyle(.borderedProminent)
@@ -301,7 +327,7 @@ struct AIAuthPanelView: View {
                 }
                 .buttonStyle(.borderedProminent)
                 .controlSize(.small)
-                .disabled(resetOTP.count < 6 || newPassword.count < 6)
+                .disabled(resetOTP.count < 6 || newPassword.count < Constants.Supabase.minimumPasswordLength)
 
                 Button("Resend code") {
                     Task { await resendPasswordResetOTP(email: email) }
@@ -396,7 +422,7 @@ struct AIAuthPanelView: View {
                 let claimed = await CreditService.shared.claimTrial()
                 trialMessage = claimed ? "50 free credits granted!" : nil
             } else {
-                showPasswordResetAction = authService.authError != nil
+                showPasswordResetAction = authService.canResetPasswordAfterLastLoginFailure
             }
         }
     }

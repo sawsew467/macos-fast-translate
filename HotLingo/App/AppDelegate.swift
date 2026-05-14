@@ -25,7 +25,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         setupSelectionTranslateButton()
         setupAccountTabNotificationHandler()
         setupHistoryWindowNotificationHandler()
-        setupPopoverCloseNotificationHandler()
         checkFirstLaunch()
         showPopoverOnLaunchIfNeeded()
         UpdateService.shared.checkOnLaunch()
@@ -83,18 +82,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                         NotificationCenter.default.post(name: .openAccountTab, object: nil)
                     }
                 }
-            }
-        }
-    }
-
-    private func setupPopoverCloseNotificationHandler() {
-        NotificationCenter.default.addObserver(
-            forName: .closeQuickTranslatePopover,
-            object: nil,
-            queue: .main
-        ) { [weak self] _ in
-            Task { @MainActor in
-                self?.closePopover()
             }
         }
     }
